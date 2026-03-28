@@ -111,6 +111,14 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* LIVE GPS */
+.center-btn{position:absolute;bottom:18px;right:18px;z-index:1000;width:40px;height:40px;border-radius:50%;border:2px solid var(--neon);background:var(--s2);color:var(--neon);font-size:1.2rem;cursor:pointer;box-shadow:0 0 14px rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.center-btn:hover{background:var(--neon);color:#080c18}
+.center-btn.tracking{border-color:var(--neon2);color:var(--neon2);box-shadow:0 0 14px rgba(16,185,129,.4)}
+.speed-badge{position:absolute;bottom:18px;left:18px;z-index:1000;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--muted);box-shadow:0 0 12px rgba(16,185,129,.2);display:flex;flex-direction:column;gap:2px;min-width:90px}
+.speed-val{font-size:1.4rem;font-weight:900;color:var(--neon);line-height:1}
+.speed-unit{font-size:.55rem;color:var(--muted);letter-spacing:2px}
+.speed-heading{font-size:.6rem;color:var(--neon2);margin-top:2px}
 @media(max-width:700px){
   .main{grid-template-columns:1fr;grid-template-rows:45vh 1fr}
   .panel{border-left:none;border-top:2px solid var(--border)}
@@ -145,7 +153,15 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 </div>
 
 <div class="main">
-  <div id="map"><div class="toast" id="toast"></div></div>
+  <div id="map">
+    <div class="toast" id="toast"></div>
+    <button class="center-btn" id="centerBtn" onclick="centerOnUser()" title="Centrer sur ma position">🎯</button>
+    <div class="speed-badge" id="speedBadge">
+      <div class="speed-val" id="speedVal">0</div>
+      <div class="speed-unit">KM/H</div>
+      <div class="speed-heading" id="headingVal">—</div>
+    </div>
+  </div>
   <div class="panel">
 
     <!-- CHARACTER -->
@@ -235,29 +251,44 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 // ═══════════════════════════════════════════════════════
 const PERSONAS = {
   grandmaman:[
-    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.75,  pitch:.72, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette'},
-    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.80,  pitch:.88, gender:'female', desc:'Espiègle · Directe · Style Betty White'},
-    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.70,  pitch:.80, gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn'},
+    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.68,  pitch:.65, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
+     preferVoice:['Microsoft Nathalie','Microsoft Caroline','Google français']},
+    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.82,  pitch:.95, volume:1,  gender:'female', desc:'Espiègle · Directe · Style Betty White',
+     preferVoice:['Google UK English Female','Microsoft Linda','Google US English']},
+    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.62,  pitch:.75, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
+     preferVoice:['Google UK English Female','Microsoft Linda']},
   ],
   enfant:[
-    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.32, pitch:1.62,gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo'},
-    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:1.10, pitch:1.10,gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear'},
-    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.22, pitch:1.40,gender:'male',   desc:'Sarcastique joyeux · Style Timon'},
+    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.45, pitch:1.85,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
+     preferVoice:['Microsoft Caroline','Microsoft Nathalie','Google français']},
+    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.95,  pitch:.70, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
+     preferVoice:['Google UK English Male','Microsoft Richard','Google US English']},
+    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.30, pitch:1.50,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
+     preferVoice:['Google US English','Microsoft Richard']},
   ],
   amis:[
-    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.08, pitch:.98, gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse'},
-    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:1.00, pitch:.92, gender:'male',   desc:'Relax · Rires · Style Seth Rogen'},
-    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.95,  pitch:.88, gender:'male',   desc:'Friendly · Pas trop bright · Kronk'},
+    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.15, pitch:1.05,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
+     preferVoice:['Google US English','Microsoft Richard']},
+    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.88,  pitch:.82, volume:.95,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
+     preferVoice:['Google US English','Microsoft Richard','Microsoft Claude']},
+    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.82,  pitch:.72, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
+     preferVoice:['Microsoft Claude','Microsoft Richard','Google US English']},
   ],
   drole:[
-    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.88,  pitch:.68, gender:'male',   desc:'Grave documentaire · Morgan Freeman'},
-    {id:'ron',    label:'📺 Ron',       av:'📺', name:'RON GPS',       rate:1.05, pitch:.90, gender:'male',   desc:'Pompeux confiant · Ron Burgundy'},
-    {id:'jarvis', label:'🤖 Jarvis',   av:'🤖', name:'JARVIS GPS',    rate:.92,  pitch:.82, gender:'male',   desc:'IA sarcastique · Jarvis Iron Man'},
+    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.72,  pitch:.50, volume:.85,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
+     preferVoice:['Google UK English Male','Google US English','Microsoft Richard']},
+    {id:'ron',    label:'📺 Ron',       av:'📺', name:'RON GPS',       rate:1.08, pitch:.88, volume:1,  gender:'male',   desc:'Pompeux confiant · Ron Burgundy',
+     preferVoice:['Google US English','Google UK English Male','Microsoft Richard']},
+    {id:'jarvis', label:'🤖 Jarvis',   av:'🤖', name:'JARVIS GPS',    rate:.88,  pitch:.78, volume:.9, gender:'male',   desc:'IA sarcastique · Jarvis Iron Man',
+     preferVoice:['Google UK English Male','Google UK English Female','Microsoft Linda']},
   ],
   insulte:[
-    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.18, pitch:.78, gender:'male',   desc:'Rage culinaire · Gordon Ramsay'},
-    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.22, pitch:.75, gender:'male',   desc:'Sergent instructeur · Full Metal Jacket'},
-    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.88,  pitch:.62, gender:'male',   desc:'Calme certain · Thanos'},
+    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.25, pitch:.85, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
+     preferVoice:['Google UK English Male','Microsoft Richard','Google US English']},
+    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.35, pitch:.70, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
+     preferVoice:['Google US English','Microsoft Richard','Google UK English Male']},
+    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.72,  pitch:.42, volume:.8, gender:'male',   desc:'Calme certain · Thanos',
+     preferVoice:['Google UK English Male','Microsoft Richard']},
   ],
 };
 const activeP = {grandmaman:0,enfant:0,amis:0,drole:0,insulte:0};
@@ -484,6 +515,7 @@ let userLat=45.5017, userLng=-73.5673;
 let voiceOn=true;
 let wpCount=0, routeMarkers=[];
 let cachedVoices=[];
+let watchId=null, accuracyCircle=null, followUser=true;
 
 // ═══════════════════════════════════════════════════════
 //  MAP
@@ -499,12 +531,50 @@ function initMap(lat,lng){
   setStatus('Carte chargée · Cliquez sur la carte pour destination rapide');
 }
 
+// Init carte immédiatement avec Montréal, puis tenter GPS
+initMap(45.5017,-73.5673);
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
-    p=>{ userLat=p.coords.latitude; userLng=p.coords.longitude; initMap(userLat,userLng); setStatus('📡 Position GPS trouvée!'); },
-    ()=>{ initMap(45.5017,-73.5673); setStatus('GPS indisponible · Montréal par défaut'); }
+    p=>{
+      userLat=p.coords.latitude; userLng=p.coords.longitude;
+      userMark.setLatLng([userLat,userLng]);
+      mapObj.setView([userLat,userLng],13);
+      setStatus('📡 Position GPS trouvée!');
+      startTracking();
+    },
+    ()=>{ setStatus('GPS indisponible · Montréal par défaut'); },
+    {enableHighAccuracy:true, timeout:8000, maximumAge:0}
   );
-} else { initMap(45.5017,-73.5673); }
+}
+
+function startTracking(){
+  if(watchId!==null) return;
+  watchId=navigator.geolocation.watchPosition(pos=>{
+    const {latitude,longitude,accuracy,speed,heading}=pos.coords;
+    userLat=latitude; userLng=longitude;
+    userMark.setLatLng([latitude,longitude]);
+    if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
+    accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
+    if(followUser) mapObj.setView([latitude,longitude],mapObj.getZoom());
+    const sVal=document.getElementById('speedVal');
+    const hVal=document.getElementById('headingVal');
+    sVal.textContent=(speed!==null&&speed>0)?Math.round(speed*3.6):'0';
+    if(heading!==null&&!isNaN(heading)){
+      const dirs=['N','NE','E','SE','S','SO','O','NO'];
+      hVal.textContent='🧭 '+dirs[Math.round(heading/45)%8]+' · '+Math.round(heading)+'°';
+    } else { hVal.textContent='—'; }
+    const btn=document.getElementById('centerBtn');
+    btn.classList.toggle('tracking',followUser);
+    setStatus('📡 GPS temps réel'+(accuracy?' · ±'+Math.round(accuracy)+'m':''));
+  }, err=>{
+    setStatus('⚠️ Erreur GPS: '+err.message);
+  }, {enableHighAccuracy:true, maximumAge:3000, timeout:10000});
+  mapObj.on('dragstart',()=>{ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); });
+}
+
+function centerOnUser(){
+  if(mapObj){ followUser=true; mapObj.setView([userLat,userLng],16); document.getElementById('centerBtn').classList.add('tracking'); }
+}
 
 function quickDest(lat,lng){
   if(destMark) mapObj.removeLayer(destMark);
@@ -536,7 +606,7 @@ async function geocode(q){
     const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`);
     const d=await r.json();
     return d.length?{lat:+d[0].lat,lng:+d[0].lon,name:d[0].display_name}:null;
-  }catch(){ return null; }
+  }catch(e){ return null; }
 }
 
 async function calcRoute(){
@@ -684,20 +754,28 @@ if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>cachedVoic
 
 function pickVoice(l,gender){
   const voices=getVoices();
+  const p=getP();
+  // Essayer les voix préférées du persona
+  if(p.preferVoice){
+    for(const pref of p.preferVoice){
+      const match=voices.find(v=>v.name.includes(pref));
+      if(match) return match;
+    }
+  }
+  // Fallback: filtrer par langue
   const lm={fr:['fr','fr-FR','fr-CA'],en:['en','en-US','en-GB'],es:['es','es-ES','es-MX']};
   const codes=lm[l]||['fr'];
   let pool=voices.filter(v=>codes.some(c=>v.lang.toLowerCase().startsWith(c.toLowerCase())));
   if(!pool.length) pool=voices;
   if(gender==='female'){
-    const f=pool.filter(v=>/female|zira|samantha|siri|karen|moira|fiona|nathalie|amélie|alice|pauline/i.test(v.name));
+    const f=pool.filter(v=>/female|zira|samantha|nathalie|caroline|linda|amélie|alice/i.test(v.name));
     if(f.length) return f[0];
   }
   if(gender==='male'){
-    const m=pool.filter(v=>/male|daniel|david|alex|jorge|carlos|luca|reed|thomas|nicolas|pierre/i.test(v.name));
+    const m=pool.filter(v=>/male|daniel|david|richard|claude|alex|jorge|carlos/i.test(v.name));
     if(m.length) return m[0];
   }
-  const exact=pool.find(v=>codes.some(c=>v.lang.toLowerCase().startsWith(c.toLowerCase().substring(0,2))));
-  return exact||pool[0]||null;
+  return pool[0]||null;
 }
 
 function speak(txt,l){
@@ -708,6 +786,7 @@ function speak(txt,l){
   u.lang={fr:'fr-FR',en:'en-US',es:'es-ES'}[l]||'fr-FR';
   u.rate=p.rate*parseFloat(vsEl.value);
   u.pitch=p.pitch;
+  u.volume=p.volume||1;
   const v=pickVoice(l,p.gender);
   if(v) u.voice=v;
   setStatus('🎙️ '+p.name+' · '+(v?v.name:'défaut')+' · pitch '+p.pitch+' · ×'+u.rate.toFixed(2));
@@ -720,7 +799,7 @@ function speakThen(txt,l,cb){
   const p=getP();
   const u=new SpeechSynthesisUtterance(txt);
   u.lang={fr:'fr-FR',en:'en-US',es:'es-ES'}[l]||'fr-FR';
-  u.rate=p.rate; u.pitch=p.pitch;
+  u.rate=p.rate; u.pitch=p.pitch; u.volume=p.volume||1;
   const v=pickVoice(l,p.gender); if(v) u.voice=v;
   u.onend=()=>cb&&cb();
   window.speechSynthesis.speak(u);
