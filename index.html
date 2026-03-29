@@ -2185,75 +2185,91 @@ function pickVoice(l,gender){
 
 // Nettoyage ponctuation pour que le TTS ne dise pas "point point point" etc.
 function cleanForSpeech(txt){
-  // Supprimer les emojis
-  txt=txt.replace(/[\u{1F600}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}]/gu,'');
-  // Remplacer ... par une pause naturelle (virgule)
-  txt=txt.replace(/\.{2,}/g,',');
-  // Supprimer TOUTE ponctuation que le TTS pourrait prononcer littéralement
-  txt=txt.replace(/[·•–—―:;"/\\(){}[\]<>*#@&|~^`_+=]/g,' ');
-  // Garder seulement . , ! ? pour l'intonation naturelle
-  // Remplacer les ! et ? multiples par un seul
+  // 1. Supprimer TOUS les emojis et symboles unicode
+  txt=txt.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}]/gu,'');
+  // 2. Remplacer ... par un espace (la pause sera gérée par les segments)
+  txt=txt.replace(/\.{2,}/g,' ');
+  // 3. Supprimer TOUTE ponctuation sauf les lettres, chiffres, espaces et apostrophes
+  // Garder ! et ? en fin de phrase pour l'intonation seulement
+  txt=txt.replace(/[·•–—―:;"/\\(){}[\]<>*#@&|~^`_+=°§¶©®™%$€£¥¢]/g,' ');
+  // 4. Supprimer les tirets (souvent prononcés "tiret")
+  txt=txt.replace(/-/g,' ');
+  // 5. Supprimer les points (souvent prononcés "point") sauf en fin de phrase
+  txt=txt.replace(/\.(?!\s*$)/g,' ');
+  txt=txt.replace(/\.\s*$/g,'');
+  // 6. Supprimer les virgules (souvent prononcées "virgule" par certaines voix)
+  txt=txt.replace(/,/g,' ');
+  // 7. Garder un seul ! ou ? pour l'intonation
   txt=txt.replace(/!{2,}/g,'!');
   txt=txt.replace(/\?{2,}/g,'?');
-  // Supprimer les tirets isolés
-  txt=txt.replace(/\s-\s/g,' ');
-  // Supprimer les guillemets simples isolés (pas les apostrophes)
-  txt=txt.replace(/\s'/g,' ');
-  txt=txt.replace(/'\s/g,' ');
-  // Supprimer les chiffres entre parenthèses style "(1)"
+  // 8. Supprimer guillemets doubles et simples isolés
+  txt=txt.replace(/["«»""]/g,'');
+  txt=txt.replace(/(?<!\w)'|'(?!\w)/g,'');
+  // 9. Supprimer les chiffres entre parenthèses
   txt=txt.replace(/\(\d+\)/g,'');
-  // Nettoyer les espaces multiples
+  // 10. Nettoyer espaces multiples
   txt=txt.replace(/\s{2,}/g,' ');
   return txt.trim();
 }
 
-// Technique 3+: Text hacking avancé — rendre le texte plus "parlé"
+// Technique 3+: Text hacking — rendre le texte plus naturel et parlé
 function humanizeText(txt){
-  // Micro-pauses après mots de liaison (virgule = pause moteur TTS)
-  txt=txt.replace(/\b(bon|bien|alors|donc|pis|t'sais|hmm|euh|like|well|so|okay|right|bueno|pues|mira|oye)\b/gi, function(m){
-    return m+',';
+  // Convertir les CAPS en minuscules (le volume boost gère l'emphase, pas le texte)
+  // Garder le premier mot CAPS intact pour l'effet, convertir les autres
+  txt=txt.replace(/\b([A-ZÉÈÊÀÂÙÛÎÏÔÇ]{3,})\b/g, function(m,p1,offset){
+    // Garder le premier mot CAPS, convertir les suivants en title case
+    if(offset<5) return m;
+    return m.charAt(0)+m.slice(1).toLowerCase();
   });
-  // Transformer "..." en pauses plus marquées (triple virgule = longue pause)
-  txt=txt.replace(/\.\.\./g, ',,,');
-  // Ajouter légère hésitation sur les CAPS (les rendre plus lents individuellement)
-  // On entoure les mots CAPS de virgules pour forcer une micro-pause avant/après
-  txt=txt.replace(/\b([A-ZÉÈÊÀÂÙÛÎÏÔÇ]{2,})\b/g, ', $1,');
-  // Éviter les triples+ virgules consécutives
-  txt=txt.replace(/,{4,}/g,',,,');
-  // Éviter les doubles virgules sauf intentionnelles
-  txt=txt.replace(/,,(?!,)/g,',');
-  return txt;
+  // Nettoyer espaces
+  txt=txt.replace(/\s{2,}/g,' ');
+  return txt.trim();
 }
 
-// Technique 1: Multi-utterance — découpe intelligente en segments courts
+// Technique 1: Multi-utterance — segments plus longs et naturels
 function splitIntoSegments(txt){
-  // Découpe sur ... ,,, ou sur les phrases (après . ! ?)
-  var parts=txt.split(/(,,,|[.!?])\s*/);
+  // Découpe seulement sur les ! et ? (pas les points ni virgules)
+  // Le but: des segments longs qui sonnent comme des phrases complètes
   var segments=[];
+  // Séparer sur ! et ? tout en gardant le délimiteur
+  var parts=txt.split(/([!?])/);
   var current='';
   for(var i=0;i<parts.length;i++){
     current+=parts[i];
-    if(/^[.!?]$/.test(parts[i]) || /,,,/.test(parts[i]) || current.length>50){
-      var clean=current.replace(/,,,/g,' ').trim();
-      if(clean) segments.push({text:clean, pause: /,,,/.test(current)?'long':/[!]/.test(parts[i])?'short':'normal', isQuestion:/[?]/.test(parts[i])});
+    // Couper après ! ou ? ou si le segment dépasse 80 caractères
+    if(/^[!?]$/.test(parts[i]) || current.length>80){
+      var clean=current.trim();
+      if(clean){
+        var isQ=/\?$/.test(clean);
+        var isExcl=/!$/.test(clean);
+        // Retirer la ponctuation finale pour éviter que le TTS la prononce
+        clean=clean.replace(/[!?]+$/g,'').trim();
+        if(clean) segments.push({text:clean, pause:isExcl?'short':'normal', isQuestion:isQ});
+      }
       current='';
     }
   }
   if(current.trim()){
-    var clean=current.replace(/,,,/g,' ').trim();
+    var clean=current.trim().replace(/[!?]+$/g,'').trim();
     if(clean) segments.push({text:clean, pause:'normal', isQuestion:false});
   }
-  // Si un seul segment trop long, couper sur les virgules
-  if(segments.length===1 && segments[0].text.length>35){
-    var commaParts=segments[0].text.split(/,\s*/);
-    if(commaParts.length>=2){
-      segments=[];
-      var half=Math.ceil(commaParts.length/2);
-      segments.push({text:commaParts.slice(0,half).join(', '), pause:'normal', isQuestion:false});
-      segments.push({text:commaParts.slice(half).join(', '), pause:'normal', isQuestion:false});
+  // Maximum 3 segments pour garder un rythme naturel (pas haché)
+  if(segments.length>3){
+    var merged=[];
+    var perGroup=Math.ceil(segments.length/3);
+    for(var g=0;g<3;g++){
+      var group=segments.slice(g*perGroup,(g+1)*perGroup);
+      if(group.length){
+        merged.push({
+          text:group.map(function(s){return s.text;}).join(' '),
+          pause:group[group.length-1].pause,
+          isQuestion:group[group.length-1].isQuestion
+        });
+      }
     }
+    segments=merged;
   }
-  return segments.length?segments:[{text:txt, pause:'normal', isQuestion:false}];
+  return segments.length?segments:[{text:txt.replace(/[!?.]+$/g,'').trim(), pause:'normal', isQuestion:false}];
 }
 
 // Technique 2: Variation dynamique FORTE
@@ -2283,7 +2299,7 @@ function speak(txt,l){
   var segments=splitIntoSegments(humanized);
   var total=segments.length;
 
-  setStatus(p.name+' · '+(v?v.name:'default')+' · '+total+' seg · pitch '+basePitch);
+  // Debug info supprimé pour interface propre
 
   // Jouer chaque segment avec toutes les techniques combinées
   var delay=0;
@@ -2294,22 +2310,20 @@ function speak(txt,l){
         var u=new SpeechSynthesisUtterance(seg.text);
         u.lang=langCode;
 
-        // Technique 2: Variation FORTE — ±8% rate, ±6% pitch par segment
-        var segRate=varyParam(baseRate, 0.08);
-        var segPitch=varyParam(basePitch, 0.06);
+        // Technique 2: Variation naturelle — ±5% rate, ±4% pitch (subtil)
+        var segRate=varyParam(baseRate, 0.05);
+        var segPitch=varyParam(basePitch, 0.04);
 
-        // Technique 4: Intonation contour
-        // Questions: pitch monte de 12% à la fin
-        if(seg.isQuestion) segPitch*=1.12;
-        // Fin de phrase longue: pitch descend de 8%
-        if(idx===total-1 && !seg.isQuestion) segPitch*=0.92;
-        // Milieu de phrase: légère montée pour maintenir l'attention
-        if(idx>0 && idx<total-1) segPitch*=1.03;
+        // Technique 4: Intonation naturelle
+        // Questions: pitch monte légèrement
+        if(seg.isQuestion) segPitch*=1.08;
+        // Fin: pitch descend naturellement
+        if(idx===total-1 && !seg.isQuestion) segPitch*=0.95;
 
-        // Premier segment: attaque plus lente (humain hésite au début)
-        if(idx===0) segRate*=0.90;
-        // Dernier segment: ralentissement final (humain conclut doucement)
-        if(idx===total-1) segRate*=0.88;
+        // Premier segment légèrement plus lent (naturel)
+        if(idx===0 && total>1) segRate*=0.95;
+        // Dernier segment: léger ralentissement
+        if(idx===total-1 && total>1) segRate*=0.93;
 
         // Technique 5: Volume boost si emphase (CAPS)
         var segVol=baseVol;
@@ -2326,17 +2340,15 @@ function speak(txt,l){
       }, delay);
     })(segments[i],i);
 
-    // Technique 6: Respiration simulée — pauses variables
+    // Technique 6: Pauses naturelles entre segments (comme une vraie respiration)
     var pauseMs;
-    if(segments[i].pause==='long') pauseMs=400+Math.floor(Math.random()*300); // "..." = grande respiration
-    else if(segments[i].pause==='short') pauseMs=120+Math.floor(Math.random()*100); // après ! = courte
-    else pauseMs=200+Math.floor(Math.random()*200); // normal = respiration moyenne
-    // Ajouter variabilité "humaine" — parfois une pause plus longue (1 sur 4)
-    if(Math.random()<0.25) pauseMs+=150+Math.floor(Math.random()*200);
+    if(segments[i].pause==='long') pauseMs=300+Math.floor(Math.random()*200);
+    else if(segments[i].pause==='short') pauseMs=150+Math.floor(Math.random()*100);
+    else pauseMs=200+Math.floor(Math.random()*150);
 
-    // Estimer la durée du segment
+    // Estimer la durée du segment (mots par seconde ajusté au rate)
     var wordCount=segments[i].text.split(/\s+/).length;
-    var segDuration=Math.max(350, (wordCount/2.8)*1000/baseRate);
+    var segDuration=Math.max(400, (wordCount/2.5)*1000/baseRate);
     delay+=segDuration+pauseMs;
   }
 }
