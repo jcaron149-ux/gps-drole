@@ -1,6 +1,6 @@
 // GPS DRÔLE — Service Worker v1
 // Caches: app shell + map tiles (offline support)
-const CACHE_NAME = 'gps-drole-v5';
+const CACHE_NAME = 'gps-drole-v6';
 const TILE_CACHE = 'gps-drole-tiles-v1';
 const APP_SHELL = [
   './',
@@ -74,18 +74,17 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  // App shell: stale-while-revalidate
+  // App shell: network-first (get latest version, fallback to cache if offline)
   e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      var fetchPromise = fetch(e.request).then(function(resp) {
-        if (resp.ok) {
-          caches.open(CACHE_NAME).then(function(cache) {
-            cache.put(e.request, resp.clone());
-          });
-        }
-        return resp;
-      }).catch(function() { return cached; });
-      return cached || fetchPromise;
+    fetch(e.request).then(function(resp) {
+      if (resp.ok) {
+        caches.open(CACHE_NAME).then(function(cache) {
+          cache.put(e.request, resp.clone());
+        });
+      }
+      return resp;
+    }).catch(function() {
+      return caches.match(e.request);
     })
   );
 });
