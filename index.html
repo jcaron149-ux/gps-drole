@@ -48,11 +48,11 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .toast.show{opacity:1}
 .leaflet-popup-content-wrapper{background:var(--s2);color:var(--text);border:1px solid var(--border)}
 .leaflet-popup-tip{background:var(--s2)}
-.route-info{position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(15,22,38,.85);backdrop-filter:blur(6px);padding:8px 16px;display:flex;justify-content:space-around;align-items:center;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--neon);border-bottom:1px solid var(--neon);opacity:0;transition:opacity .3s;pointer-events:none}
+.route-info{position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(8,12,24,.92);backdrop-filter:blur(10px);padding:14px 20px;display:flex;justify-content:space-around;align-items:center;font-family:'Orbitron',monospace;font-size:.85rem;color:var(--neon);border-bottom:3px solid var(--neon);opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .route-info.vis{opacity:1;pointer-events:auto}
-.route-info-item{display:flex;flex-direction:column;align-items:center;gap:2px}
-.route-info-label{font-size:.5rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.route-info-val{font-weight:700;font-size:.8rem}
+.route-info-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.route-info-label{font-size:.6rem;color:var(--neon2);letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.route-info-val{font-weight:900;font-size:1.1rem;text-shadow:0 0 8px rgba(245,158,11,.4)}
 .route-progress{position:absolute;bottom:0;left:0;right:0;z-index:1000;height:4px;background:rgba(15,22,38,.5);pointer-events:none}
 .route-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),var(--neon2));border-radius:0 2px 2px 0;transition:width .5s ease}
 .panel{background:var(--s1);border-left:2px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -1660,8 +1660,7 @@ function checkTurnByTurn(){
     if(dist<550 && dist>250 && !stepAnnounced[i].far){
       stepAnnounced[i].far=true;
       var preInstr=buildPreAnnounce(step,500);
-      if(preInstr) showInstr(preInstr);
-      // Pas de voix persona ici, juste l'instruction texte + ding
+      if(preInstr){ showInstr(preInstr); showNavInstr(preInstr); }
       vibrateAndDing();
       break;
     }
@@ -1669,18 +1668,18 @@ function checkTurnByTurn(){
     if(dist<250 && dist>80 && !stepAnnounced[i].mid){
       stepAnnounced[i].mid=true;
       var midInstr=buildPreAnnounce(step,200);
-      if(midInstr) showInstr(midInstr);
+      if(midInstr){ showInstr(midInstr); showNavInstr(midInstr); }
       vibrateAndDing();
       break;
     }
-    // Annonce finale à 30m: voix du personnage + instruction précise
+    // Annonce finale à 30m: voix du personnage + instruction nav dans overlay
     if(dist<40 && !stepAnnounced[i].near){
       stepAnnounced[i].near=true;
       lastAnnouncedStep=i;
       var scenario=mapManeuverToScenario(step.type,step.modifier);
       if(scenario) go(scenario);
       var instrLabel=buildStepInstruction(step);
-      if(instrLabel) showInstr(instrLabel);
+      if(instrLabel){ showInstr(instrLabel); showNavInstr(instrLabel); }
       // Arrivée: arrêter le guidage
       if(step.type==='arrive'){
         setTimeout(function(){ stopGuidance(); showToast('Destination atteinte!'); },3000);
@@ -1940,6 +1939,24 @@ function pickVoice(l,gender){
 //  6. Respiration simulée: pauses variables imitant la respiration
 // =============================================================
 
+// Nettoyage ponctuation pour que le TTS ne dise pas "point point point" etc.
+function cleanForSpeech(txt){
+  // Remplacer ... par une pause (espace)
+  txt=txt.replace(/\.{2,}/g,' ');
+  // Supprimer les caractères que le TTS pourrait prononcer
+  txt=txt.replace(/[·•–—―]/g,' ');
+  // Supprimer les tirets isolés
+  txt=txt.replace(/\s-\s/g,' ');
+  // Supprimer les symboles spéciaux
+  txt=txt.replace(/[*#@&|~^`\\[\]{}()<>]/g,'');
+  // Remplacer les ! et ? multiples par un seul
+  txt=txt.replace(/!{2,}/g,'!');
+  txt=txt.replace(/\?{2,}/g,'?');
+  // Nettoyer les espaces multiples
+  txt=txt.replace(/\s{2,}/g,' ');
+  return txt.trim();
+}
+
 // Technique 3+: Text hacking avancé — rendre le texte plus "parlé"
 function humanizeText(txt){
   // Micro-pauses après mots de liaison (virgule = pause moteur TTS)
@@ -2010,7 +2027,9 @@ function speak(txt,l){
   var baseVol=p.volume||1;
 
   // Humaniser le texte puis découper en segments enrichis
-  var humanized=humanizeText(txt);
+  // Nettoyer la ponctuation d'abord, puis humaniser
+  var cleaned=cleanForSpeech(txt);
+  var humanized=humanizeText(cleaned);
   var segments=splitIntoSegments(humanized);
   var total=segments.length;
 
@@ -2087,7 +2106,10 @@ function showInstr(txt){
   var el=document.getElementById('instrText');
   el.textContent=txt;
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-  // Aussi afficher dans l'overlay flottant pendant le guidage
+  // L'overlay guidage n'affiche PAS les répliques personnage — voir showNavInstr()
+}
+// Instruction de navigation seulement dans l'overlay (pas la réplique drôle)
+function showNavInstr(txt){
   var ov=document.getElementById('guidanceOverlay');
   if(ov) ov.textContent=txt;
 }
