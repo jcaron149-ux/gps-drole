@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎙️ Test Voix GPS Drôle</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c18;--s1:#0f1626;--s2:#151f35;--s3:#1c2a45;--neon:#f59e0b;--neon2:#10b981;--blue:#3b82f6;--red:#ef4444;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;--border:rgba(245,158,11,.18)}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;padding:20px}
+h1{font-family:'Orbitron',monospace;font-size:1.6rem;background:linear-gradient(90deg,var(--neon),#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;color:var(--muted);font-size:.8rem;margin-bottom:20px}
+
+/* VOICE LIST */
+.voice-list{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;max-height:250px;overflow-y:auto}
+.voice-list h2{font-family:'Orbitron',monospace;font-size:.8rem;color:var(--neon);margin-bottom:10px}
+.voice-item{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.75rem;cursor:pointer;border-radius:4px;transition:background .2s}
+.voice-item:hover{background:rgba(245,158,11,.08)}
+.voice-item .name{color:var(--text);font-weight:600}
+.voice-item .lang{color:var(--neon2);font-size:.65rem}
+.voice-item .type{color:var(--purple);font-size:.6rem;padding:2px 6px;border-radius:10px;border:1px solid var(--purple)}
+.voice-item .type.natural{color:var(--neon);border-color:var(--neon);background:rgba(245,158,11,.1)}
+.voice-count{text-align:center;color:var(--neon2);font-size:.75rem;margin-bottom:10px;font-weight:600}
+
+/* MODES */
+.modes{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.mode-btn{padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.8rem;font-weight:600;transition:all .2s}
+.mode-btn:hover{border-color:var(--neon);color:var(--neon)}
+.mode-btn.active{background:var(--neon);border-color:var(--neon);color:#080c18}
+
+/* PERSONA CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:20px}
+.card{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:all .3s}
+.card:hover{border-color:var(--neon);box-shadow:0 0 20px rgba(245,158,11,.15)}
+.card.speaking{border-color:var(--neon2);box-shadow:0 0 25px rgba(16,185,129,.3)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-av{font-size:2.4rem;filter:drop-shadow(0 0 8px rgba(245,158,11,.3))}
+.card-info h3{font-family:'Orbitron',monospace;font-size:.85rem;color:var(--neon);letter-spacing:1px}
+.card-info .desc{font-size:.7rem;color:var(--muted);margin-top:2px}
+.card-voice-info{font-size:.65rem;color:var(--neon2);margin-top:3px}
+
+/* PARAMS */
+.params{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+.param{text-align:center}
+.param label{display:block;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.param .val{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--neon)}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+.test-btn{flex:1;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:600;transition:all .2s}
+.test-btn.primary{background:var(--neon2);color:#080c18}
+.test-btn.primary:hover{background:#34d399;box-shadow:0 0 14px rgba(16,185,129,.4)}
+.test-btn.scenario{background:var(--s1);color:var(--text);border:1px solid var(--border)}
+.test-btn.scenario:hover{border-color:var(--neon);color:var(--neon)}
+.test-btn.stop{background:var(--red);color:white}
+.test-btn.stop:hover{background:#f87171}
+
+/* CUSTOM TEXT */
+.custom-section{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px}
+.custom-section h2{font-family:'Orbitron',monospace;font-size:.8rem;color:var(--neon);margin-bottom:10px}
+.custom-row{display:flex;gap:8px;align-items:center}
+.custom-input{flex:1;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:.85rem}
+.custom-input:focus{outline:none;border-color:var(--neon)}
+.custom-input::placeholder{color:var(--muted)}
+
+/* SLIDERS */
+.slider-section{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px}
+.slider-section h2{font-family:'Orbitron',monospace;font-size:.8rem;color:var(--neon);margin-bottom:10px}
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.slider-row label{font-size:.72rem;color:var(--muted);min-width:60px}
+.slider-row input[type=range]{flex:1;accent-color:var(--neon)}
+.slider-row .slider-val{font-family:'Orbitron',monospace;font-size:.75rem;color:var(--neon);min-width:40px;text-align:right}
+
+/* LANG */
+.lang-bar{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
+.lang-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;transition:all .2s}
+.lang-btn:hover{border-color:var(--neon2);color:var(--neon2)}
+.lang-btn.active{background:var(--neon2);border-color:var(--neon2);color:#080c18}
+
+/* STATUS */
+.status{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--border);padding:8px 20px;font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:8px;z-index:100}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon2);box-shadow:0 0 5px var(--neon2);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<h1>🎙️ TEST VOIX GPS DRÔLE</h1>
+<p class="subtitle">Teste chaque personnage · Compare les voix · Ajuste en temps réel</p>
+
+<!-- VOICE COUNT -->
+<div class="voice-count" id="voiceCount">Chargement des voix...</div>
+
+<!-- LANG -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('fr',this)">🇫🇷 Français</button>
+  <button class="lang-btn" onclick="setLang('en',this)">🇬🇧 English</button>
+  <button class="lang-btn" onclick="setLang('es',this)">🇪🇸 Español</button>
+</div>
+
+<!-- MODES -->
+<div class="modes" id="modeBar"></div>
+
+<!-- GLOBAL OVERRIDES -->
+<div class="slider-section">
+  <h2>⚙️ Override global (appliqué par-dessus les réglages du persona)</h2>
+  <div class="slider-row">
+    <label>Rate</label>
+    <input type="range" id="overRate" min="0.3" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('overRateVal').textContent=this.value">
+    <span class="slider-val" id="overRateVal">1.0</span>
+  </div>
+  <div class="slider-row">
+    <label>Pitch</label>
+    <input type="range" id="overPitch" min="0.1" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('overPitchVal').textContent=this.value">
+    <span class="slider-val" id="overPitchVal">1.0</span>
+  </div>
+  <div class="slider-row">
+    <label>Volume</label>
+    <input type="range" id="overVol" min="0.1" max="1.0" step="0.05" value="1.0" oninput="document.getElementById('overVolVal').textContent=this.value">
+    <span class="slider-val" id="overVolVal">1.0</span>
+  </div>
+  <div style="font-size:.6rem;color:var(--muted);margin-top:4px">💡 Les overrides multiplient les valeurs du persona. 1.0 = pas de changement.</div>
+</div>
+
+<!-- CUSTOM TEXT -->
+<div class="custom-section">
+  <h2>✏️ Texte personnalisé</h2>
+  <div class="custom-row">
+    <input class="custom-input" id="customText" placeholder="Écris un texte à faire dire par le persona sélectionné..." value="Tournez à droite dans 500 mètres, et essayez de pas rater ça!">
+    <button class="test-btn primary" onclick="speakCustom()" style="flex:0 0 auto;padding:8px 16px">🔊 Dire</button>
+    <button class="test-btn stop" onclick="stopAll()" style="flex:0 0 auto;padding:8px 16px">⏹️</button>
+  </div>
+</div>
+
+<!-- PERSONA CARDS -->
+<div class="cards" id="cardsContainer"></div>
+
+<!-- AVAILABLE VOICES -->
+<div class="voice-list" id="voiceList">
+  <h2>📋 Voix disponibles sur ton appareil</h2>
+  <div id="voiceItems">Chargement...</div>
+</div>
+
+<!-- STATUS -->
+<div class="status">
+  <div class="status-dot"></div>
+  <span id="statusTxt">Prêt · Clique sur un persona pour tester</span>
+</div>
+
+<div style="height:50px"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  PERSONAS (same as GPS Drôle v2.0)
+// ═══════════════════════════════════════════════════════
+const PERSONAS = {
+  grandmaman:[
+    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.72,  pitch:.88, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
+     preferVoice:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],
+     testFr:"Ah mon beau, fais attention icitte! Mamie veut pas que t'aies un accident!",
+     testEn:"Oh sweetheart, be careful there! Grandma doesn't want you to get hurt!",
+     testEs:"Ay mi amor, ten cuidado ahí! Abuelita no quiere que te lastimes!"},
+    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.85,  pitch:1.15, volume:1, gender:'female', desc:'Espiègle · Directe · Style Betty White',
+     preferVoice:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Karen'],
+     testFr:"Oh chéri, t'as manqué le virage! C'est pas grave, à mon âge je manque bien des choses aussi!",
+     testEn:"Oh honey, you missed the turn! That's okay, at my age I miss things too!",
+     testEs:"Ay cariño, perdiste el giro! No importa, a mi edad yo también pierdo cosas!"},
+    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.70,  pitch:.82, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
+     preferVoice:['Microsoft Aria Online','Aria','Google UK English Female','Microsoft Linda','Microsoft Zira','Samantha'],
+     testFr:"Si vous ne pouvez pas gérer un simple virage, peut-être devriez-vous prendre le bus.",
+     testEn:"If you can't handle a simple turn, perhaps you should consider taking the bus, darling.",
+     testEs:"Si no puedes manejar un simple giro, quizás deberías tomar el autobús, querido."},
+  ],
+  enfant:[
+    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.50, pitch:1.90,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
+     preferVoice:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],
+     testFr:"OH OH OH! On tourne à droite! Non attends... à gauche! Euh... j'ai oublié! On continue tout droit!",
+     testEn:"OH OH OH! Turn right! No wait... left! Uh... I forgot! Just keep swimming... I mean driving!",
+     testEs:"OH OH OH! Gira a la derecha! No espera... izquierda! Eh... olvidé! Sigue nadando... digo manejando!"},
+    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.88,  pitch:.62, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
+     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+     testFr:"Vers l'infini et au-delà! Préparez-vous pour la manoeuvre de virage à droite dans 500 mètres!",
+     testEn:"To infinity and beyond! Prepare for right turn maneuver in 500 meters, Space Ranger!",
+     testEs:"Hacia el infinito y más allá! Prepárese para la maniobra de giro a la derecha en 500 metros!"},
+    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.35, pitch:1.45,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
+     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft Mark','Microsoft David','Alex'],
+     testFr:"Hakuna Matata mon ami! T'as raté le virage mais c'est pas grave! Pas de souci pour le reste de tes jours!",
+     testEn:"Hakuna Matata buddy! You missed the turn but no worries! For the rest of your days!",
+     testEs:"Hakuna Matata amigo! Perdiste el giro pero no te preocupes! Por el resto de tus días!"},
+  ],
+  amis:[
+    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.18, pitch:1.10,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
+     preferVoice:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Microsoft Mark','Alex'],
+     testFr:"Hey le public! Oui toi derrière ton écran! T'as vu comment il conduit? Même moi j'ai peur et je suis immortel!",
+     testEn:"Hey audience! Yeah you behind the screen! Did you see how they drive? Even I'm scared and I'm immortal!",
+     testEs:"Hey público! Sí tú detrás de la pantalla! Viste cómo maneja? Hasta yo tengo miedo y soy inmortal!"},
+    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.82,  pitch:.75, volume:.92,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
+     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Claude','Alex'],
+     testFr:"Heh heh heh... dude, t'as genre... raté le virage. C'est comme... pas grave man. On va juste... heh... recalculer.",
+     testEn:"Heh heh heh... dude, you like... missed the turn. It's like... no big deal man. We'll just... heh... recalculate.",
+     testEs:"Je je je... dude, como que... perdiste el giro. Es como... no importa man. Solo vamos a... je... recalcular."},
+    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.78,  pitch:.58, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
+     preferVoice:['Microsoft Guy Online','Guy','Microsoft David','Microsoft Claude','Google US English','Alex'],
+     testFr:"Oh yeah! Tout droit! C'est la direction... euh... attendez, c'est quoi déjà la gauche? Celle avec le pouce en L?",
+     testEn:"Oh yeah! Straight ahead! That's the direction... uh... wait, which one is left again? The one with the thumb thing?",
+     testEs:"Oh sí! Todo recto! Esa es la dirección... eh... espera, cuál es la izquierda? La del pulgar en L?"},
+  ],
+  drole:[
+    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.65,  pitch:.42, volume:.82,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
+     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+     testFr:"Et c'est à ce moment précis... que notre conducteur réalisa... qu'il avait raté son virage. La vie est un voyage. Et parfois... on se perd.",
+     testEn:"And it was at that very moment... that our driver realized... they had missed their turn. Life is a journey. And sometimes... we get lost.",
+     testEs:"Y fue en ese preciso momento... que nuestro conductor se dio cuenta... que había perdido su giro. La vida es un viaje. Y a veces... nos perdemos."},
+    {id:'ron',    label:'📺 Ron',       av:'📺', name:'RON GPS',       rate:1.05, pitch:.92, volume:1,  gender:'male',   desc:'Pompeux confiant · Ron Burgundy',
+     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Mark','Alex'],
+     testFr:"Je suis Ron Burgundy. Et je suis très important. Tournez à droite. Parce que je l'ai dit. Et soixante pour cent du temps, j'ai raison à chaque fois.",
+     testEn:"I'm Ron Burgundy. And I'm kind of a big deal. Turn right. Because I said so. And sixty percent of the time, I'm right every time.",
+     testEs:"Soy Ron Burgundy. Y soy bastante importante. Gira a la derecha. Porque lo dije yo. Y sesenta por ciento del tiempo, tengo razón siempre."},
+    {id:'jarvis', label:'🤖 Jarvis',   av:'🤖', name:'JARVIS GPS',    rate:.90,  pitch:.82, volume:.88,gender:'male',   desc:'IA sarcastique · Jarvis Iron Man',
+     preferVoice:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft David','Microsoft Richard'],
+     testFr:"Monsieur, mes calculs indiquent une probabilité de 87 pour cent que vous allez rater le prochain virage. Je prépare un itinéraire alternatif.",
+     testEn:"Sir, my calculations indicate an 87 percent probability that you will miss the next turn. I'm preparing an alternate route.",
+     testEs:"Señor, mis cálculos indican una probabilidad del 87 por ciento de que perderá el próximo giro. Estoy preparando una ruta alternativa."},
+  ],
+  insulte:[
+    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.30, pitch:.92, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
+     preferVoice:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft Guy Online','Microsoft David'],
+     testFr:"T'AS MANQUÉ LE VIRAGE ESPÈCE D'IDIOT SANDWICH! Mon Dieu, même un SOUFFLÉ retombe mieux que toi!",
+     testEn:"YOU MISSED THE TURN YOU ABSOLUTE IDIOT SANDWICH! My God, even a SOUFFLÉ lands better than you!",
+     testEs:"PERDISTE EL GIRO PEDAZO DE SANDWICH IDIOTA! Dios mío, hasta un SOUFFLÉ aterriza mejor que tú!"},
+    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.40, pitch:.78, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
+     preferVoice:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Microsoft Mark','Alex'],
+     testFr:"RECRUE! T'as RATÉ le virage! Est-ce que tes YEUX fonctionnent ou c'est juste DÉCORATIF?! DEMI-TOUR IMMÉDIATEMENT!",
+     testEn:"PRIVATE! You MISSED the turn! Do your EYES work or are they just DECORATIVE?! ABOUT FACE IMMEDIATELY!",
+     testEs:"RECLUTA! PERDISTE el giro! Tus OJOS funcionan o son solo DECORATIVOS?! MEDIA VUELTA INMEDIATAMENTE!"},
+    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.62,  pitch:.35, volume:.78,gender:'male',   desc:'Calme certain · Thanos',
+     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+     testFr:"Tu as raté le virage. C'est... inévitable. Je recalcule. Et quand j'aurai fini... tu arriveras. Comme toutes choses devraient être... parfaitement équilibré.",
+     testEn:"You missed the turn. It is... inevitable. I am recalculating. And when I am done... you will arrive. As all things should be... perfectly balanced.",
+     testEs:"Perdiste el giro. Es... inevitable. Estoy recalculando. Y cuando termine... llegarás. Como todas las cosas deberían ser... perfectamente equilibrado."},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let currentMode='grandmaman';
+let currentLang='fr';
+let cachedVoices=[];
+let selectedPersona=null;
+
+// ═══════════════════════════════════════════════════════
+//  VOICES
+// ═══════════════════════════════════════════════════════
+function getVoices(){
+  if(cachedVoices.length) return cachedVoices;
+  cachedVoices=window.speechSynthesis?window.speechSynthesis.getVoices():[];
+  return cachedVoices;
+}
+
+function loadVoices(){
+  const voices=getVoices();
+  document.getElementById('voiceCount').textContent=`🔊 ${voices.length} voix détectées sur cet appareil`;
+
+  const container=document.getElementById('voiceItems');
+  container.innerHTML='';
+  // Sort: Natural first, then Google, then others
+  const sorted=[...voices].sort((a,b)=>{
+    const aN=/natural|online/i.test(a.name)?0:/google/i.test(a.name)?1:2;
+    const bN=/natural|online/i.test(b.name)?0:/google/i.test(b.name)?1:2;
+    if(aN!==bN) return aN-bN;
+    return a.name.localeCompare(b.name);
+  });
+
+  sorted.forEach(v=>{
+    const isNatural=/natural|online/i.test(v.name);
+    const isGoogle=/google/i.test(v.name);
+    const div=document.createElement('div');
+    div.className='voice-item';
+    div.innerHTML=`
+      <span class="name">${v.name}</span>
+      <span class="lang">${v.lang}</span>
+      <span class="type ${isNatural?'natural':''}">${isNatural?'⭐ Natural':isGoogle?'☁️ Google':'💻 Local'}</span>`;
+    div.onclick=()=>{
+      const txt=document.getElementById('customText').value||'Test de voix';
+      const u=new SpeechSynthesisUtterance(txt);
+      u.voice=v;
+      u.lang=v.lang;
+      u.rate=parseFloat(document.getElementById('overRate').value);
+      u.pitch=parseFloat(document.getElementById('overPitch').value);
+      u.volume=parseFloat(document.getElementById('overVol').value);
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+      setStatus(`🎙️ ${v.name} · ${v.lang} · ${isNatural?'Natural':isGoogle?'Google':'Local'}`);
+    };
+    container.appendChild(div);
+  });
+}
+
+if(window.speechSynthesis){
+  window.speechSynthesis.onvoiceschanged=()=>{ cachedVoices=window.speechSynthesis.getVoices(); loadVoices(); };
+  setTimeout(loadVoices,200);
+}
+
+// ═══════════════════════════════════════════════════════
+//  PICK VOICE (same logic as GPS Drôle)
+// ═══════════════════════════════════════════════════════
+function pickVoice(persona,l){
+  const voices=getVoices();
+  if(persona.preferVoice){
+    for(const pref of persona.preferVoice){
+      const exact=voices.find(v=>v.name===pref);
+      if(exact) return exact;
+    }
+    for(const pref of persona.preferVoice){
+      const partial=voices.find(v=>v.name.toLowerCase().includes(pref.toLowerCase()));
+      if(partial) return partial;
+    }
+  }
+  const lm={fr:['fr','fr-FR','fr-CA'],en:['en','en-US','en-GB'],es:['es','es-ES','es-MX']};
+  const codes=lm[l]||['fr'];
+  let pool=voices.filter(v=>codes.some(c=>v.lang.toLowerCase().startsWith(c.toLowerCase())));
+  if(!pool.length) pool=voices;
+  pool.sort((a,b)=>{
+    const aN=/natural|online/i.test(a.name)?0:/google/i.test(a.name)?1:2;
+    const bN=/natural|online/i.test(b.name)?0:/google/i.test(b.name)?1:2;
+    return aN-bN;
+  });
+  if(persona.gender==='female'){
+    const f=pool.filter(v=>/female|zira|samantha|nathalie|caroline|linda|amélie|alice|jenny|aria|sylvie|karen/i.test(v.name));
+    if(f.length) return f[0];
+  }
+  if(persona.gender==='male'){
+    const m=pool.filter(v=>/male|daniel|david|richard|claude|alex|jorge|carlos|guy|eric|mark|ryan|thomas|remy|liam/i.test(v.name));
+    if(m.length) return m[0];
+  }
+  return pool[0]||null;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SPEAK
+// ═══════════════════════════════════════════════════════
+function speakPersona(persona,txt){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+
+  const overRate=parseFloat(document.getElementById('overRate').value);
+  const overPitch=parseFloat(document.getElementById('overPitch').value);
+  const overVol=parseFloat(document.getElementById('overVol').value);
+
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang={fr:'fr-FR',en:'en-US',es:'es-ES'}[currentLang]||'fr-FR';
+  u.rate=persona.rate*overRate;
+  u.pitch=Math.min(2,persona.pitch*overPitch);
+  u.volume=Math.min(1,persona.volume*overVol);
+
+  const v=pickVoice(persona,currentLang);
+  if(v) u.voice=v;
+
+  // Visual feedback
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('speaking'));
+  const card=document.getElementById('card-'+persona.id);
+  if(card) card.classList.add('speaking');
+  u.onend=()=>{ if(card) card.classList.remove('speaking'); };
+
+  const voiceName=v?v.name:'défaut';
+  const isNatural=v&&/natural|online/i.test(v.name);
+  setStatus(`🎙️ ${persona.name} · ${voiceName} ${isNatural?'⭐':''} · rate ${u.rate.toFixed(2)} · pitch ${u.pitch.toFixed(2)} · vol ${u.volume.toFixed(2)}`);
+
+  // Update card voice info
+  const infoEl=document.getElementById('voiceinfo-'+persona.id);
+  if(infoEl) infoEl.textContent=`🔊 ${voiceName} ${isNatural?'⭐ Natural':''}`;
+
+  window.speechSynthesis.speak(u);
+}
+
+function speakCustom(){
+  const txt=document.getElementById('customText').value;
+  if(!txt) return;
+  if(selectedPersona){
+    speakPersona(selectedPersona,txt);
+  } else {
+    // Use first persona of current mode
+    speakPersona(PERSONAS[currentMode][0],txt);
+  }
+}
+
+function stopAll(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('speaking'));
+  setStatus('⏹️ Arrêté');
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI
+// ═══════════════════════════════════════════════════════
+function setStatus(msg){ document.getElementById('statusTxt').textContent=msg; }
+
+function setLang(l,btn){
+  currentLang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function setMode(m){
+  currentMode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+  selectedPersona=null;
+  renderCards();
+}
+
+function renderModes(){
+  const bar=document.getElementById('modeBar');
+  const modes={grandmaman:'👵 Grand-maman',enfant:'👶 Enfant à bord',amis:'🍺 Gang de chums',drole:'😂 Extrême drôle',insulte:'💀 Extrême insulte'};
+  bar.innerHTML='';
+  Object.entries(modes).forEach(([k,v])=>{
+    const btn=document.createElement('button');
+    btn.className='mode-btn'+(k===currentMode?' active':'');
+    btn.dataset.mode=k;
+    btn.textContent=v;
+    btn.onclick=()=>setMode(k);
+    bar.appendChild(btn);
+  });
+}
+
+function renderCards(){
+  const container=document.getElementById('cardsContainer');
+  container.innerHTML='';
+  const personas=PERSONAS[currentMode];
+
+  personas.forEach(p=>{
+    const testText=currentLang==='fr'?p.testFr:currentLang==='en'?p.testEn:p.testEs;
+    const v=pickVoice(p,currentLang);
+    const voiceName=v?v.name:'aucune';
+    const isNatural=v&&/natural|online/i.test(v.name);
+
+    const card=document.createElement('div');
+    card.className='card';
+    card.id='card-'+p.id;
+    card.innerHTML=`
+      <div class="card-header">
+        <span class="card-av">${p.av}</span>
+        <div class="card-info">
+          <h3>${p.name}</h3>
+          <div class="desc">${p.desc}</div>
+          <div class="card-voice-info" id="voiceinfo-${p.id}">🔊 ${voiceName} ${isNatural?'⭐ Natural':''}</div>
+        </div>
+      </div>
+      <div class="params">
+        <div class="param"><label>Rate</label><div class="val">${p.rate}</div></div>
+        <div class="param"><label>Pitch</label><div class="val">${p.pitch}</div></div>
+        <div class="param"><label>Volume</label><div class="val">${p.volume}</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="test-btn primary" onclick="testPersona('${p.id}')">🔊 Test phrase</button>
+        <button class="test-btn scenario" onclick="testScenario('${p.id}','straight')">➡️</button>
+        <button class="test-btn scenario" onclick="testScenario('${p.id}','right')">↪️</button>
+        <button class="test-btn scenario" onclick="testScenario('${p.id}','missed')">❌</button>
+        <button class="test-btn scenario" onclick="testScenario('${p.id}','arrived')">🏁</button>
+        <button class="test-btn stop" onclick="stopAll()">⏹️</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function findPersona(id){
+  for(const mode of Object.values(PERSONAS)){
+    const p=mode.find(p=>p.id===id);
+    if(p) return p;
+  }
+  return null;
+}
+
+function testPersona(id){
+  const p=findPersona(id);
+  if(!p) return;
+  selectedPersona=p;
+  const txt=currentLang==='fr'?p.testFr:currentLang==='en'?p.testEn:p.testEs;
+  speakPersona(p,txt);
+}
+
+// Scenario phrases (subset for testing)
+const SCENARIOS={
+  fr:{
+    straight:["Continuez tout droit pendant 500 mètres.","Tout droit! On est sur la bonne voie!"],
+    right:["Tournez à droite dans 500 mètres.","À droite au prochain virage!"],
+    missed:["Vous avez manqué le virage! Recalcul en cours!","Oh non, le virage est passé! On recalcule!"],
+    arrived:["Vous êtes arrivé à destination! Bravo!","Destination atteinte! Quel voyage!"]
+  },
+  en:{
+    straight:["Continue straight for 500 meters.","Straight ahead! We're on track!"],
+    right:["Turn right in 500 meters.","Right at the next turn!"],
+    missed:["You missed the turn! Recalculating!","Oh no, the turn has passed! Recalculating!"],
+    arrived:["You have arrived at your destination! Well done!","Destination reached! What a trip!"]
+  },
+  es:{
+    straight:["Continúe recto durante 500 metros.","Todo recto! Vamos bien!"],
+    right:["Gire a la derecha en 500 metros.","A la derecha en el próximo giro!"],
+    missed:["Perdió el giro! Recalculando!","Oh no, el giro ya pasó! Recalculando!"],
+    arrived:["Ha llegado a su destino! Bien hecho!","Destino alcanzado! Qué viaje!"]
+  }
+};
+
+function testScenario(id,scenario){
+  const p=findPersona(id);
+  if(!p) return;
+  selectedPersona=p;
+  const phrases=SCENARIOS[currentLang]&&SCENARIOS[currentLang][scenario];
+  if(!phrases) return;
+  const txt=phrases[Math.floor(Math.random()*phrases.length)];
+  speakPersona(p,txt);
+}
+
+// ═══ INIT ═══
+renderModes();
+renderCards();
+</script>
+</body>
+</html>
