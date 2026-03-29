@@ -150,6 +150,22 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
   .demo-section,.itin-section{padding:8px 10px}
   .center-btn{width:46px;height:46px;font-size:1.3rem}
 }
+/* Guidance fullscreen mode — panneau masqué, carte plein écran */
+body.guidance-fullscreen .modes-bar,
+body.guidance-fullscreen .lang-bar{display:none}
+body.guidance-fullscreen .main{grid-template-columns:1fr}
+body.guidance-fullscreen .panel{display:none}
+body.guidance-fullscreen #map{height:100%}
+body.guidance-fullscreen header{padding:5px 14px}
+body.guidance-fullscreen .logo{font-size:1.1rem}
+body.guidance-fullscreen .header-right{display:none}
+/* Floating instruction overlay during guidance */
+.guidance-overlay{display:none;position:absolute;bottom:60px;left:10px;right:10px;z-index:1001;background:rgba(15,22,38,.92);backdrop-filter:blur(8px);border:2px solid var(--neon);border-radius:12px;padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--neon2);text-align:center;box-shadow:0 0 24px rgba(245,158,11,.3);pointer-events:none}
+body.guidance-fullscreen .guidance-overlay{display:block}
+/* Floating stop button during guidance */
+.guidance-stop-float{display:none;position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:1001;padding:10px 28px;border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;cursor:pointer;box-shadow:0 0 18px rgba(239,68,68,.5);letter-spacing:1px}
+body.guidance-fullscreen .guidance-stop-float{display:block}
+.guidance-stop-float:hover{background:#f87171;box-shadow:0 0 28px rgba(239,68,68,.7)}
 /* PWA install banner */
 .pwa-install{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--s1);border-top:2px solid var(--neon);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--text)}
 .pwa-install.vis{display:flex}
@@ -200,6 +216,8 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
       <div class="speed-heading" id="headingVal">&#8212;</div>
     </div>
     <div class="route-progress" id="routeProgress"><div class="route-progress-fill" id="routeProgressFill"></div></div>
+    <div class="guidance-overlay" id="guidanceOverlay">Suivez les instructions...</div>
+    <button class="guidance-stop-float" id="guidanceStopFloat" onclick="toggleGuidance()">&#9209;&#65039; ARRETER</button>
   </div>
   <div class="panel">
 
@@ -1487,11 +1505,14 @@ function startGuidance(){
   btn.textContent='\u23F9\uFE0F ARR\u00caTER LE GUIDAGE';
   btn.classList.add('active');
   followUser=true;
-  mapObj.setView([userLat,userLng],16);
+  mapObj.setView([userLat,userLng],17);
   document.getElementById('centerBtn').classList.add('tracking');
   startRerouteDetection();
   if(currentRouteDist&&currentRouteDur) updateRouteInfoBar(currentRouteDist,currentRouteDur);
   document.getElementById('routeInfo').classList.add('vis');
+  // Mode plein écran: masquer panneau, carte full
+  document.body.classList.add('guidance-fullscreen');
+  setTimeout(function(){ mapObj.invalidateSize(); },300);
   go('straight');
   showToast('Guidage actif!');
   setStatus('Guidage en cours - Suivez les instructions vocales');
@@ -1506,6 +1527,9 @@ function stopGuidance(){
     btn.classList.remove('active');
   }
   document.getElementById('routeInfo').classList.remove('vis');
+  // Quitter le mode plein écran
+  document.body.classList.remove('guidance-fullscreen');
+  setTimeout(function(){ mapObj.invalidateSize(); },300);
   lastAnnouncedStep=-1;
   if(window.speechSynthesis) window.speechSynthesis.cancel();
   setStatus('Guidage arr\u00eat\u00e9');
@@ -1931,6 +1955,9 @@ function showInstr(txt){
   var el=document.getElementById('instrText');
   el.textContent=txt;
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  // Aussi afficher dans l'overlay flottant pendant le guidage
+  var ov=document.getElementById('guidanceOverlay');
+  if(ov) ov.textContent=txt;
 }
 
 function animChar(){
@@ -2039,13 +2066,19 @@ function setupAutocompletePhoton(inputId){
     var q=input.value.trim();
     if(q.length<3){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
     timer=setTimeout(function(){
-      // Try Photon (Komoot) first — faster + better results
-      fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang='+lang)
+      // Try Photon (Komoot) first — faster + better results + local bias
+      var photonUrl='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang='+lang;
+      // Biais géographique: prioriser les résultats proches de l'utilisateur
+      if(userLat&&userLng) photonUrl+='&lat='+userLat+'&lon='+userLng;
+      fetch(photonUrl)
         .then(function(r){ return r.json(); })
         .then(function(data){
           if(!data.features||!data.features.length){
             // Fallback to Nominatim
-            return fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&addressdetails=1')
+            // Nominatim fallback avec viewbox local (±2 degrés autour de l'utilisateur)
+            var nomUrl='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&addressdetails=1';
+            if(userLat&&userLng) nomUrl+='&viewbox='+(userLng-2)+','+(userLat+2)+','+(userLng+2)+','+(userLat-2)+'&bounded=0';
+            return fetch(nomUrl)
               .then(function(r){ return r.json(); })
               .then(function(nom){
                 return nom.map(function(n){ return {name:n.display_name,lat:+n.lat,lng:+n.lon}; });
@@ -2098,7 +2131,11 @@ startTracking=function(){
     userMark.setLatLng([latitude,longitude]);
     if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
     accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
-    if(followUser) mapObj.setView([latitude,longitude],mapObj.getZoom());
+    // Suivi GPS temps réel: zoom serré en guidage, animation fluide
+    if(followUser){
+      var zoomLevel=guidanceActive?17:mapObj.getZoom();
+      mapObj.setView([latitude,longitude],zoomLevel,{animate:true,duration:0.5});
+    }
     detectCountry(latitude,longitude);
     var spdDisplay=toDisplaySpeed(speed);
     currentSpeed=spdDisplay;
