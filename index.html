@@ -1182,19 +1182,24 @@ function initMap(lat,lng){
   setStatus('Carte charg\u00e9e - Cliquez sur la carte pour destination rapide');
 }
 
-initMap(45.5017,-73.5673);
 if(navigator.geolocation){
+  setStatus('Recherche de votre position GPS...');
   navigator.geolocation.getCurrentPosition(
     function(p){
       userLat=p.coords.latitude; userLng=p.coords.longitude;
-      userMark.setLatLng([userLat,userLng]);
-      mapObj.setView([userLat,userLng],13);
-      setStatus('Position GPS trouv\u00e9e!');
+      initMap(userLat, userLng);
+      setStatus('Position GPS trouvée!');
       startTracking();
     },
-    function(){ setStatus('GPS indisponible - Montr\u00e9al par d\u00e9faut'); },
-    {enableHighAccuracy:true, timeout:8000, maximumAge:0}
+    function(){
+      initMap(45.5017,-73.5673);
+      setStatus('GPS indisponible - Montréal par défaut');
+    },
+    {enableHighAccuracy:true, timeout:10000, maximumAge:0}
   );
+} else {
+  initMap(45.5017,-73.5673);
+  setStatus('Géolocalisation non supportée - Montréal par défaut');
 }
 
 function startTracking(){
