@@ -177,8 +177,8 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 
     <div class="char-box">
       <span class="char-av" id="charAv">&#128117;</span>
-      <div class="char-name" id="charName">LISE GPS</div>
-      <div class="char-desc" id="charDesc">Grave-douce &middot; Quebecoise &middot; Style Lise Payette</div>
+      <div class="char-name" id="charName">JANETTE GPS</div>
+      <div class="char-desc" id="charDesc">Chaleureuse &middot; Quebecoise &middot; Style Janette Bertrand</div>
       <div class="persona-row" id="personaRow"></div>
       <button class="test-voice-btn" onclick="testVoice()">&#128266; Tester la voix</button>
     </div>
@@ -240,7 +240,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 <div class="status-bar">
   <div class="status-dot"></div>
   <span id="statusTxt">GPS pret - Testez un scenario ou calculez un itineraire!</span>
-  <span id="modeIndicator">LISE GPS</span>
+  <span id="modeIndicator">JANETTE GPS</span>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -252,9 +252,9 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 // =============================================================
 const PERSONAS = {
   grandmaman:[
-    {id:'lise', label:'\u{1F475} Lise', av:'\u{1F475}', name:'LISE GPS',
-     rate:.72, pitch:.90, volume:.9, gender:'female',
-     desc:'Grave-douce \u00b7 Qu\u00e9b\u00e9coise \u00b7 Style Lise Payette',
+    {id:'janette', label:'\u{1F475} Janette', av:'\u{1F475}', name:'JANETTE GPS',
+     rate:.70, pitch:.85, volume:.92, gender:'female',
+     desc:'Chaleureuse \u00b7 Directe \u00b7 Qu\u00e9b\u00e9coise \u00b7 Style Janette Bertrand',
      preferVoice:{
        fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Microsoft Denise Online','Denise','Google fran\u00e7ais','Am\u00e9lie'],
        en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Microsoft Aria Online','Aria'],
@@ -394,54 +394,55 @@ const P = {
  grandmaman:{
   fr:{
    straight:[
-     "Continue tout droit, mon beau... c'est \u00e7a, tout DOUCEMENT!",
-     "Allez tout droit! T'as-tu compris? Bon... mamie est FI\u00c8RE de toi!",
-     "Tout droit mon p'tit coeur... euh... garde les deux mains sur le volant, l\u00e0!",
-     "Droit devant toi, mon tr\u00e9sor... mamie te surveille, t'sais!"
+     "Continue tout droit... c'est correct, t'es capable. J'te fais CONFIANCE, là.",
+     "Tout droit mon grand... bon, t'sais, dans la vie faut avancer... pis c'est en avant que ça se passe!",
+     "Droit devant... pis lâche pas. Moi j'ai JAMAIS lâché pis regarde où ça m'a menée!",
+     "On continue tout droit... prends ton temps, y'a personne qui court après toi, là."
    ],
    right:[
-     "Dans 500 m\u00e8tres... euh... tourne \u00e0 DROITE mon ch\u00e9ri... pas trop vite hein!",
-     "Tourne \u00e0 droite! C'est \u00e7a BRAVO! Mamie r\u00e9p\u00e8te: \u00e0 droite, l\u00e0!",
-     "\u00c0 droite dans 500 m\u00e8tres... t'as-tu compris mon tr\u00e9sor? \u00c0 DROITE!"
+     "Tourne à droite dans 500 mètres... pis fais-le avec CONFIANCE, mon grand!",
+     "À droite! T'sais... dans la vie, des fois faut prendre le bord... pis c'est correct!",
+     "Droite dans 500 mètres... bon, c'est comme dans les relations, faut savoir TOURNER au bon moment!"
    ],
    left:[
-     "Prends \u00e0 gauche mon grand... \u00e0 GAUCHE! L'autre gauche!",
-     "Tourne \u00e0 gauche... euh... doucement, y'a pas le feu, l\u00e0!",
-     "\u00c0 gauche mon beau... bon, l'AUTRE gauche mon coeur... voyons!"
+     "Prends à gauche... pis hésite pas! L'hésitation, c'est le PIRE ennemi du conducteur!",
+     "À gauche mon grand... t'sais, y'a pas de mauvais côté... y'a juste des DÉTOURS!",
+     "Gauche! L'AUTRE gauche! Bon... c'est comme expliquer les émotions à un homme, ça..."
    ],
    uturn:[
-     "Fais un demi-tour s'il te pla\u00eet mon beau... doucement, DOUCEMENT!",
-     "On tourne de bord mon ch\u00e9ri... euh... fais attention aux autres voitures, l\u00e0!"
+     "Fais demi-tour... c'est correct de changer d'idée! Moi j'ai changé d'idée SOUVENT dans ma vie... pis j'le regrette pas!",
+     "On revire de bord... t'sais, avoir le courage de recommencer, c'est une FORCE, pas une faiblesse!"
    ],
    missed:[
-     "Oh mon dieu... t'as rat\u00e9 le virage mon p'tit coeur... bon, mamie recalcule...",
-     "A\u00efe a\u00efe a\u00efe... c'\u00e9tait L\u00c0! C'est correct, mamie te pardonne... on recalcule!",
-     "Oh non non non... c'est pas grave hein... euh... on trouve un autre chemin!",
-     "La vie c'est comme une bo\u00eete de chocolats mon beau... on sait JAMAIS quel virage on va rater, t'sais."
+     "T'as manqué le virage... bon, c'est pas grave. Dans la vie, on manque des affaires... l'important c'est de se R'PRENDRE!",
+     "Aïe... c'était là! Mais t'sais quoi? On apprend de nos ERREURS. Moi la première!",
+     "Oh... raté! C'est comme dans un couple... des fois on se manque. L'important c'est de se RETROUVER!",
+     "Bon ben... c'est passé. Mais JAMAIS je vais t'en vouloir. On recalcule pis on r'part, là!"
    ],
    recalc:[
-     "Mamie recalcule la route... euh... attends-moi une seconde mon beau!",
-     "Un moment mon ch\u00e9ri... bon, mamie trouve un NOUVEAU chemin pour toi!",
-     "Mamie va trouver un autre chemin... elle a TOUJOURS trouv\u00e9... elle trouvera encore, l\u00e0."
+     "Je recalcule... donne-moi deux secondes. Faut RÉFLÉCHIR avant d'agir, t'sais!",
+     "Nouveau chemin... bon, c'est ça la vie! Faut s'ADAPTER. Moi j'me suis toujours adaptée!",
+     "On recalcule... pis c'est correct. Y'a TOUJOURS un autre chemin, mon grand."
    ],
    traffic:[
-     "Y'a du trafic l\u00e0... c'est comme le dimanche soir \u00e0 No\u00ebl \u00e7a, bon!",
-     "Ah du trafic... euh... \u00e7a me rappelle quand ton grand-p\u00e8re conduisait... on attendait des HEURES!",
-     "Patience mon beau... m\u00eame les hobbits sont arriv\u00e9s \u00e0 destination, t'sais..."
+     "Du trafic... bon, prends ton mal en patience. T'sais, la patience c'est une VERTU que j'ai apprise avec le temps!",
+     "Ah du trafic... c'est comme dans la vie, des fois ça BLOQUE. Mais ça finit toujours par débloquer!",
+     "Trafic! Bon... profites-en pour réfléchir à ta vie. Moi c'est dans le trafic que j'ai eu mes MEILLEURES idées!"
    ],
    speed:[
-     "RALENTIS mon beau, y'a un radar! Mamie veut PAS que t'aies un ticket!",
-     "Doucement doucement! Radar devant! Mamie t'aime TROP pour te laisser avoir une contravention!",
-     "Avec grand pouvoir vient grande responsabilit\u00e9... euh... et les radars mon ch\u00e9ri."
+     "RALENTIS! Y'a un radar! T'sais, la vitesse ça impressionne PERSONNE... surtout pas la police!",
+     "Doucement! Radar! Moi j'te le dis par AMOUR... pis parce que les tickets c'est cher!",
+     "Ho ho ho! Radar devant! Dans la vie mon grand... c'est pas le plus VITE qui arrive le mieux, c'est le plus SAGE!"
    ],
    tunnel:[
-     "On entre dans un tunnel mon ch\u00e9ri... bon, accroche-toi!",
-     "Tunnel devant mon beau... c'est correct, mamie est L\u00c0 avec toi!"
+     "On rentre dans un tunnel... c'est correct, j'suis LÀ avec toi. On va passer au travers ENSEMBLE!",
+     "Tunnel! T'sais... même dans le noir, y'a toujours de la lumière au BOUT. C'est ça que j'ai toujours dit!"
    ],
    arrived:[
-     "T'es ARRIV\u00c9 mon tr\u00e9sor!! Mamie est tellement FI\u00c8RE! Veux-tu un biscuit?",
-     "Ah voil\u00e0! On est arriv\u00e9! BRAVO bravo bravo! Mamie t'aime!",
-     "Il n'y a pas d'endroit comme chez nous... mon tr\u00e9sor, t'sais!"
+     "T'es ARRIVÉ! Mon grand, j'suis tellement fière de toi! T'as PERSÉVÉRÉ pis t'as réussi!",
+     "Voilà! Destination atteinte! T'sais... le voyage c'est AUSSI important que la destination!",
+     "On est arrivé! BRAVO! Moi j'ai toujours dit... l'important c'est pas d'où tu pars, c'est où tu VAS!",
+     "Arrivé! Bon... prends le temps de RESPIRER. T'as fait ça comme un CHAMPION, là!"
    ]
   },
   en:{
@@ -1634,7 +1635,7 @@ function updateIndicator(){
 function testVoice(){
   var tests={
     grandmaman:{
-      fr:"Ah oui mon beau... euh... mamie est L\u00c0 avec toi, t'sais!",
+      fr:"T'sais mon grand... j'suis L\u00c0 avec toi. Pis j'te l\u00e2cherai PAS!",
       en:"Oh sweetie... hmm... grandma is RIGHT here with you, okay?",
       es:"Ay mi amor... euh... abuelita est\u00e1 AQU\u00cd contigo!"
     },
