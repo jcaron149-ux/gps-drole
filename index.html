@@ -190,6 +190,67 @@ body.guidance-fullscreen .guidance-stop-float{display:block}
 .pwa-install.vis{display:flex}
 .pwa-install-btn{padding:6px 16px;border-radius:8px;border:none;background:var(--neon);color:#080c18;font-family:'Orbitron',monospace;font-weight:700;font-size:.72rem;cursor:pointer}
 .pwa-install-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem}
+/* ===== PHASE 1: Trip History ===== */
+.history-section{padding:10px 14px;border-bottom:1px solid var(--border)}
+.history-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;font-size:.68rem;color:var(--text);border:1px solid var(--border);margin-bottom:4px;background:var(--s2);transition:background .15s}
+.history-item:hover{background:rgba(245,158,11,.08)}
+.history-item .hi-mode{font-size:1rem;min-width:20px;text-align:center}
+.history-item .hi-info{flex:1;overflow:hidden}
+.history-item .hi-date{font-size:.58rem;color:var(--muted)}
+.history-item .hi-route{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--neon2)}
+.history-item .hi-stats{font-size:.58rem;color:var(--muted)}
+.history-relaunch{padding:4px 8px;border-radius:5px;border:1px solid var(--neon);background:transparent;color:var(--neon);cursor:pointer;font-size:.62rem;font-weight:600;transition:all .2s;flex-shrink:0}
+.history-relaunch:hover{background:rgba(245,158,11,.15)}
+.history-clear{width:100%;padding:5px;margin-top:5px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:.65rem;transition:all .2s}
+.history-clear:hover{background:rgba(239,68,68,.1)}
+/* ===== PHASE 2: Auto Night Mode Toggle ===== */
+.auto-night-toggle{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(--muted)}
+.auto-night-toggle input{accent-color:var(--neon);cursor:pointer}
+/* ===== PHASE 5: Pause Overlay ===== */
+.pause-overlay{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1002;background:rgba(15,22,38,.85);backdrop-filter:blur(8px);border:2px solid var(--neon);border-radius:16px;padding:24px 36px;font-family:'Orbitron',monospace;font-size:1.3rem;color:var(--neon);text-align:center;box-shadow:0 0 30px rgba(245,158,11,.4);animation:pausePulse 2s ease-in-out infinite}
+.pause-overlay.vis{display:block}
+@keyframes pausePulse{0%,100%{opacity:.8;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
+/* ===== PHASE 6: Driver Mode ===== */
+body.driver-mode header,
+body.driver-mode .modes-bar,
+body.driver-mode .lang-bar,
+body.driver-mode .status-bar,
+body.driver-mode .panel,
+body.driver-mode .pwa-install{display:none!important}
+body.driver-mode .main{grid-template-columns:1fr;grid-template-rows:1fr}
+body.driver-mode #map{height:100vh}
+body.driver-mode{overflow:hidden;height:100vh}
+body.driver-mode .driver-hud{display:flex!important}
+.driver-hud{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1002;background:rgba(8,12,24,.92);backdrop-filter:blur(10px);border-top:3px solid var(--neon);padding:12px 20px;flex-direction:row;align-items:center;justify-content:space-around;gap:10px}
+.driver-speed{display:flex;align-items:baseline;gap:4px}
+.driver-speed span:first-child{font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;color:var(--neon);line-height:1}
+.driver-unit{font-family:'Orbitron',monospace;font-size:1rem;color:var(--muted)}
+.driver-next{display:flex;align-items:center;gap:8px;font-family:'Orbitron',monospace}
+.driver-next span:first-child{font-size:3rem;color:var(--neon2)}
+.driver-next span:last-child{font-size:1.2rem;color:var(--text);font-weight:700}
+.driver-eta{font-family:'Orbitron',monospace;font-size:1.5rem;color:var(--blue);font-weight:700}
+.driver-stop{padding:12px 24px;border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:.85rem;font-weight:900;cursor:pointer;min-height:64px;min-width:64px;letter-spacing:1px;box-shadow:0 0 16px rgba(239,68,68,.4)}
+.driver-stop:hover{background:#f87171}
+.driver-mode-btn{width:100%;padding:8px;margin-top:5px;border-radius:8px;border:1px solid var(--blue);background:transparent;color:var(--blue);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:600;transition:all .2s}
+.driver-mode-btn:hover{background:rgba(59,130,246,.1)}
+/* ===== PHASE 7: POI ===== */
+.poi-section{padding:10px 14px;border-bottom:1px solid var(--border)}
+.poi-buttons{display:flex;gap:5px;flex-wrap:wrap}
+.poi-btn{width:42px;height:42px;border-radius:8px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.poi-btn:hover{border-color:var(--neon);background:rgba(245,158,11,.1)}
+.poi-btn.active{border-color:var(--neon2);background:rgba(16,185,129,.15);box-shadow:0 0 10px rgba(16,185,129,.3)}
+/* ===== PHASE 9: Quick Nav ===== */
+.quick-nav-btn{position:absolute;bottom:70px;right:18px;z-index:1000;width:44px;height:44px;border-radius:50%;border:2px solid var(--neon2);background:var(--s2);color:var(--neon2);font-size:1.3rem;cursor:pointer;box-shadow:0 0 14px rgba(16,185,129,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.quick-nav-btn:hover{background:var(--neon2);color:#080c18}
+.quick-nav-popup{display:none;position:absolute;bottom:120px;right:14px;z-index:1001;background:var(--s2);border:1px solid var(--neon2);border-radius:10px;padding:6px;box-shadow:0 0 18px rgba(16,185,129,.3)}
+.quick-nav-popup.vis{display:flex;flex-direction:column;gap:4px}
+.quick-nav-popup button{padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--text);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;white-space:nowrap;transition:all .2s;min-height:44px}
+.quick-nav-popup button:hover{border-color:var(--neon);background:rgba(245,158,11,.1)}
+/* ===== PHASE 10: Share Button ===== */
+.share-btn{width:100%;padding:6px;margin-top:5px;border-radius:6px;border:1px solid var(--purple);background:transparent;color:var(--purple);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.7rem;font-weight:600;transition:all .2s}
+.share-btn:hover{background:rgba(168,85,247,.1)}
+.share-map-btn{position:absolute;bottom:70px;left:18px;z-index:1000;width:44px;height:44px;border-radius:50%;border:2px solid var(--purple);background:var(--s2);color:var(--purple);font-size:1.1rem;cursor:pointer;box-shadow:0 0 14px rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.share-map-btn:hover{background:var(--purple);color:white}
 </style>
 </head>
 <body>
@@ -202,6 +263,7 @@ body.guidance-fullscreen .guidance-stop-float{display:block}
   <div class="header-right">
     <div>OpenStreetMap &middot; Web Speech API &middot; OSRM<br><span>&#9679; 100% Gratuit &middot; Aucune API Key</span></div>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Mode clair/sombre">&#127769;</button>
+    <label class="auto-night-toggle"><input type="checkbox" id="autoNightCb" checked onchange="toggleAutoNight()">&#127769; Auto</label>
   </div>
 </header>
 
@@ -237,6 +299,19 @@ body.guidance-fullscreen .guidance-stop-float{display:block}
     <div class="route-progress" id="routeProgress"><div class="route-progress-fill" id="routeProgressFill"></div></div>
     <div class="guidance-overlay" id="guidanceOverlay">Suivez les instructions...</div>
     <button class="guidance-stop-float" id="guidanceStopFloat" onclick="toggleGuidance()">&#9209;&#65039; ARRETER</button>
+    <div class="pause-overlay" id="pauseOverlay">&#9208; Pause automatique</div>
+    <div class="driver-hud" id="driverHud">
+      <div class="driver-speed"><span id="driverSpeed">0</span><span class="driver-unit" id="driverUnit">KM/H</span></div>
+      <div class="driver-next"><span id="driverArrow">&#8593;</span><span id="driverDist">--</span></div>
+      <div class="driver-eta"><span id="driverEta">--:--</span></div>
+      <button class="driver-stop" onclick="toggleDriverMode()">&#10005; QUITTER</button>
+    </div>
+    <button class="quick-nav-btn" id="quickNavBtn" onclick="toggleQuickNav()">&#127968;</button>
+    <div class="quick-nav-popup" id="quickNavPopup">
+      <button onclick="useFav('home');toggleQuickNav()">&#127968; Maison</button>
+      <button onclick="useFav('work');toggleQuickNav()">&#128188; Travail</button>
+    </div>
+    <button class="share-map-btn" id="shareMapBtn" onclick="sharePosition()" title="Partager ma position" style="display:none">&#128228;</button>
   </div>
   <div class="panel">
 
@@ -304,6 +379,28 @@ body.guidance-fullscreen .guidance-stop-float{display:block}
         <input class="fav-add-input" id="favAddName" placeholder="Nom du favori (ex: Gym)">
         <button class="fav-add-btn" onclick="addFavorite()">&#10133; Ajouter</button>
       </div>
+      <button class="share-btn" onclick="sharePosition()">&#128228; Partager ma position</button>
+    </div>
+
+    <div class="history-section">
+      <div class="box-label">&#128203; Historique des trajets</div>
+      <div id="historyList"></div>
+      <button class="history-clear" onclick="clearHistory()">&#128465; Effacer l'historique</button>
+    </div>
+
+    <div class="poi-section">
+      <div class="box-label">&#128205; Points d'int&eacute;r&ecirc;t</div>
+      <div class="poi-buttons">
+        <button class="poi-btn" onclick="togglePOI('gas')" id="poiGas" title="Stations">&#9981;</button>
+        <button class="poi-btn" onclick="togglePOI('food')" id="poiFood" title="Restos">&#127828;</button>
+        <button class="poi-btn" onclick="togglePOI('toilet')" id="poiToilet" title="Toilettes">&#128699;</button>
+        <button class="poi-btn" onclick="togglePOI('pharmacy')" id="poiPharmacy" title="Pharmacies">&#127973;</button>
+        <button class="poi-btn" onclick="togglePOI('cafe')" id="poiCafe" title="Caf&eacute;s">&#9749;</button>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <button class="driver-mode-btn" onclick="toggleDriverMode()">&#128663; Mode Conduite</button>
     </div>
 
     <div class="voice-section">
@@ -2520,6 +2617,633 @@ window.addEventListener('load',function(){
 document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='visible'&&guidanceActive) requestWakeLock();
 });
+
+// =============================================================
+//  PHASE 1: TRIP HISTORY
+// =============================================================
+var tripStartTime=null;
+var tripOriginName='';
+var routeDestName='';
+
+function getTripHistory(){
+  try{ return JSON.parse(localStorage.getItem('gps-drole-history')||'[]'); }catch(e){ return []; }
+}
+function saveTripToHistory(trip){
+  var hist=getTripHistory();
+  hist.push(trip);
+  if(hist.length>20) hist=hist.slice(hist.length-20);
+  localStorage.setItem('gps-drole-history',JSON.stringify(hist));
+  renderTripHistory();
+}
+function renderTripHistory(){
+  var list=document.getElementById('historyList');
+  if(!list) return;
+  var hist=getTripHistory();
+  list.innerHTML='';
+  if(!hist.length){ list.innerHTML='<div style="font-size:.6rem;color:var(--muted);padding:4px">Aucun trajet enregistr\u00e9</div>'; return; }
+  var modeIcons={grandmaman:'\u{1F475}',enfant:'\u{1F476}',amis:'\u{1F37A}',drole:'\u{1F923}',insulte:'\u{1F480}'};
+  for(var i=hist.length-1;i>=0;i--){
+    var t=hist[i];
+    var d=new Date(t.date);
+    var dateStr=d.toLocaleDateString()+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    var durMin=Math.round((t.dur||0)/60);
+    var durStr=durMin>=60?Math.floor(durMin/60)+'h'+durMin%60+'min':durMin+'min';
+    var distStr=t.dist?(t.dist/1000).toFixed(1)+' km':'--';
+    var div=document.createElement('div');
+    div.className='history-item';
+    div.innerHTML='<span class="hi-mode">'+(modeIcons[t.mode]||'\u{1F697}')+'</span>'+
+      '<div class="hi-info"><div class="hi-date">'+dateStr+'</div>'+
+      '<div class="hi-route">'+((t.origin||'?')+' \u2192 '+(t.destination||'?'))+'</div>'+
+      '<div class="hi-stats">'+distStr+' \u00b7 '+durStr+'</div></div>'+
+      '<button class="history-relaunch" onclick="relaunchTrip('+i+')">Relancer</button>';
+    list.appendChild(div);
+  }
+}
+function relaunchTrip(idx){
+  var hist=getTripHistory();
+  if(!hist[idx]) return;
+  var t=hist[idx];
+  document.getElementById('destIn').value=t.destination||'';
+  calcRoute();
+}
+function clearHistory(){
+  localStorage.removeItem('gps-drole-history');
+  renderTripHistory();
+  showToast('Historique effac\u00e9');
+}
+
+// Patch startGuidance for trip tracking
+var _origStartGuidance2=startGuidance;
+startGuidance=function(){
+  tripStartTime=Date.now();
+  var depIn=document.getElementById('departIn');
+  tripOriginName=(depIn&&depIn.value)?depIn.value:'Ma position';
+  greetingGiven=false;
+  _origStartGuidance2();
+  // Show share button during guidance
+  var sb=document.getElementById('shareMapBtn');
+  if(sb) sb.style.display='flex';
+};
+
+// Patch osrmRoute to capture destination name
+var _origOsrmRoute=osrmRoute;
+osrmRoute=function(pts){
+  if(pts.length) routeDestName=(pts[pts.length-1].name||document.getElementById('destIn').value||'Destination').split(',')[0];
+  _origOsrmRoute(pts);
+};
+
+// Patch stopGuidance to save trip
+var _origStopGuidance2=stopGuidance;
+stopGuidance=function(){
+  if(tripStartTime&&guidanceActive){
+    saveTripToHistory({
+      date:new Date().toISOString(),
+      origin:tripOriginName,
+      destination:routeDestName||'Destination',
+      dist:currentRouteDist,
+      dur:(Date.now()-tripStartTime)/1000,
+      mode:mode
+    });
+    tripStartTime=null;
+  }
+  var sb=document.getElementById('shareMapBtn');
+  if(sb) sb.style.display='none';
+  _origStopGuidance2();
+};
+
+// =============================================================
+//  PHASE 2: AUTO NIGHT MODE (real sunrise/sunset)
+// =============================================================
+var manualThemeOverride=!!localStorage.getItem('gps-drole-manual-theme');
+var autoNightEnabled=localStorage.getItem('gps-drole-auto-night')!=='false';
+
+function getSunTimes(lat,lng){
+  var now=new Date();
+  var start=new Date(now.getFullYear(),0,0);
+  var diff=now-start;
+  var oneDay=1000*60*60*24;
+  var dayOfYear=Math.floor(diff/oneDay);
+  var zenith=90.833;
+  var D2R=Math.PI/180;
+  var R2D=180/Math.PI;
+  var lngHour=lng/15;
+  function calc(isSunrise){
+    var t=dayOfYear+((isSunrise?6:18)-lngHour)/24;
+    var M=(0.9856*t)-3.289;
+    var L=M+(1.916*Math.sin(M*D2R))+(0.020*Math.sin(2*M*D2R))+282.634;
+    L=L%360; if(L<0)L+=360;
+    var RA=R2D*Math.atan(0.91764*Math.tan(L*D2R));
+    RA=RA%360; if(RA<0)RA+=360;
+    var Lq=Math.floor(L/90)*90;
+    var RAq=Math.floor(RA/90)*90;
+    RA=(RA+(Lq-RAq))/15;
+    var sinDec=0.39782*Math.sin(L*D2R);
+    var cosDec=Math.cos(Math.asin(sinDec));
+    var cosH=(Math.cos(zenith*D2R)-(sinDec*Math.sin(lat*D2R)))/(cosDec*Math.cos(lat*D2R));
+    if(cosH>1) return isSunrise?0:24;
+    if(cosH<-1) return isSunrise?0:24;
+    var H=isSunrise?(360-R2D*Math.acos(cosH)):R2D*Math.acos(cosH);
+    H=H/15;
+    var T=H+RA-(0.06571*t)-6.622;
+    var UT=T-lngHour;
+    UT=UT%24; if(UT<0)UT+=24;
+    var offset=-now.getTimezoneOffset()/60;
+    var local=UT+offset;
+    local=local%24; if(local<0)local+=24;
+    return local;
+  }
+  return {sunrise:calc(true),sunset:calc(false)};
+}
+
+function checkAutoNightMode(){
+  if(!autoNightEnabled||manualThemeOverride) return;
+  var sun=getSunTimes(userLat,userLng);
+  var h=new Date().getHours()+new Date().getMinutes()/60;
+  var isNight=h<sun.sunrise||h>sun.sunset;
+  var root=document.documentElement;
+  if(isNight&&root.classList.contains('light')){
+    root.classList.remove('light');
+    document.getElementById('themeBtn').textContent='\u{1F319}';
+  } else if(!isNight&&!root.classList.contains('light')){
+    root.classList.add('light');
+    document.getElementById('themeBtn').textContent='\u2600\uFE0F';
+  }
+}
+
+function toggleAutoNight(){
+  var cb=document.getElementById('autoNightCb');
+  autoNightEnabled=cb.checked;
+  localStorage.setItem('gps-drole-auto-night',autoNightEnabled?'true':'false');
+  if(autoNightEnabled){ manualThemeOverride=false; localStorage.removeItem('gps-drole-manual-theme'); checkAutoNightMode(); }
+}
+
+// Patch toggleTheme to track manual override
+var _origToggleTheme=toggleTheme;
+toggleTheme=function(){
+  manualThemeOverride=true;
+  localStorage.setItem('gps-drole-manual-theme','1');
+  _origToggleTheme();
+};
+
+// Init auto-night checkbox
+(function(){
+  var cb=document.getElementById('autoNightCb');
+  if(cb) cb.checked=autoNightEnabled;
+})();
+setInterval(checkAutoNightMode,300000);
+
+// =============================================================
+//  PHASE 3: EASTER EGGS
+// =============================================================
+var RARE_PHRASES={
+  grandmaman:{fr:["T'sais... j'ai JAMAIS dit \u00e7a \u00e0 personne, mais... t'es mon conducteur pr\u00e9f\u00e9r\u00e9.","Entre toi pis moi... le GPS Google aurait D\u00c9J\u00c0 d\u00e9missionn\u00e9."],en:["Between you and me... Google Maps would've QUIT by now.","You know what, darling? You're my FAVORITE driver ever."],es:["Entre t\u00fa y yo... Google Maps ya habr\u00eda RENUNCIADO.","Sabes qu\u00e9 mi amor? Eres mi conductor FAVORITO."]},
+  enfant:{fr:["OH REGARDE UN DINOSAURE! Euh... non c'est un camion. MAIS C'EST COOL PAREIL!","Est-ce qu'on est dans un FILM?! Parce que c'est TROP \u00c9PIQUE!"],en:["OH LOOK A DINOSAUR! Wait... that's a truck. BUT IT'S STILL COOL!","Are we in a MOVIE?! Because this is SO EPIC!"],es:["OH MIRA UN DINOSAURIO! Espera... es un cami\u00f3n. PERO MOLA IGUAL!","Estamos en una PEL\u00cdCULA?! Porque esto es SUPER \u00c9PICO!"]},
+  amis:{fr:["D'apr\u00e8s la l\u00e9gende, y'a quelqu'un qui conduit PIRE que toi. Mais personne l'a jamais TROUV\u00c9.","Si conduire \u00e9tait un sport olympique, t'aurais le record du PLUS de recalculs, genre."],en:["Legend says there's someone who drives WORSE than you. But nobody's ever FOUND them.","If driving were an Olympic sport, you'd hold the record for MOST recalculations."],es:["La leyenda dice que hay alguien que conduce PEOR que t\u00fa. Pero nadie lo ha ENCONTRADO.","Si conducir fuera deporte ol\u00edmpico, tendr\u00edas el r\u00e9cord de M\u00c1S recalculaciones."]},
+  drole:{fr:["BREAKING NEWS: Un conducteur a suivi TOUTES les instructions. C'\u00e9tait pas toi, genre.","Fun fact: ton GPS a essay\u00e9 de d\u00e9missionner TROIS fois pendant ce trajet."],en:["BREAKING NEWS: A driver followed ALL instructions. It wasn't you, like.","Fun fact: your GPS tried to RESIGN three times during this trip."],es:["NOTICIA: Un conductor sigui\u00f3 TODAS las instrucciones. No eras t\u00fa.","Dato curioso: tu GPS intent\u00f3 RENUNCIAR tres veces en este viaje."]},
+  insulte:{fr:["J'ai vu des PARKINGS qui conduisent mieux que toi. Des PARKINGS, t'sais.","M\u00eame ton GPS pleure en silence CHAQUE fois que tu d\u00e9marres."],en:["I've seen PARKING LOTS drive better than you. PARKING LOTS.","Even your GPS cries silently EVERY time you start the car."],es:["He visto ESTACIONAMIENTOS conducir mejor que t\u00fa. ESTACIONAMIENTOS.","Hasta tu GPS llora en silencio CADA vez que arrancas el coche."]}
+};
+
+var SPECIAL_DATE_PHRASES={
+  christmas:{
+    grandmaman:{fr:"Ho ho ho! Joyeux No\u00ebl mon tr\u00e9sor! Le p\u00e8re No\u00ebl est FI\u00c8RE de toi!",en:"Ho ho ho! Merry Christmas dear! Santa is SO proud!",es:"Jo jo jo! Feliz Navidad mi amor! Pap\u00e1 Noel est\u00e1 ORGULLOSO!"},
+    enfant:{fr:"C'EST NO\u00cbL!! ON VA VOIR LE P\u00c8RE NO\u00cbL!! YAAAAY!",en:"IT'S CHRISTMAS!! WE'RE GOING TO SEE SANTA!! YAYYY!",es:"ES NAVIDAD!! VAMOS A VER A PAP\u00c1 NOEL!! YAAAY!"},
+    amis:{fr:"Joyeux No\u00ebl, espece de renne au nez ROUGE, genre!",en:"Merry Christmas, you red-nosed REINDEER!",es:"Feliz Navidad, pedazo de reno de nariz ROJA!"},
+    drole:{fr:"No\u00ebl! Le seul jour o\u00f9 tes virages sont encore PLUS croches que d'habitude, genre.",en:"Christmas! The only day your turns are even WORSE than usual.",es:"Navidad! El \u00fanico d\u00eda que tus giros son A\u00daN peores."},
+    insulte:{fr:"Joyeux No\u00ebl! M\u00eame le P\u00e8re No\u00ebl REFUSE de monter dans ta voiture!",en:"Merry Christmas! Even Santa REFUSES to ride in your car!",es:"Feliz Navidad! Hasta Pap\u00e1 Noel RECHAZA subirse a tu coche!"}
+  },
+  halloween:{
+    grandmaman:{fr:"Boo! T'sais, la VRAIE frayeur c'est de conduire avec toi, mon tr\u00e9sor!",en:"Boo! The REAL scare is riding with you, dear!",es:"Buu! El VERDADERO susto es ir contigo, mi amor!"},
+    enfant:{fr:"C'EST HALLOWEEN!! Y'A DES FANT\u00d4MES PARTOUT!! Euh... c'est des lampadaires.",en:"IT'S HALLOWEEN!! GHOSTS EVERYWHERE!! Wait... those are streetlights.",es:"ES HALLOWEEN!! FANTASMAS POR TODOS LADOS!! Espera... son farolas."},
+    amis:{fr:"Halloween! Ta conduite fait PLUS peur que n'importe quel film d'horreur, genre.",en:"Halloween! Your driving is SCARIER than any horror movie.",es:"Halloween! Tu conducci\u00f3n da M\u00c1S miedo que cualquier pel\u00edcula de terror."},
+    drole:{fr:"Halloween! Les fant\u00f4mes sur la route c'est juste les pi\u00e9tons qui te FUIENT, genre.",en:"Halloween! The ghosts on the road are just pedestrians FLEEING from you.",es:"Halloween! Los fantasmas en la carretera son peatones que te HUYEN."},
+    insulte:{fr:"Halloween! M\u00eame les zombies conduisent MIEUX que toi!",en:"Halloween! Even ZOMBIES drive better than you!",es:"Halloween! Hasta los ZOMBIES conducen mejor que t\u00fa!"}
+  },
+  aprilfools:{
+    grandmaman:{fr:"Poisson d'avril! Non mais s\u00e9rieux... ta conduite c'est la VRAIE blague, t'sais.",en:"April Fools! But seriously... your driving IS the joke, dear.",es:"D\u00eda de los inocentes! En serio... tu conducci\u00f3n ES la broma, mi amor."},
+    enfant:{fr:"POISSON D'AVRIL!! Hahaha! T'ES TOMB\u00c9 DEDANS!! Euh... dans quoi?",en:"APRIL FOOLS!! Hahaha! GOT YOU!! Wait... got you with what?",es:"DIA DE LOS INOCENTES!! Jajaja! TE PILL\u00c9!! Espera... con qu\u00e9?"},
+    amis:{fr:"Poisson d'avril! On pensait que tu savais conduire. C'\u00e9tait la BLAGUE, genre.",en:"April Fools! We thought you could drive. THAT was the joke.",es:"D\u00eda de los inocentes! Pens\u00e1bamos que sab\u00edas conducir. ESA era la broma."},
+    drole:{fr:"1er avril! Ta conduite c'est un poisson d'avril de 365 JOURS, genre.",en:"April Fools! Your driving is a year-round PRANK.",es:"D\u00eda de los inocentes! Tu conducci\u00f3n es una broma de 365 D\u00cdAS."},
+    insulte:{fr:"Poisson d'avril! Ton permis de conduire c'est la MEILLEURE blague de l'ann\u00e9e!",en:"April Fools! Your driver's license is the BEST joke of the year!",es:"D\u00eda de los inocentes! Tu carnet de conducir es el MEJOR chiste del a\u00f1o!"}
+  }
+};
+
+var SECRET_PERSONA={
+  av:'\u{1F47D}', name:'ALIEN GPS',
+  desc:'Extraterrestre confus \u00b7 Observe les humains',
+  phrases:{
+    fr:["Humain... pourquoi tu tournes le CERCLE? La t\u00e9l\u00e9portation est tellement plus EFFICACE.","Bip boop... votre plan\u00e8te a trop de CHEMINS. Sur Zorbulax on a UN seul chemin.","Fascinant... tu utilises des ROUES. Comme c'est... primitif."],
+    en:["Human... why do you turn the CIRCLE? Teleportation is so much more EFFICIENT.","Beep boop... your planet has too many ROADS. On Zorbulax we have ONE path.","Fascinating... you use WHEELS. How... primitive."],
+    es:["Humano... por qu\u00e9 giras el C\u00cdRCULO? La teletransportaci\u00f3n es mucho m\u00e1s EFICIENTE.","Bip boop... su planeta tiene demasiados CAMINOS. En Zorbulax hay UN solo camino.","Fascinante... usas RUEDAS. Qu\u00e9... primitivo."]
+  }
+};
+
+var logoTapCount=0;
+var logoTapTimer=null;
+var secretModeActive=false;
+var secretModeTimeout=null;
+
+(function(){
+  var logo=document.querySelector('.logo');
+  if(logo){
+    logo.style.cursor='pointer';
+    logo.addEventListener('click',function(){
+      logoTapCount++;
+      if(!logoTapTimer) logoTapTimer=setTimeout(function(){ logoTapCount=0; logoTapTimer=null; },3000);
+      if(logoTapCount>=5){
+        logoTapCount=0;
+        clearTimeout(logoTapTimer); logoTapTimer=null;
+        activateSecretMode();
+      }
+    });
+  }
+})();
+
+function activateSecretMode(){
+  secretModeActive=true;
+  showToast('\u{1F389} Mode Secret activ\u00e9!');
+  document.getElementById('charAv').textContent=SECRET_PERSONA.av;
+  document.getElementById('charName').textContent=SECRET_PERSONA.name;
+  document.getElementById('charDesc').textContent=SECRET_PERSONA.desc;
+  if(secretModeTimeout) clearTimeout(secretModeTimeout);
+  secretModeTimeout=setTimeout(function(){
+    secretModeActive=false;
+    applyPersona();
+    showToast('Mode secret d\u00e9sactiv\u00e9');
+  },300000);
+}
+
+// Speed milestone
+var speedMilestone100=!!localStorage.getItem('gps-drole-milestone-100');
+
+// =============================================================
+//  PHASE 4: CONTEXTUAL REPLIES
+// =============================================================
+var greetingGiven=false;
+
+function getTimeContext(){
+  var h=new Date().getHours();
+  if(h>=5&&h<12) return 'morning';
+  if(h>=12&&h<17) return 'afternoon';
+  if(h>=17&&h<21) return 'evening';
+  return 'night';
+}
+
+var GREETING_PHRASES={
+  grandmaman:{fr:{morning:"Bon matin mon tr\u00e9sor! Belle journ\u00e9e pour CONDUIRE!",afternoon:"Bon apr\u00e8s-midi! T'as d\u00e9j\u00e0 D\u00ceN\u00c9 au moins?",evening:"Bonsoir! Fais ATTENTION, y fait noir bient\u00f4t!",night:"Mon Dieu, \u00e0 c't'heure-l\u00e0? Fais ATTENTION sur la route!"},en:{morning:"Good morning sweetheart! Beautiful day for DRIVING!",afternoon:"Good afternoon dear! Have you eaten LUNCH?",evening:"Good evening! Be CAREFUL, it's getting dark!",night:"Oh my, at this HOUR? Be careful on the road!"},es:{morning:"Buenos d\u00edas mi amor! Buen d\u00eda para CONDUCIR!",afternoon:"Buenas tardes! Ya has COMIDO?",evening:"Buenas noches! Ten CUIDADO, oscurece pronto!",night:"Dios m\u00edo, a estas HORAS? Ten cuidado!"}},
+  enfant:{fr:{morning:"BONJOUR!! C'EST LE MATIN! LET'S GOOO!",afternoon:"YOOO C'est l'apr\u00e8s-midi! AVENTURE TIME!",evening:"Le SOIR! C'est comme une aventure NOCTURNE!",night:"WOAH IL FAIT NOIR! C'est comme un film de BATMAN!"},en:{morning:"GOOD MORNING!! LET'S GOOO!",afternoon:"It's AFTERNOON! ADVENTURE TIME!",evening:"EVENING! It's like a NIGHT adventure!",night:"WOAH IT'S DARK! Like a BATMAN movie!"},es:{morning:"BUENOS D\u00cdAS!! VAMOS VAMOS!",afternoon:"Es la TARDE! HORA DE AVENTURA!",evening:"LA NOCHE! Es como una aventura NOCTURNA!",night:"WOAH EST\u00c1 OSCURO! Como una peli de BATMAN!"}},
+  amis:{fr:{morning:"Yo! T'es debout \u00e0 c't'heure-l\u00e0? RESPECT, genre.",afternoon:"Salut! On dirait que t'es encore en VIE, genre.",evening:"Hey! Pr\u00eat pour un road trip DE SOIR?",night:"Bro, \u00e0 c't'heure-l\u00e0? T'as CLAIREMENT pas de vie, genre."},en:{morning:"Yo! You're up at this hour? RESPECT.",afternoon:"Hey! Looks like you're still ALIVE.",evening:"Hey! Ready for an EVENING road trip?",night:"Bro, at THIS hour? You clearly have NO life."},es:{morning:"Ey! Despierto a estas horas? RESPETO.",afternoon:"Ey! Parece que sigues VIVO.",evening:"Ey! Listo para un viaje NOCTURNO?",night:"Bro, a estas horas? Claramente NO tienes vida."}},
+  drole:{fr:{morning:"Bonjour! J'esp\u00e8re que t'as pris ton CAF\u00c9... tu vas en avoir besoin, genre.",afternoon:"Bon apr\u00e8s-midi! La sieste aurait \u00e9t\u00e9 un MEILLEUR choix, t'sais.",evening:"Bonsoir! Les \u00e9toiles brillent... mais PAS ton sens de l'orientation.",night:"Il fait noir... comme ton AVENIR au volant, genre."},en:{morning:"Good morning! Hope you had COFFEE... you'll need it.",afternoon:"Good afternoon! A nap would've been a BETTER choice.",evening:"Good evening! Stars are shining... but NOT your sense of direction.",night:"It's dark... like your FUTURE behind the wheel."},es:{morning:"Buenos d\u00edas! Espero que tomaste CAF\u00c9... lo vas a necesitar.",afternoon:"Buenas tardes! Una siesta habr\u00eda sido MEJOR opci\u00f3n.",evening:"Buenas noches! Las estrellas brillan... pero NO tu sentido de orientaci\u00f3n.",night:"Est\u00e1 oscuro... como tu FUTURO al volante."}},
+  insulte:{fr:{morning:"T'es DEBOUT? Wow. Premier miracle de la JOURN\u00c9E.",afternoon:"Encore en train de conduire? La route m\u00e9ritait une PAUSE de toi.",evening:"Le soir?! Ta conduite est d\u00e9j\u00e0 assez SOMBRE de jour!",night:"Tu conduis la NUIT?! Les autres conducteurs vont avoir besoin d'une TH\u00c9RAPIE."},en:{morning:"You're AWAKE? Wow. First miracle of the DAY.",afternoon:"Still driving? The road deserved a BREAK from you.",evening:"Evening?! Your driving is already DARK enough during the day!",night:"Driving at NIGHT?! Other drivers will need THERAPY."},es:{morning:"Est\u00e1s DESPIERTO? Wow. Primer milagro del D\u00cdA.",afternoon:"A\u00fan conduciendo? La carretera merec\u00eda un DESCANSO de ti.",evening:"De noche?! Tu conducci\u00f3n ya es bastante OSCURA de d\u00eda!",night:"Conduces de NOCHE?! Los dem\u00e1s conductores necesitar\u00e1n TERAPIA."}}
+};
+
+var WEEKEND_PHRASES={
+  grandmaman:{fr:"C'est la fin de semaine! PROFITE de la vie, mon tr\u00e9sor!",en:"It's the weekend! ENJOY life, sweetheart!",es:"Es fin de semana! DISFRUTA la vida, mi amor!"},
+  enfant:{fr:"C'EST LA FIN DE SEMAINE!! PAS D'\u00c9COLE!! YAAAY!",en:"IT'S THE WEEKEND!! NO SCHOOL!! YAYYY!",es:"ES FIN DE SEMANA!! NO HAY COLE!! YAAAY!"},
+  amis:{fr:"La fin de semaine, bro! On SORT ou quoi, genre?",en:"Weekend vibes! Are we GOING OUT or what?",es:"Fin de semana! SALIMOS o qu\u00e9?"},
+  drole:{fr:"La fin de semaine... m\u00eame les routes veulent PAS te voir, genre.",en:"Weekend... even the roads don't WANT to see you.",es:"Fin de semana... hasta las carreteras NO quieren verte."},
+  insulte:{fr:"C'est le weekend! Les AUTRES conducteurs priaient pour que tu restes chez toi!",en:"It's the weekend! Other drivers PRAYED you'd stay home!",es:"Es fin de semana! Los dem\u00e1s conductores REZABAN para que te quedaras en casa!"}
+};
+
+// Patch go() with easter eggs and contextual replies
+var _origGo2=go;
+go=function(sc){
+  // Secret mode override
+  if(secretModeActive){
+    var stxt=SECRET_PERSONA.phrases[lang]||SECRET_PERSONA.phrases.fr;
+    if(stxt&&stxt.length){
+      var pick=stxt[Math.floor(Math.random()*stxt.length)];
+      vibrateAndDing();
+      speak(pick,lang); animChar();
+      showInstr(pick);
+      return;
+    }
+  }
+
+  // Greeting on first go() of guidance session
+  if(guidanceActive&&!greetingGiven){
+    greetingGiven=true;
+    var tc=getTimeContext();
+    var gp=GREETING_PHRASES[mode];
+    if(gp&&gp[lang]&&gp[lang][tc]){
+      speak(gp[lang][tc],lang);
+    }
+  }
+
+  // Special date check
+  var now=new Date();
+  var mm=now.getMonth(), dd=now.getDate();
+  var specialKey=null;
+  if(mm===11&&dd===25) specialKey='christmas';
+  else if(mm===9&&dd===31) specialKey='halloween';
+  else if(mm===3&&dd===1) specialKey='aprilfools';
+  if(specialKey&&SPECIAL_DATE_PHRASES[specialKey]&&SPECIAL_DATE_PHRASES[specialKey][mode]){
+    var sp=SPECIAL_DATE_PHRASES[specialKey][mode];
+    var stxt2=sp[lang]||sp.fr;
+    if(stxt2&&Math.random()<0.3){
+      vibrateAndDing();
+      speak(stxt2,lang); animChar();
+      showInstr(stxt2);
+      return;
+    }
+  }
+
+  // Rare phrase (1/50)
+  if(Math.random()<0.02&&RARE_PHRASES[mode]){
+    var rp=RARE_PHRASES[mode][lang]||RARE_PHRASES[mode].fr;
+    if(rp&&rp.length){
+      var rtxt=rp[Math.floor(Math.random()*rp.length)];
+      vibrateAndDing();
+      speak(rtxt,lang); animChar();
+      showInstr(rtxt);
+      return;
+    }
+  }
+
+  // Weekend phrase (1/5 chance during guidance)
+  if(guidanceActive&&Math.random()<0.2){
+    var day=now.getDay();
+    if(day===0||day===6){
+      var wp=WEEKEND_PHRASES[mode];
+      if(wp){
+        var wtxt=wp[lang]||wp.fr;
+        if(wtxt){ speak(wtxt,lang); }
+      }
+    }
+  }
+
+  // Speed milestone
+  if(!speedMilestone100&&currentSpeed>=100){
+    speedMilestone100=true;
+    localStorage.setItem('gps-drole-milestone-100','1');
+    showToast('\u{1F3C6} 100 km/h atteint! Milestone!');
+  }
+
+  _origGo2(sc);
+};
+
+// =============================================================
+//  PHASE 5: STOP DETECTION (auto-pause)
+// =============================================================
+var stopTimer=null;
+var isPaused=false;
+
+// Patch GPS tracking to detect stops
+var _origStartTracking2=startTracking;
+startTracking=function(){
+  _origStartTracking2();
+  // Override watchPosition won't work easily, so we use a polling approach
+};
+
+// Check stop in a separate interval
+setInterval(function(){
+  if(!guidanceActive||isPaused) return;
+  if(currentSpeed===0||currentSpeed===null){
+    if(!stopTimer){
+      stopTimer=setTimeout(function(){
+        activateAutoPause();
+      },120000); // 2 minutes
+    }
+  } else if(currentSpeed>3){
+    if(stopTimer){ clearTimeout(stopTimer); stopTimer=null; }
+    if(isPaused) resumeFromPause();
+  }
+},5000);
+
+function activateAutoPause(){
+  isPaused=true;
+  var ov=document.getElementById('pauseOverlay');
+  if(ov) ov.classList.add('vis');
+  GPS_THROTTLE_MS=5000;
+  showToast('Pause automatique activ\u00e9e');
+  sendNotification('GPS Dr\u00f4le','Pause automatique activ\u00e9e');
+}
+
+function resumeFromPause(){
+  isPaused=false;
+  stopTimer=null;
+  var ov=document.getElementById('pauseOverlay');
+  if(ov) ov.classList.remove('vis');
+  GPS_THROTTLE_MS=1000;
+  showToast('Reprise du guidage');
+  playDing();
+  if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+}
+
+// Patch go() to skip if paused
+var _origGo3=go;
+go=function(sc){
+  if(isPaused) return;
+  _origGo3(sc);
+};
+
+// =============================================================
+//  PHASE 6: DRIVER MODE
+// =============================================================
+var driverModeActive=false;
+
+function toggleDriverMode(){
+  driverModeActive=!driverModeActive;
+  document.body.classList.toggle('driver-mode',driverModeActive);
+  if(driverModeActive){
+    setTimeout(function(){ if(mapObj) mapObj.invalidateSize(); },300);
+  } else {
+    setTimeout(function(){ if(mapObj) mapObj.invalidateSize(); },300);
+  }
+}
+
+// Update driver HUD in GPS tracking
+setInterval(function(){
+  if(!driverModeActive) return;
+  document.getElementById('driverSpeed').textContent=currentSpeed||0;
+  document.getElementById('driverUnit').textContent=useImperial?'MPH':'KM/H';
+  // ETA
+  if(currentRouteDist&&currentRouteDur&&routeDestCoords){
+    var distToD=haversine(userLat,userLng,routeDestCoords.lat,routeDestCoords.lng);
+    var avgSpd=currentRouteDist/currentRouteDur;
+    var remainSec=avgSpd>0?distToD/avgSpd:0;
+    var eta=new Date(Date.now()+remainSec*1000);
+    document.getElementById('driverEta').textContent=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
+  }
+},2000);
+
+// Update driver arrow on turn-by-turn
+var _origCheckTBT=checkTurnByTurn;
+checkTurnByTurn=function(){
+  _origCheckTBT();
+  if(!driverModeActive||!routeSteps.length) return;
+  // Find next upcoming step
+  for(var i=Math.max(0,lastAnnouncedStep);i<routeSteps.length;i++){
+    var step=routeSteps[i];
+    var dist=haversine(userLat,userLng,step.lat,step.lng);
+    if(dist<600){
+      var arrow='\u2191'; // straight
+      if(step.modifier){
+        if(step.modifier.indexOf('right')>=0) arrow='\u21B1';
+        if(step.modifier.indexOf('left')>=0) arrow='\u21B0';
+        if(step.modifier.indexOf('uturn')>=0) arrow='\u21BA';
+      }
+      if(step.type==='arrive') arrow='\u{1F3C1}';
+      document.getElementById('driverArrow').textContent=arrow;
+      var distTxt=dist>1000?(dist/1000).toFixed(1)+' km':Math.round(dist)+' m';
+      document.getElementById('driverDist').textContent=distTxt;
+      break;
+    }
+  }
+};
+
+// =============================================================
+//  PHASE 7: POINTS OF INTEREST (POI)
+// =============================================================
+var POI_CATS={
+  gas:{icon:'\u26FD',q:'amenity=fuel',label:{fr:'Stations',en:'Gas',es:'Gasolina'}},
+  food:{icon:'\u{1F354}',q:'amenity~"restaurant|fast_food"',label:{fr:'Restos',en:'Food',es:'Comida'}},
+  toilet:{icon:'\u{1F6BB}',q:'amenity=toilets',label:{fr:'Toilettes',en:'Toilets',es:'Ba\u00f1os'}},
+  pharmacy:{icon:'\u{1F3E5}',q:'amenity=pharmacy',label:{fr:'Pharmacies',en:'Pharmacy',es:'Farmacia'}},
+  cafe:{icon:'\u2615',q:'amenity=cafe',label:{fr:'Caf\u00e9s',en:'Caf\u00e9s',es:'Caf\u00e9s'}}
+};
+
+var poiLayers={};
+var poiActive={};
+var lastPoiFetch=0;
+
+function fetchPOIs(cat){
+  var now=Date.now();
+  if(now-lastPoiFetch<30000){ showToast('Attendez 30s entre les requ\u00eates POI'); return; }
+  lastPoiFetch=now;
+  var c=POI_CATS[cat];
+  if(!c) return;
+  var qParts=c.q.split('=');
+  var overpassQ;
+  if(c.q.indexOf('~')>=0){
+    var parts2=c.q.split('~');
+    overpassQ='[out:json][timeout:10];(node['+parts2[0]+'~'+parts2[1]+'](around:2000,'+userLat+','+userLng+'););out body;';
+  } else {
+    overpassQ='[out:json][timeout:10];(node['+c.q+'](around:2000,'+userLat+','+userLng+'););out body;';
+  }
+  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(overpassQ))
+    .then(function(r){ return r.json(); })
+    .then(function(d){ showPOIs(cat,d.elements||[]); })
+    .catch(function(){ showToast('Erreur chargement POI'); });
+}
+
+function showPOIs(cat,elements){
+  if(poiLayers[cat]){ mapObj.removeLayer(poiLayers[cat]); }
+  var c=POI_CATS[cat];
+  var markers=[];
+  elements.forEach(function(el){
+    if(el.lat&&el.lon){
+      var name=(el.tags&&el.tags.name)||c.label[lang]||cat;
+      var marker=L.marker([el.lat,el.lon],{
+        icon:L.divIcon({html:c.icon,className:'',iconSize:[24,24],iconAnchor:[12,12]})
+      }).bindPopup('<b>'+c.icon+' '+name+'</b>');
+      markers.push(marker);
+    }
+  });
+  poiLayers[cat]=L.layerGroup(markers).addTo(mapObj);
+  showToast(elements.length+' '+c.label[lang]+' trouv\u00e9(s)');
+}
+
+function togglePOI(cat){
+  var btn=document.getElementById('poi'+cat.charAt(0).toUpperCase()+cat.slice(1));
+  if(poiActive[cat]){
+    poiActive[cat]=false;
+    if(poiLayers[cat]){ mapObj.removeLayer(poiLayers[cat]); delete poiLayers[cat]; }
+    if(btn) btn.classList.remove('active');
+  } else {
+    poiActive[cat]=true;
+    if(btn) btn.classList.add('active');
+    fetchPOIs(cat);
+  }
+}
+
+function clearAllPOIs(){
+  Object.keys(poiLayers).forEach(function(k){
+    if(poiLayers[k]) mapObj.removeLayer(poiLayers[k]);
+  });
+  poiLayers={};
+  poiActive={};
+  document.querySelectorAll('.poi-btn').forEach(function(b){ b.classList.remove('active'); });
+}
+
+// =============================================================
+//  PHASE 8: PUSH NOTIFICATIONS
+// =============================================================
+function sendNotification(title,body){
+  if(!('Notification' in window)) return;
+  if(Notification.permission!=='granted') return;
+  if(document.visibilityState==='visible') return;
+  try{ new Notification(title,{body:body,icon:'icon-192.png',tag:'gps-drole'}); }catch(e){}
+}
+function requestNotifPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+
+// Patch startGuidance for notifications
+var _origStartGuidance3=startGuidance;
+startGuidance=function(){
+  requestNotifPermission();
+  _origStartGuidance3();
+};
+
+// Patch arrive detection for notification
+var _origCheckTBT2=checkTurnByTurn;
+checkTurnByTurn=function(){
+  _origCheckTBT2();
+  // Check if arrive step was just announced
+  for(var i=0;i<routeSteps.length;i++){
+    if(routeSteps[i].type==='arrive'&&stepAnnounced[i]&&stepAnnounced[i].near){
+      sendNotification('GPS Dr\u00f4le','Vous \u00eates arriv\u00e9 \u00e0 destination!');
+      break;
+    }
+  }
+};
+
+// Patch speed alert for notification
+var _origSpeedCallback=null;
+// Speed alert notification is handled within the GPS tracking which already calls go('speed')
+
+// =============================================================
+//  PHASE 9: WIDGET SHORTCUTS + QUICK NAV
+// =============================================================
+function toggleQuickNav(){
+  var popup=document.getElementById('quickNavPopup');
+  if(popup) popup.classList.toggle('vis');
+}
+
+// URL param handling for shortcuts
+(function(){
+  var urlParams=new URLSearchParams(window.location.search);
+  var quickAction=urlParams.get('action');
+  if(quickAction==='home'||quickAction==='work'){
+    setTimeout(function(){ useFav(quickAction); },2000);
+  }
+})();
+
+// =============================================================
+//  PHASE 10: POSITION SHARING
+// =============================================================
+function sharePosition(){
+  if(!userLat||!userLng){ showToast('Position GPS non disponible'); return; }
+  var url='https://www.google.com/maps?q='+userLat+','+userLng;
+  var txt='Ma position GPS: '+userLat.toFixed(6)+', '+userLng.toFixed(6);
+  if(navigator.share){
+    navigator.share({title:'Ma position - GPS Dr\u00f4le',text:txt,url:url}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(url).then(function(){showToast('Lien copi\u00e9!');}).catch(function(){showToast(url);});
+  }
+}
+
+// =============================================================
+//  INIT ADDITIONS — render history on load
+// =============================================================
+var _origOnLoad=null;
+setTimeout(function(){
+  renderTripHistory();
+  checkAutoNightMode();
+},600);
 </script>
 </body>
 </html>

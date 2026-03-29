@@ -9,6 +9,10 @@
   "theme_color": "#080c18",
   "background_color": "#080c18",
   "categories": ["navigation", "entertainment"],
+  "shortcuts": [
+    {"name": "Aller à la maison", "short_name": "🏠 Maison", "url": "/gps-drole/?action=home", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
+    {"name": "Aller au travail", "short_name": "💼 Travail", "url": "/gps-drole/?action=work", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]}
+  ],
   "icons": [
     {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
     {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}

@@ -1,6 +1,6 @@
 // GPS DRÔLE — Service Worker v1
 // Caches: app shell + map tiles (offline support)
-const CACHE_NAME = 'gps-drole-v3';
+const CACHE_NAME = 'gps-drole-v4';
 const TILE_CACHE = 'gps-drole-tiles-v1';
 const APP_SHELL = [
   './',
@@ -29,6 +29,17 @@ self.addEventListener('activate', function(e) {
             .map(function(k) { return caches.delete(k); })
       );
     }).then(function() { self.clients.claim(); })
+  );
+});
+
+// Notification click: focus or open app
+self.addEventListener('notificationclick', function(e) {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({type: 'window'}).then(function(cls) {
+      if (cls.length) cls[0].focus();
+      else clients.openWindow('/gps-drole/');
+    })
   );
 });
 
