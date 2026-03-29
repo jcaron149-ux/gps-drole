@@ -3302,7 +3302,8 @@ startTracking=function(){
 // =============================================================
 var deferredPrompt=null;
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(function(reg){
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){
+    reg.update();
     setStatus('GPS Drole v4 — Mode hors-ligne actif!');
     // Auto-reload quand une nouvelle version du SW est activée
     reg.addEventListener('updatefound',function(){
