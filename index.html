@@ -272,14 +272,25 @@ body.driver-mode .driver-hud{display:flex!important}
     <div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">Cette application contient du <b style="color:#ef4444;">langage grossier, vulgaire et des insultes</b> dans certains modes de navigation.</div>
     <div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">&#128286; <b>Contenu r&eacute;serv&eacute; &agrave; un public averti.</b></div>
     <div style="color:#94a3b8;font-size:clamp(.7rem,1.8vw,.8rem);line-height:1.5;margin-bottom:20px;">Les modes <b style="color:#f59e0b;">Extr&ecirc;me dr&ocirc;le</b> et <b style="color:#ef4444;">Extr&ecirc;me insulte</b> contiennent un humour cru et des r&eacute;pliques offensantes &agrave; des fins humoristiques uniquement. Ce GPS est un divertissement et ne remplace pas un vrai syst&egrave;me de navigation.</div>
-    <div style="color:#64748b;font-size:clamp(.65rem,1.5vw,.75rem);margin-bottom:20px;">En continuant, vous confirmez avoir 16 ans ou plus et acceptez le contenu mature de cette application.</div>
+    <div style="color:#64748b;font-size:clamp(.65rem,1.5vw,.75rem);margin-bottom:16px;">En continuant, vous confirmez avoir 16 ans ou plus et acceptez le contenu mature de cette application.</div>
+    <div style="margin-bottom:20px;">
+      <label style="color:#93c5fd;font-size:clamp(.75rem,2vw,.85rem);font-weight:600;display:block;margin-bottom:8px;">&#128100; Ton pr&eacute;nom (pour personnaliser les r&eacute;pliques)</label>
+      <input id="disclaimerName" type="text" placeholder="Ex: Jacques, Marie..." style="width:80%;max-width:280px;padding:10px 16px;border-radius:10px;border:2px solid #3b82f6;background:rgba(15,23,60,.8);color:#fff;font-family:'Exo 2',sans-serif;font-size:clamp(.85rem,2vw,1rem);text-align:center;outline:none;" autocomplete="given-name">
+    </div>
     <button id="disclaimerAccept" style="padding:clamp(10px,2vw,14px) clamp(24px,5vw,40px);border-radius:30px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;font-family:Orbitron,monospace;font-size:clamp(.8rem,2vw,.95rem);font-weight:900;cursor:pointer;letter-spacing:1px;box-shadow:0 0 20px rgba(59,130,246,.4);transition:all .2s;">J'ACCEPTE ET JE CONTINUE</button>
   </div>
 </div>
 <script>
 (function(){
   var o=document.getElementById('disclaimerOverlay');
+  // Si un nom est déjà sauvegardé, pré-remplir le champ
+  var savedName=localStorage.getItem('gps-drole-username')||'';
+  var nameInput=document.getElementById('disclaimerName');
+  if(savedName) nameInput.value=savedName;
   document.getElementById('disclaimerAccept').onclick=function(){
+    // Sauvegarder le nom
+    var name=nameInput.value.trim();
+    if(name) localStorage.setItem('gps-drole-username',name);
     o.style.opacity='0';o.style.transition='opacity .4s';
     setTimeout(function(){o.remove();},400);
   };
@@ -423,7 +434,7 @@ body.driver-mode .driver-hud{display:flex!important}
     </div>
 
     <div class="demo-section" style="text-align:center">
-      <button class="settings-toggle-btn" onclick="toggleSettings()">&#9881;&#65039; Parametres</button>
+      <button class="settings-toggle-btn" onclick="toggleSettings()" title="Param&egrave;tres" style="font-size:1.5rem;padding:8px 14px;border-radius:50%;min-width:0;width:auto;">&#9881;&#65039;</button>
     </div>
 
     <!-- Panneau Paramètres (caché par défaut) -->
@@ -431,6 +442,15 @@ body.driver-mode .driver-hud{display:flex!important}
       <div class="settings-header">
         <span class="box-label">&#9881;&#65039; Parametres</span>
         <button class="settings-close" onclick="toggleSettings()">&#10006;</button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#128100; Profil</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <input id="settingsName" type="text" placeholder="Ton pr&eacute;nom..." style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-family:'Exo 2',sans-serif;font-size:.8rem;outline:none" oninput="saveUserName(this.value)">
+          <button class="demo-btn" onclick="document.getElementById('settingsName').value='';saveUserName('')" style="padding:6px 10px;font-size:.7rem">&#10006;</button>
+        </div>
+        <div style="font-size:.6rem;color:var(--muted)">Les personnages utiliseront ton nom dans leurs r&eacute;pliques</div>
       </div>
 
       <div class="settings-group">
@@ -2541,6 +2561,36 @@ function testVoice(){
 }
 
 // =============================================================
+//  USER NAME (personalized replicas)
+// =============================================================
+function getUserName(){ return localStorage.getItem('gps-drole-username')||''; }
+function saveUserName(n){
+  n=n.trim();
+  if(n) localStorage.setItem('gps-drole-username',n);
+  else localStorage.removeItem('gps-drole-username');
+}
+// Inject user name into replica text
+function personalize(txt){
+  var name=getUserName();
+  if(!name) return txt;
+  // Replace generic placeholders with the user's name
+  txt=txt.replace(/\bmon (grand|ti-cul|champion|ami|chum|cher|coco)\b/gi, name);
+  txt=txt.replace(/\bmy (friend|dear|buddy|pal|dude|man)\b/gi, name);
+  txt=txt.replace(/\bmi (amor|amigo|querido)\b/gi, name);
+  // Also: 50% chance to prepend the name naturally
+  if(Math.random()<0.5){
+    var l=lang;
+    var prefixes={fr:['Hey '+name+' ','Écoute '+name+' ','Ok '+name+' '],
+                  en:['Hey '+name+' ','Listen '+name+' ','Ok '+name+' '],
+                  es:['Oye '+name+' ','Escucha '+name+' ','Ok '+name+' ']};
+    var pList=prefixes[l]||prefixes.fr;
+    // Only prepend if the text doesn't already contain the name
+    if(txt.indexOf(name)<0) txt=pList[Math.floor(Math.random()*pList.length)]+txt;
+  }
+  return txt;
+}
+
+// =============================================================
 //  SCENARIOS
 // =============================================================
 function go(sc){
@@ -2548,6 +2598,7 @@ function go(sc){
   var arr=P[mode]&&P[mode][l]&&P[mode][l][sc];
   if(!arr||!arr.length) return;
   var txt=arr[Math.floor(Math.random()*arr.length)];
+  txt=personalize(txt);
   speak(txt,l); animChar();
 }
 
@@ -3220,6 +3271,9 @@ window.addEventListener('load',function(){
     setupAutocompletePhoton('destIn');
     renderFavorites();
     checkAutoNightMode();
+    // Charger le nom utilisateur dans le champ paramètres
+    var sn=document.getElementById('settingsName');
+    if(sn) sn.value=getUserName();
   },500);
 });
 
