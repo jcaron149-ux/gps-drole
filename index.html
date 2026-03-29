@@ -48,11 +48,11 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .toast.show{opacity:1}
 .leaflet-popup-content-wrapper{background:var(--s2);color:var(--text);border:1px solid var(--border)}
 .leaflet-popup-tip{background:var(--s2)}
-.route-info{position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(15,23,60,.94);backdrop-filter:blur(10px);padding:14px 20px;display:flex;justify-content:space-around;align-items:center;font-family:'Orbitron',monospace;font-size:.85rem;color:#60a5fa;border-bottom:3px solid #3b82f6;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 20px rgba(59,130,246,.3)}
-.route-info.vis{opacity:1;pointer-events:auto}
-.route-info-item{display:flex;flex-direction:column;align-items:center;gap:4px}
-.route-info-label{font-size:.6rem;color:#93c5fd;letter-spacing:2px;text-transform:uppercase;font-weight:700}
-.route-info-val{font-weight:900;font-size:1.1rem;color:#fff;text-shadow:0 0 8px rgba(59,130,246,.5)}
+.route-info{position:fixed;top:0;left:0;right:0;z-index:10000;background:rgba(15,23,60,.96);backdrop-filter:blur(12px);padding:16px 24px;display:flex;justify-content:space-around;align-items:center;font-family:'Orbitron',monospace;font-size:.95rem;color:#60a5fa;border-bottom:4px solid #3b82f6;opacity:0;transform:translateY(-100%);transition:opacity .3s,transform .3s;pointer-events:none;box-shadow:0 4px 24px rgba(59,130,246,.4)}
+.route-info.vis{opacity:1;transform:translateY(0);pointer-events:auto}
+.route-info-item{display:flex;flex-direction:column;align-items:center;gap:6px}
+.route-info-label{font-size:.7rem;color:#93c5fd;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.route-info-val{font-weight:900;font-size:1.3rem;color:#fff;text-shadow:0 0 10px rgba(59,130,246,.6)}
 .route-progress{position:absolute;bottom:0;left:0;right:0;z-index:1000;height:4px;background:rgba(15,22,38,.5);pointer-events:none}
 .route-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),var(--neon2));border-radius:0 2px 2px 0;transition:width .5s ease}
 .panel{background:var(--s1);border-left:2px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -161,7 +161,7 @@ body.guidance-fullscreen .panel{display:none}
 body.guidance-fullscreen #map{height:100vh}
 body.guidance-fullscreen{overflow:hidden;height:100vh}
 /* Floating instruction overlay during guidance */
-.guidance-overlay{display:none;position:absolute;bottom:60px;left:10px;right:10px;z-index:1001;background:rgba(15,22,38,.92);backdrop-filter:blur(8px);border:2px solid var(--neon);border-radius:12px;padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--neon2);text-align:center;box-shadow:0 0 24px rgba(245,158,11,.3);pointer-events:none}
+.guidance-overlay{display:none;position:absolute;bottom:60px;left:10px;right:10px;z-index:1001;background:rgba(15,22,38,.92);backdrop-filter:blur(8px);border:2px solid var(--neon);border-radius:12px;padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--neon2);text-align:center;box-shadow:0 0 24px rgba(245,158,11,.3);pointer-events:none;visibility:hidden}
 body.guidance-fullscreen .guidance-overlay{display:block}
 /* Floating stop button during guidance */
 .guidance-stop-float{display:none;position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:1001;padding:10px 28px;border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;cursor:pointer;box-shadow:0 0 18px rgba(239,68,68,.5);letter-spacing:1px}
@@ -1660,7 +1660,7 @@ function checkTurnByTurn(){
     if(dist<550 && dist>250 && !stepAnnounced[i].far){
       stepAnnounced[i].far=true;
       var preInstr=buildPreAnnounce(step,500);
-      if(preInstr){ showInstr(preInstr); showNavInstr(preInstr); }
+      if(preInstr){ showNavInstr(preInstr); }
       vibrateAndDing();
       break;
     }
@@ -1668,7 +1668,7 @@ function checkTurnByTurn(){
     if(dist<250 && dist>80 && !stepAnnounced[i].mid){
       stepAnnounced[i].mid=true;
       var midInstr=buildPreAnnounce(step,200);
-      if(midInstr){ showInstr(midInstr); showNavInstr(midInstr); }
+      if(midInstr){ showNavInstr(midInstr); }
       vibrateAndDing();
       break;
     }
@@ -1679,7 +1679,7 @@ function checkTurnByTurn(){
       var scenario=mapManeuverToScenario(step.type,step.modifier);
       if(scenario) go(scenario);
       var instrLabel=buildStepInstruction(step);
-      if(instrLabel){ showInstr(instrLabel); showNavInstr(instrLabel); }
+      if(instrLabel){ showNavInstr(instrLabel); }
       // Arrivée: arrêter le guidage
       if(step.type==='arrive'){
         setTimeout(function(){ stopGuidance(); showToast('Destination atteinte!'); },3000);
@@ -1859,7 +1859,7 @@ function testVoice(){
   };
   var modeTests=tests[mode]||tests.grandmaman;
   var txt=modeTests[lang]||modeTests.fr;
-  showInstr(txt); speak(txt,lang); animChar();
+  speak(txt,lang); animChar();
 }
 
 // =============================================================
@@ -1870,7 +1870,7 @@ function go(sc){
   var arr=P[mode]&&P[mode][l]&&P[mode][l][sc];
   if(!arr||!arr.length) return;
   var txt=arr[Math.floor(Math.random()*arr.length)];
-  showInstr(txt); speak(txt,l); animChar();
+  speak(txt,l); animChar();
 }
 
 // =============================================================
@@ -1941,17 +1941,23 @@ function pickVoice(l,gender){
 
 // Nettoyage ponctuation pour que le TTS ne dise pas "point point point" etc.
 function cleanForSpeech(txt){
-  // Remplacer ... par une pause (espace)
-  txt=txt.replace(/\.{2,}/g,' ');
-  // Supprimer les caractères que le TTS pourrait prononcer
-  txt=txt.replace(/[·•–—―]/g,' ');
-  // Supprimer les tirets isolés
-  txt=txt.replace(/\s-\s/g,' ');
-  // Supprimer les symboles spéciaux
-  txt=txt.replace(/[*#@&|~^`\\[\]{}()<>]/g,'');
+  // Supprimer les emojis
+  txt=txt.replace(/[\u{1F600}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}]/gu,'');
+  // Remplacer ... par une pause naturelle (virgule)
+  txt=txt.replace(/\.{2,}/g,',');
+  // Supprimer TOUTE ponctuation que le TTS pourrait prononcer littéralement
+  txt=txt.replace(/[·•–—―:;"/\\(){}[\]<>*#@&|~^`_+=]/g,' ');
+  // Garder seulement . , ! ? pour l'intonation naturelle
   // Remplacer les ! et ? multiples par un seul
   txt=txt.replace(/!{2,}/g,'!');
   txt=txt.replace(/\?{2,}/g,'?');
+  // Supprimer les tirets isolés
+  txt=txt.replace(/\s-\s/g,' ');
+  // Supprimer les guillemets simples isolés (pas les apostrophes)
+  txt=txt.replace(/\s'/g,' ');
+  txt=txt.replace(/'\s/g,' ');
+  // Supprimer les chiffres entre parenthèses style "(1)"
+  txt=txt.replace(/\(\d+\)/g,'');
   // Nettoyer les espaces multiples
   txt=txt.replace(/\s{2,}/g,' ');
   return txt.trim();
