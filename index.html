@@ -290,7 +290,7 @@ body.guidance-fullscreen #navArrow{display:block}
 /* ===== FEATURE 9: Splash screen ===== */
 #splashScreen{position:fixed;inset:0;z-index:9999999;background:linear-gradient(135deg,#080c18 0%,#0f1626 40%,#1c2a45 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .6s ease}
 #splashScreen.fade-out{opacity:0;pointer-events:none}
-.splash-logo{font-size:4rem;animation:splashBounce 1.2s ease-in-out infinite}
+.splash-logo{width:180px;height:auto;animation:splashBounce 1.2s ease-in-out infinite}
 @keyframes splashBounce{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.15) translateY(-10px)}}
 .splash-title{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;background:linear-gradient(90deg,#f59e0b,#fde68a,#f59e0b);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 2s linear infinite;letter-spacing:4px}
 .splash-sub{font-family:'Exo 2',sans-serif;font-size:.85rem;color:#64748b;letter-spacing:3px}
@@ -303,9 +303,31 @@ body.guidance-fullscreen #navArrow{display:block}
 
 <!-- FEATURE 9: Splash screen -->
 <div id="splashScreen">
-  <div class="splash-logo">&#128506;&#65039;</div>
-  <div class="splash-title">GPS DROLE</div>
-  <div class="splash-sub">Navigation avec personnalite</div>
+  <svg class="splash-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 250" width="180" height="225">
+  <defs>
+    <clipPath id="sL"><rect x="0" y="0" width="100" height="180"/></clipPath>
+    <clipPath id="sR"><rect x="100" y="0" width="100" height="180"/></clipPath>
+    <linearGradient id="sBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f1626"/><stop offset="100%" stop-color="#1c2a45"/></linearGradient>
+    <filter id="sGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="sGO"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#f59e0b" flood-opacity="0.5"/></filter>
+    <filter id="sGR"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ef4444" flood-opacity="0.5"/></filter>
+  </defs>
+  <circle cx="100" cy="90" r="85" fill="url(#sBg)" stroke="#2d3a56" stroke-width="3"/>
+  <g clip-path="url(#sL)"><circle cx="100" cy="85" r="72" fill="#E8E2D8"/><ellipse cx="72" cy="48" rx="28" ry="16" fill="#F2EDE6" opacity="0.6"/><path d="M32 68 Q35 82 30 96" stroke="#C4B9A8" stroke-width="7" fill="none" opacity="0.3" stroke-linecap="round"/><path d="M65 18 Q50 36 42 55" stroke="#D1C9BC" stroke-width="1.5" fill="none" opacity="0.5"/><path d="M33 92 Q38 87 50 85 Q55 85 60 89" stroke="#D4CCBF" stroke-width="3" fill="#DDD6CC" opacity="0.7"/><path d="M45 105 Q55 102 70 103 Q85 104 100 105" fill="#DDD6CC" opacity="0.5"/><path d="M70 18 Q65 32 68 45 Q63 52 67 62" stroke="#B8AD9E" stroke-width="1.3" fill="none" opacity="0.7"/><path d="M85 20 Q80 28 82 36" stroke="#B8AD9E" stroke-width="0.9" fill="none" opacity="0.5"/><path d="M48 38 Q52 46 48 55 Q50 62 46 69" stroke="#B8AD9E" stroke-width="1" fill="none" opacity="0.5"/><path d="M55 20 Q58 26 55 32 Q58 38 55 44" stroke="#C4B9A8" stroke-width="1" fill="none" opacity="0.4"/></g>
+  <g clip-path="url(#sR)"><circle cx="100" cy="85" r="72" fill="#FBBF24"/><ellipse cx="128" cy="48" rx="28" ry="16" fill="#FCD34D" opacity="0.5"/><ellipse cx="148" cy="96" rx="14" ry="9" fill="#F97316" opacity="0.3"/><path d="M158 92 Q155 87 152 90" stroke="#D97706" stroke-width="1.5" fill="none" opacity="0.4"/><path d="M156 99 Q153 95 150 97" stroke="#D97706" stroke-width="1" fill="none" opacity="0.3"/></g>
+  <ellipse cx="68" cy="74" rx="18" ry="20" fill="#0a0a1a"/><ellipse cx="68" cy="74" rx="18" ry="20" fill="none" stroke="#A69E90" stroke-width="2" opacity="0.4"/><ellipse cx="68" cy="76" rx="12" ry="13" fill="#0f0f1f"/><circle cx="68" cy="76" r="5" fill="#991b1b" opacity="0.5"/><circle cx="68" cy="76" r="3" fill="#ef4444" opacity="0.9"/><circle cx="65" cy="73" r="1.5" fill="#fca5a5" opacity="0.7"/>
+  <path d="M115 70 Q130 52 145 70" stroke="#5D3A1A" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M115 70 Q130 61 145 70" stroke="#5D3A1A" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M147 66 L152 62" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/><path d="M148 70 L153 68" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/><path d="M150 74 Q152 81 150 88" stroke="#60A5FA" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/><ellipse cx="150" cy="88" rx="3" ry="4" fill="#60A5FA" opacity="0.6"/>
+  <path d="M90 90 L100 104 L90 104 Z" fill="#0a0a1a"/><line x1="90" y1="90" x2="90" y2="104" stroke="#A69E90" stroke-width="1" opacity="0.4"/><path d="M100 104 L110 90 Q115 87 112 97 Q110 103 107 104 Z" fill="#E8A800" opacity="0.7"/><ellipse cx="107" cy="102" rx="4" ry="3" fill="#B88600" opacity="0.5"/>
+  <path d="M48 116 Q75 114 100 116 Q125 114 152 116 Q140 144 100 146 Q60 144 48 116Z" fill="#1a0a0a"/>
+  <path d="M88 116 Q92 115 96 116 L95 128 Q92 130 89 128 Z" fill="#E8E2D8" stroke="#A69E90" stroke-width="0.8"/><path d="M80 116 Q83 115 87 116 L86 127 Q83 129 81 127 Z" fill="#DDD6CC" stroke="#A69E90" stroke-width="0.8"/><path d="M72 117 Q75 115 79 117 L77 130 Q75 133 73 130 Z" fill="#E8E2D8" stroke="#A69E90" stroke-width="0.8"/><path d="M63 118 Q66 116 71 118 L70 129 Q67 131 64 129 Z" fill="#DDD6CC" stroke="#A69E90" stroke-width="0.8"/><path d="M54 119 Q57 117 62 119 L61 128 Q58 130 55 128 Z" fill="#E0DAD0" stroke="#A69E90" stroke-width="0.8"/><path d="M52 119 Q65 114 85 115 Q95 115 100 116" fill="#8B7D6B" opacity="0.3"/><line x1="75" y1="131" x2="75" y2="139" stroke="#B8AD9E" stroke-width="1.8" opacity="0.35" stroke-linecap="round"/><line x1="67" y1="130" x2="67" y2="137" stroke="#B8AD9E" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/><ellipse cx="84" cy="122" rx="2" ry="3" fill="#C4B9A8" opacity="0.3"/><line x1="87" y1="116" x2="87" y2="127" stroke="#0a0a1a" stroke-width="1" opacity="0.5"/>
+  <path d="M100 116 Q115 112 130 114 Q142 114 152 116" stroke="#D97706" stroke-width="2.5" fill="none"/><path d="M103 117 Q125 115 148 117 L146 126 Q125 128 105 126 Z" fill="#fff" opacity="0.9"/><path d="M100 138 Q115 146 135 144 Q148 141 152 134" fill="#D97706" opacity="0.5"/><ellipse cx="128" cy="136" rx="14" ry="8" fill="#DC2626" opacity="0.6"/>
+  <path d="M35 121 Q40 136 50 144 Q55 146 60 146" stroke="#C4B9A8" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M100 5 A85 85 0 0 0 100 175" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.35" filter="url(#sGR)"/><path d="M100 5 A85 85 0 0 1 100 175" fill="none" stroke="#f59e0b" stroke-width="3" opacity="0.35" filter="url(#sGO)"/>
+  <g transform="translate(100, 5)"><path d="M0 0 C-8 -5 -12 -15 -12 -22 A12 12 0 0 1 12 -22 C12 -15 8 -5 0 0Z" fill="#3b82f6" filter="url(#sGlow)"/><circle cx="0" cy="-20" r="5" fill="#fff"/></g>
+  <text x="100" y="205" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="26" font-weight="900" letter-spacing="4"><tspan fill="#ef4444">GPS</tspan><tspan fill="#ffffff" dx="5">DR</tspan><tspan fill="#f59e0b" dx="24">LE</tspan></text>
+  <g transform="translate(119, 193)"><circle cx="0" cy="0" r="10" fill="#f59e0b"/><circle cx="-4" cy="-3" r="1.8" fill="#1a1a2e"/><circle cx="4" cy="-3" r="1.8" fill="#1a1a2e"/><path d="M-5 2 Q0 8 5 2" stroke="#1a1a2e" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M-5 -13 L0 -17 L5 -13" stroke="#f59e0b" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>
+  <text x="100" y="228" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#94a3b8" letter-spacing="2" font-style="italic">&#192; en mourir de rire</text>
+  </svg>
 </div>
 
 <!-- DISCLAIMER: Affiché immédiatement AVANT tout le reste -->
@@ -354,7 +376,7 @@ body.guidance-fullscreen #navArrow{display:block}
 
 <header>
   <div>
-    <div class="logo">GPS DROLE</div>
+    <div class="logo" style="display:flex;align-items:center;gap:8px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" width="32" height="28" style="flex-shrink:0"><defs><clipPath id="hL"><rect x="0" y="0" width="100" height="180"/></clipPath><clipPath id="hR"><rect x="100" y="0" width="100" height="180"/></clipPath></defs><g clip-path="url(#hL)"><circle cx="100" cy="85" r="72" fill="#E8E2D8"/><ellipse cx="68" cy="74" rx="18" ry="20" fill="#0a0a1a"/><circle cx="68" cy="76" r="3" fill="#ef4444" opacity="0.9"/></g><g clip-path="url(#hR)"><circle cx="100" cy="85" r="72" fill="#FBBF24"/><path d="M115 70 Q130 52 145 70" stroke="#5D3A1A" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M115 70 Q130 61 145 70" stroke="#5D3A1A" stroke-width="3.5" fill="none" stroke-linecap="round"/></g><path d="M48 116 Q100 114 152 116 Q140 144 100 146 Q60 144 48 116Z" fill="#1a0a0a"/><path d="M72 117 Q75 115 79 117 L77 130 Q75 133 73 130 Z" fill="#E8E2D8"/><path d="M63 118 Q66 116 71 118 L70 129 Q67 131 64 129 Z" fill="#DDD6CC"/><path d="M103 117 Q125 115 148 117 L146 126 Q125 128 105 126 Z" fill="#fff" opacity="0.9"/></svg>GPS DROLE</div>
     <div class="tagline">Navigation avec personnalite &middot; v2.1</div>
   </div>
   <div class="header-right">
