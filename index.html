@@ -1601,9 +1601,31 @@ function osrmRoute(pts){
         showGuideButton();
         setStatus('Route: '+distLabel+' \u00b7 ~'+dur+' \u00b7 '+pts.length+' points \u00b7 '+routeSteps.length+' etapes');
         showToast(distLabel+' \u00b7 ~'+dur);
+
+        // CACHE: sauver route en localStorage pour survie hors-ligne
+        try{
+          localStorage.setItem('gps-drole-cached-route',JSON.stringify({
+            coords:currentRouteCoords,
+            dest:routeDestCoords,
+            start:routeStartCoords,
+            steps:routeSteps,
+            dist:currentRouteDist,
+            dur:currentRouteDur,
+            destName:routeDestName||'Destination',
+            geometry:rt.geometry,
+            pts:pts
+          }));
+        }catch(e){}
+
+        // PRE-CHARGE: télécharger les tuiles le long de la route en avance
+        prefetchRouteTiles(currentRouteCoords);
       }
     })
-    .catch(function(){ setStatus('Routage OSRM indisponible - Mode d\u00e9mo actif'); });
+    .catch(function(){
+      // OFFLINE: tenter de charger la route depuis le cache
+      setStatus('Routage OSRM indisponible — tentative de cache...');
+      loadCachedRoute();
+    });
 }
 
 function clearRoute(){
@@ -1726,17 +1748,74 @@ function updateRouteProgress(){
 // =============================================================
 //  AUTO-REROUTING (every 10s, >100m off route)
 // =============================================================
+var isRerouting=false;
+var oldRouteLayer=null;
 function startRerouteDetection(){
   if(rerouteInterval) clearInterval(rerouteInterval);
   rerouteInterval=setInterval(function(){
-    if(!currentRouteCoords||!currentRouteCoords.length) return;
+    if(!currentRouteCoords||!currentRouteCoords.length||isRerouting) return;
     var minDist=minDistToRoute(userLat,userLng,currentRouteCoords);
     if(minDist>100){
+      isRerouting=true;
       showToast('Recalcul en cours...');
       go('recalc');
-      if(routeDestCoords){
-        osrmRoute([{lat:userLat,lng:userLng},{lat:routeDestCoords.lat,lng:routeDestCoords.lng}]);
+      // Garder l'ancienne route visible (grisée) pendant le recalcul
+      if(routeLayer){
+        oldRouteLayer=routeLayer;
+        oldRouteLayer.setStyle({color:'#6b7280',weight:3,opacity:.4,dashArray:'8,8'});
+        routeLayer=null;
       }
+      if(routeDestCoords){
+        var reroutePts=[{lat:userLat,lng:userLng},{lat:routeDestCoords.lat,lng:routeDestCoords.lng}];
+        var coords=reroutePts.map(function(p){ return p.lng+','+p.lat; }).join(';');
+        fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true')
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            // Supprimer l'ancienne route grisée
+            if(oldRouteLayer){ mapObj.removeLayer(oldRouteLayer); oldRouteLayer=null; }
+            isRerouting=false;
+            if(d.routes&&d.routes.length){
+              var rt=d.routes[0];
+              routeLayer=L.geoJSON(rt.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
+              currentRouteDist=rt.distance;
+              currentRouteDur=rt.duration;
+              currentRouteCoords=rt.geometry.coordinates.map(function(c){ return [c[1],c[0]]; });
+              routeSteps=[];
+              lastAnnouncedStep=-1;
+              stepAnnounced={};
+              if(rt.legs) rt.legs.forEach(function(leg){
+                if(leg.steps) leg.steps.forEach(function(step){
+                  if(step.maneuver&&step.maneuver.location){
+                    routeSteps.push({lat:step.maneuver.location[1],lng:step.maneuver.location[0],type:step.maneuver.type,modifier:step.maneuver.modifier||'',instruction:step.name||step.maneuver.type,distance:step.distance,duration:step.duration||0,bearing_after:step.maneuver.bearing_after||0});
+                  }
+                });
+              });
+              updateRouteInfoBar(rt.distance,rt.duration);
+              showToast('Nouvelle route calculee!');
+              // Mettre à jour le cache
+              try{ localStorage.setItem('gps-drole-cached-route',JSON.stringify({coords:currentRouteCoords,dest:routeDestCoords,start:{lat:userLat,lng:userLng},steps:routeSteps,dist:currentRouteDist,dur:currentRouteDur,destName:routeDestName||'Destination',geometry:rt.geometry,pts:reroutePts})); }catch(e){}
+              prefetchRouteTiles(currentRouteCoords);
+            }
+          })
+          .catch(function(){
+            // OFFLINE: recalcul impossible — garder l'ancienne route
+            isRerouting=false;
+            if(oldRouteLayer){
+              oldRouteLayer.setStyle({color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'});
+              routeLayer=oldRouteLayer;
+              oldRouteLayer=null;
+            }
+            showToast('Hors-ligne — restez sur la route actuelle!');
+            // Avertissement vocal du personnage
+            var offlinePhrases={
+              fr:"Hey, on a plus de réseau! Reste sur la route, je peux pas recalculer!",
+              en:"Hey, no network! Stay on the route, I can't recalculate!",
+              es:"Oye, sin red! Quédate en la ruta, no puedo recalcular!"
+            };
+            speak(offlinePhrases[lang]||offlinePhrases.fr, lang);
+            animChar();
+          });
+      } else { isRerouting=false; }
     }
   },10000);
 }
@@ -3308,6 +3387,97 @@ window.addEventListener('offline',goOffline);
 window.addEventListener('online',goOnline);
 // Vérifier l'état initial
 if(!navigator.onLine) goOffline();
+
+// =============================================================
+//  OFFLINE: Pré-chargement tuiles le long de la route
+// =============================================================
+function prefetchRouteTiles(routeCoords){
+  if(!routeCoords||!routeCoords.length) return;
+  var zoom=16; // zoom typique de guidage
+  var fetched={};
+  var count=0;
+  var maxTiles=200; // limiter pour ne pas surcharger
+  // Échantillonner 1 point sur 10 de la route
+  for(var i=0;i<routeCoords.length&&count<maxTiles;i+=10){
+    var lat=routeCoords[i][0], lng=routeCoords[i][1];
+    // Convertir lat/lng en coordonnées de tuile
+    var n=Math.pow(2,zoom);
+    var xtile=Math.floor((lng+180)/360*n);
+    var ytile=Math.floor((1-Math.log(Math.tan(lat*Math.PI/180)+1/Math.cos(lat*Math.PI/180))/Math.PI)/2*n);
+    var key=zoom+'/'+xtile+'/'+ytile;
+    if(fetched[key]) continue;
+    fetched[key]=true;
+    count++;
+    // Pré-charger la tuile (le Service Worker la mettra en cache)
+    var img=new Image();
+    img.src='https://tile.openstreetmap.org/'+key+'.png';
+  }
+  if(count>0) setStatus('Pre-chargement de '+count+' tuiles pour le mode hors-ligne');
+}
+
+// =============================================================
+//  OFFLINE: Charger route depuis le cache localStorage
+// =============================================================
+function loadCachedRoute(){
+  try{
+    var cached=JSON.parse(localStorage.getItem('gps-drole-cached-route'));
+    if(!cached||!cached.coords){ setStatus('Aucune route en cache'); return; }
+    currentRouteCoords=cached.coords;
+    routeDestCoords=cached.dest;
+    routeStartCoords=cached.start;
+    routeSteps=cached.steps||[];
+    currentRouteDist=cached.dist;
+    currentRouteDur=cached.dur;
+    routeDestName=cached.destName||'Destination';
+    lastAnnouncedStep=-1;
+    stepAnnounced={};
+    // Redessiner la route sur la carte
+    if(cached.geometry){
+      if(routeLayer) mapObj.removeLayer(routeLayer);
+      routeLayer=L.geoJSON(cached.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
+      if(cached.pts){
+        routeMarkers.forEach(function(m){ mapObj.removeLayer(m); }); routeMarkers=[];
+        cached.pts.forEach(function(p,i){
+          var em=i===0?'\u{1F7E2}':i===cached.pts.length-1?'\u{1F534}':'\u{1F535}';
+          var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:em,className:'',iconSize:[22,22],iconAnchor:[11,11]})}).addTo(mapObj);
+          routeMarkers.push(m);
+        });
+      }
+      mapObj.fitBounds(routeLayer.getBounds(),{padding:[40,40]});
+    }
+    updateRouteInfoBar(currentRouteDist,currentRouteDur);
+    showGuideButton();
+    showToast('Route chargee depuis le cache hors-ligne!');
+    setStatus('Route en cache: '+toDisplayDist(currentRouteDist));
+  }catch(e){ setStatus('Erreur chargement cache route'); }
+}
+
+// =============================================================
+//  DISCLAIMER: Mise en garde au démarrage
+// =============================================================
+(function(){
+  var disclaimerKey='gps-drole-disclaimer-v1';
+  if(localStorage.getItem(disclaimerKey)==='accepted') return;
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:linear-gradient(135deg,#0f1626,#1c2a45);border:2px solid #3b82f6;border-radius:16px;padding:clamp(20px,4vw,36px);max-width:500px;width:100%;text-align:center;box-shadow:0 0 40px rgba(59,130,246,.3);font-family:Exo 2,sans-serif;';
+  box.innerHTML='<div style="font-size:2.5rem;margin-bottom:12px;">\u26A0\uFE0F</div>'+
+    '<div style="font-family:Orbitron,monospace;font-size:clamp(1rem,3vw,1.3rem);font-weight:900;color:#f59e0b;margin-bottom:16px;">AVERTISSEMENT</div>'+
+    '<div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">Cette application contient du <b style="color:#ef4444;">langage grossier, vulgaire et des insultes</b> dans certains modes de navigation.</div>'+
+    '<div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">\u{1F51E} <b>Contenu r\u00e9serv\u00e9 \u00e0 un public averti.</b></div>'+
+    '<div style="color:#94a3b8;font-size:clamp(.7rem,1.8vw,.8rem);line-height:1.5;margin-bottom:20px;">Les modes <b style="color:#f59e0b;">Extr\u00eame dr\u00f4le</b> et <b style="color:#ef4444;">Extr\u00eame insulte</b> contiennent un humour cru et des r\u00e9pliques offensantes \u00e0 des fins humoristiques uniquement. Ce GPS est un divertissement et ne remplace pas un vrai syst\u00e8me de navigation.</div>'+
+    '<div style="color:#64748b;font-size:clamp(.65rem,1.5vw,.75rem);margin-bottom:20px;">En continuant, vous confirmez avoir 16 ans ou plus et acceptez le contenu mature de cette application.</div>'+
+    '<button id="disclaimerAccept" style="padding:clamp(10px,2vw,14px) clamp(24px,5vw,40px);border-radius:30px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;font-family:Orbitron,monospace;font-size:clamp(.8rem,2vw,.95rem);font-weight:900;cursor:pointer;letter-spacing:1px;box-shadow:0 0 20px rgba(59,130,246,.4);transition:all .2s;">J\'ACCEPTE ET JE CONTINUE</button>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  document.getElementById('disclaimerAccept').addEventListener('click',function(){
+    localStorage.setItem(disclaimerKey,'accepted');
+    overlay.style.opacity='0';
+    overlay.style.transition='opacity .4s';
+    setTimeout(function(){ overlay.remove(); },400);
+  });
+})();
 </script>
 </body>
 </html>
