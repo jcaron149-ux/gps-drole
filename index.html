@@ -1436,6 +1436,7 @@ function osrmRoute(pts){
 
         routeSteps=[];
         lastAnnouncedStep=-1;
+        stepAnnounced={};
         if(rt.legs){
           rt.legs.forEach(function(leg){
             if(leg.steps){
@@ -1447,7 +1448,9 @@ function osrmRoute(pts){
                     type:step.maneuver.type,
                     modifier:step.maneuver.modifier||'',
                     instruction:step.name||step.maneuver.type,
-                    distance:step.distance
+                    distance:step.distance,
+                    duration:step.duration||0,
+                    bearing_after:step.maneuver.bearing_after||0
                   });
                 }
               });
@@ -1473,7 +1476,7 @@ function clearRoute(){
   document.getElementById('departIn').value='';
   document.getElementById('destIn').value='';
   currentRouteCoords=null; currentRouteDist=0; currentRouteDur=0;
-  routeDestCoords=null; routeSteps=[]; lastAnnouncedStep=-1;
+  routeDestCoords=null; routeSteps=[]; lastAnnouncedStep=-1; stepAnnounced={};
   if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
   document.getElementById('routeInfo').classList.remove('vis');
   document.getElementById('routeProgressFill').style.width='0%';
@@ -1593,56 +1596,137 @@ function minDistToRoute(lat,lng,routeCoords){
 }
 
 // =============================================================
-//  TURN-BY-TURN GUIDANCE (within 80m of step)
+//  TURN-BY-TURN v2 — 3 annonces: 500m, 200m, au virage (30m)
+//  + noms de rues + distances + instructions précises
 // =============================================================
+var stepAnnounced={}; // stepIdx -> {far:bool, mid:bool, near:bool}
+
 function checkTurnByTurn(){
   if(!routeSteps.length) return;
-  for(var i=lastAnnouncedStep+1;i<routeSteps.length;i++){
+  for(var i=Math.max(0,lastAnnouncedStep);i<routeSteps.length;i++){
     var step=routeSteps[i];
     var dist=haversine(userLat,userLng,step.lat,step.lng);
-    if(dist<80){
+    if(!stepAnnounced[i]) stepAnnounced[i]={far:false,mid:false,near:false};
+
+    // Pré-annonce à ~500m: "Dans 500 mètres, tournez à droite sur Rue X"
+    if(dist<550 && dist>250 && !stepAnnounced[i].far){
+      stepAnnounced[i].far=true;
+      var preInstr=buildPreAnnounce(step,500);
+      if(preInstr) showInstr(preInstr);
+      // Pas de voix persona ici, juste l'instruction texte + ding
+      vibrateAndDing();
+      break;
+    }
+    // Annonce à ~200m: "Dans 200 mètres, tournez à droite"
+    if(dist<250 && dist>80 && !stepAnnounced[i].mid){
+      stepAnnounced[i].mid=true;
+      var midInstr=buildPreAnnounce(step,200);
+      if(midInstr) showInstr(midInstr);
+      vibrateAndDing();
+      break;
+    }
+    // Annonce finale à 30m: voix du personnage + instruction précise
+    if(dist<40 && !stepAnnounced[i].near){
+      stepAnnounced[i].near=true;
       lastAnnouncedStep=i;
       var scenario=mapManeuverToScenario(step.type,step.modifier);
       if(scenario) go(scenario);
       var instrLabel=buildStepInstruction(step);
       if(instrLabel) showInstr(instrLabel);
+      // Arrivée: arrêter le guidage
+      if(step.type==='arrive'){
+        setTimeout(function(){ stopGuidance(); showToast('Destination atteinte!'); },3000);
+      }
       break;
     }
+    // Ne pas scanner les steps trop loin
+    if(dist>600) break;
   }
 }
 
 function mapManeuverToScenario(type,modifier){
   if(type==='arrive') return 'arrived';
-  if(type==='turn'){
-    if(modifier.indexOf('right')>=0) return 'right';
-    if(modifier.indexOf('left')>=0) return 'left';
+  if(type==='turn'||type==='end of road'||type==='fork'){
     if(modifier.indexOf('uturn')>=0) return 'uturn';
-  }
-  if(type==='new name'||type==='continue') return 'straight';
-  if(type==='fork'){
     if(modifier.indexOf('right')>=0) return 'right';
     if(modifier.indexOf('left')>=0) return 'left';
   }
-  if(type==='end of road'){
-    if(modifier.indexOf('right')>=0) return 'right';
-    if(modifier.indexOf('left')>=0) return 'left';
-  }
+  if(type==='new name'||type==='continue'||type==='depart') return 'straight';
   if(type==='roundabout'||type==='rotary') return 'right';
-  if(type==='depart') return 'straight';
   return null;
 }
 
-function buildStepInstruction(step){
-  var labels={
-    fr:{turn:'Tourner',arrive:'Arriv\u00e9e',continue:'Continuer',fork:'Bifurquer','new name':'Continuer','end of road':'Fin de route',depart:'D\u00e9part',roundabout:'Rond-point',rotary:'Rond-point'},
-    en:{turn:'Turn',arrive:'Arrived',continue:'Continue',fork:'Fork','new name':'Continue','end of road':'End of road',depart:'Depart',roundabout:'Roundabout',rotary:'Roundabout'},
-    es:{turn:'Girar',arrive:'Llegada',continue:'Continuar',fork:'Bifurcar','new name':'Continuar','end of road':'Fin de calle',depart:'Salida',roundabout:'Rotonda',rotary:'Rotonda'}
-  };
+// Pré-annonce: "Dans X mètres, tournez à droite sur Rue Saint-Laurent"
+function buildPreAnnounce(step,distM){
   var l=lang;
-  var lb=(labels[l]&&labels[l][step.type])||(labels.fr[step.type])||step.type;
-  var mod=step.modifier?(' '+step.modifier):'';
-  var name=step.instruction&&step.instruction!==step.type?(' \u00b7 '+step.instruction):'';
-  return lb+mod+name;
+  var distTxt=useImperial?Math.round(distM*3.28084)+' ft':distM+' m';
+  var action=getActionText(step.type,step.modifier,l);
+  var street=step.instruction&&step.instruction!==step.type?' '+getOnText(l)+' '+step.instruction:'';
+  var templates={
+    fr:'Dans '+distTxt+', '+action+street,
+    en:'In '+distTxt+', '+action+street,
+    es:'En '+distTxt+', '+action+street
+  };
+  return templates[l]||templates.fr;
+}
+
+// Instruction finale précise avec nom de rue et distance
+function buildStepInstruction(step){
+  var l=lang;
+  var action=getActionText(step.type,step.modifier,l);
+  var street=step.instruction&&step.instruction!==step.type?' '+getOnText(l)+' '+step.instruction:'';
+  // Distance jusqu'au prochain step
+  var nextDist='';
+  var idx=routeSteps.indexOf(step);
+  if(idx>=0&&idx<routeSteps.length-1){
+    var nd=routeSteps[idx+1].distance||step.distance;
+    if(nd){
+      var ndTxt=useImperial?(nd/1609.344).toFixed(1)+' mi':(nd>=1000?(nd/1000).toFixed(1)+' km':Math.round(nd)+' m');
+      var thenText={fr:'puis dans',en:'then in',es:'luego en'};
+      nextDist=' \u00b7 '+(thenText[l]||thenText.fr)+' '+ndTxt;
+    }
+  }
+  return action+street+nextDist;
+}
+
+// Texte d'action selon le type de manoeuvre et la langue
+function getActionText(type,modifier,l){
+  var actions={
+    fr:{
+      'turn-right':'Tournez \u00e0 droite','turn-left':'Tournez \u00e0 gauche','turn-uturn':'Faites demi-tour',
+      'turn-slight right':'L\u00e9g\u00e8rement \u00e0 droite','turn-slight left':'L\u00e9g\u00e8rement \u00e0 gauche',
+      'turn-sharp right':'Virage serr\u00e9 \u00e0 droite','turn-sharp left':'Virage serr\u00e9 \u00e0 gauche',
+      'continue':'Continuez tout droit','new name':'Continuez','depart':'D\u00e9part',
+      'arrive':'Vous \u00eates arriv\u00e9!','fork-right':'Prenez \u00e0 droite','fork-left':'Prenez \u00e0 gauche',
+      'end of road-right':'En fin de route, tournez \u00e0 droite','end of road-left':'En fin de route, tournez \u00e0 gauche',
+      'roundabout':'Prenez le rond-point','rotary':'Prenez le rond-point','merge-right':'Ins\u00e9rez-vous \u00e0 droite','merge-left':'Ins\u00e9rez-vous \u00e0 gauche'
+    },
+    en:{
+      'turn-right':'Turn right','turn-left':'Turn left','turn-uturn':'Make a U-turn',
+      'turn-slight right':'Bear right','turn-slight left':'Bear left',
+      'turn-sharp right':'Sharp right','turn-sharp left':'Sharp left',
+      'continue':'Continue straight','new name':'Continue','depart':'Depart',
+      'arrive':'You have arrived!','fork-right':'Keep right','fork-left':'Keep left',
+      'end of road-right':'At end of road, turn right','end of road-left':'At end of road, turn left',
+      'roundabout':'Take the roundabout','rotary':'Take the roundabout','merge-right':'Merge right','merge-left':'Merge left'
+    },
+    es:{
+      'turn-right':'Gire a la derecha','turn-left':'Gire a la izquierda','turn-uturn':'D\u00e9 media vuelta',
+      'turn-slight right':'Ligeramente a la derecha','turn-slight left':'Ligeramente a la izquierda',
+      'turn-sharp right':'Giro cerrado a la derecha','turn-sharp left':'Giro cerrado a la izquierda',
+      'continue':'Contin\u00fae recto','new name':'Contin\u00fae','depart':'Salida',
+      'arrive':'\u00a1Ha llegado!','fork-right':'Tome la derecha','fork-left':'Tome la izquierda',
+      'end of road-right':'Al final, gire a la derecha','end of road-left':'Al final, gire a la izquierda',
+      'roundabout':'Tome la rotonda','rotary':'Tome la rotonda','merge-right':'Inc\u00f3rporese a la derecha','merge-left':'Inc\u00f3rporese a la izquierda'
+    }
+  };
+  var key=type+(modifier?'-'+modifier:'');
+  var dict=actions[l]||actions.fr;
+  return dict[key]||dict[type]||type+' '+modifier;
+}
+
+function getOnText(l){
+  return {fr:'sur',en:'on',es:'en'}[l]||'sur';
 }
 
 // =============================================================
