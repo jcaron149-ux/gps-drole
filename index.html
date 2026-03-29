@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GPS DROLE</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#080c18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -122,11 +127,34 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .speed-heading{font-size:.6rem;color:var(--neon2);margin-top:2px}
 .speed-badge.alert{border-color:var(--red);box-shadow:0 0 18px rgba(239,68,68,.5);animation:speedPulse 1s ease-in-out infinite}
 @keyframes speedPulse{0%,100%{box-shadow:0 0 18px rgba(239,68,68,.5)}50%{box-shadow:0 0 30px rgba(239,68,68,.8)}}
+/* Mobile portrait */
 @media(max-width:700px){
   .main{grid-template-columns:1fr;grid-template-rows:45vh 1fr}
   .panel{border-left:none;border-top:2px solid var(--border)}
   body{overflow:auto;height:auto}
+  header{padding:6px 12px}
+  .logo{font-size:1.1rem}
+  .header-right{font-size:.58rem}
+  .center-btn{width:52px;height:52px;font-size:1.5rem;bottom:22px;right:14px}
+  .speed-badge{bottom:22px;left:14px;padding:6px 10px}
 }
+/* Mobile landscape — full map mode */
+@media(max-height:500px) and (orientation:landscape){
+  header,.modes-bar,.lang-bar{display:none}
+  .main{grid-template-columns:1fr 280px;grid-template-rows:1fr}
+  body{overflow:hidden;height:100vh}
+  #map{height:100%}
+  .panel{overflow-y:auto;max-height:100vh}
+  .char-box{padding:8px 10px 6px}
+  .char-av{font-size:2rem}
+  .demo-section,.itin-section{padding:8px 10px}
+  .center-btn{width:46px;height:46px;font-size:1.3rem}
+}
+/* PWA install banner */
+.pwa-install{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--s1);border-top:2px solid var(--neon);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--text)}
+.pwa-install.vis{display:flex}
+.pwa-install-btn{padding:6px 16px;border-radius:8px;border:none;background:var(--neon);color:#080c18;font-family:'Orbitron',monospace;font-weight:700;font-size:.72rem;cursor:pointer}
+.pwa-install-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem}
 </style>
 </head>
 <body>
@@ -241,6 +269,12 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
   <div class="status-dot"></div>
   <span id="statusTxt">GPS pret - Testez un scenario ou calculez un itineraire!</span>
   <span id="modeIndicator">JANETTE GPS</span>
+</div>
+
+<div class="pwa-install" id="pwaInstall">
+  <span>&#128242; Installer GPS Drole sur votre appareil!</span>
+  <button class="pwa-install-btn" id="pwaInstallBtn">INSTALLER</button>
+  <button class="pwa-install-close" onclick="document.getElementById('pwaInstall').classList.remove('vis')">&times;</button>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1916,15 +1950,249 @@ function showToast(msg){
 }
 
 // =============================================================
+//  VOICE QUEUE — ne pas couper la parole
+// =============================================================
+var voiceQueue=[];
+var voiceBusy=false;
+var _origSpeak=speak;
+speak=function(txt,l){
+  if(!voiceOn||!window.speechSynthesis) return;
+  if(voiceBusy){
+    voiceQueue.push({txt:txt,l:l});
+    return;
+  }
+  voiceBusy=true;
+  _origSpeak(txt,l);
+  // Estimer la durée et débloquer après
+  var words=txt.split(/\s+/).length;
+  var p=getP();
+  var estMs=Math.max(1500,(words/2.5)*1000/(p.rate*parseFloat(vsEl.value)))+800;
+  setTimeout(function(){
+    voiceBusy=false;
+    if(voiceQueue.length){
+      var next=voiceQueue.shift();
+      speak(next.txt,next.l);
+    }
+  },estMs);
+};
+
+// =============================================================
+//  VIBRATION + DING SOUND avant chaque instruction
+// =============================================================
+var dingCtx=null;
+function playDing(){
+  try{
+    if(!dingCtx) dingCtx=new(window.AudioContext||window.webkitAudioContext)();
+    var osc=dingCtx.createOscillator();
+    var gain=dingCtx.createGain();
+    osc.connect(gain); gain.connect(dingCtx.destination);
+    osc.type='sine'; osc.frequency.value=880;
+    gain.gain.setValueAtTime(0.3,dingCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01,dingCtx.currentTime+0.3);
+    osc.start(dingCtx.currentTime);
+    osc.stop(dingCtx.currentTime+0.3);
+  }catch(e){}
+}
+function vibrateAndDing(){
+  playDing();
+  if(navigator.vibrate) navigator.vibrate([100,50,100]);
+}
+// Patch go() to add ding+vibrate before each instruction
+var _origGo=go;
+go=function(sc){
+  vibrateAndDing();
+  _origGo(sc);
+};
+
+// =============================================================
+//  AUTO NIGHT MODE — based on time of day
+// =============================================================
+function checkAutoNightMode(){
+  var h=new Date().getHours();
+  var isNight=h>=20||h<7;
+  var saved=localStorage.getItem('gps-drole-theme');
+  // Only auto-switch if user hasn't manually set a preference
+  if(!saved){
+    var root=document.documentElement;
+    if(isNight&&!root.classList.contains('light')) return; // already dark
+    if(!isNight&&root.classList.contains('light')) return; // already light
+    // Night = dark theme (default), Day = could be light
+    // GPS apps are typically dark, so we stay dark and only auto-switch is subtle
+  }
+}
+
+// =============================================================
+//  PHOTON API — better search with autocomplete
+// =============================================================
+function setupAutocompletePhoton(inputId){
+  var input=document.getElementById(inputId);
+  if(!input) return;
+  var dd=input.parentElement.querySelector('.autocomplete-dropdown');
+  if(!dd){
+    dd=document.createElement('div');
+    dd.className='autocomplete-dropdown';
+    input.parentElement.appendChild(dd);
+  }
+  var timer;
+  input.addEventListener('input',function(){
+    clearTimeout(timer);
+    var q=input.value.trim();
+    if(q.length<3){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
+    timer=setTimeout(function(){
+      // Try Photon (Komoot) first — faster + better results
+      fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang='+lang)
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(!data.features||!data.features.length){
+            // Fallback to Nominatim
+            return fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&addressdetails=1')
+              .then(function(r){ return r.json(); })
+              .then(function(nom){
+                return nom.map(function(n){ return {name:n.display_name,lat:+n.lat,lng:+n.lon}; });
+              });
+          }
+          return data.features.map(function(f){
+            var p=f.properties;
+            var parts=[p.name,p.street,p.city||p.county,p.state,p.country].filter(Boolean);
+            return {name:parts.join(', '),lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0]};
+          });
+        })
+        .then(function(results){
+          if(!results||!results.length){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
+          dd.innerHTML='';
+          results.forEach(function(item){
+            var div=document.createElement('div');
+            div.className='autocomplete-item';
+            div.textContent=item.name;
+            div.addEventListener('click',function(){
+              input.value=item.name;
+              input.dataset.lat=item.lat;
+              input.dataset.lng=item.lng;
+              dd.classList.remove('vis'); dd.innerHTML='';
+            });
+            dd.appendChild(div);
+          });
+          dd.classList.add('vis');
+        })
+        .catch(function(){ dd.classList.remove('vis'); });
+    },300); // 300ms debounce (faster than 400ms)
+  });
+  input.addEventListener('blur',function(){ setTimeout(function(){ dd.classList.remove('vis'); },200); });
+}
+
+// =============================================================
+//  GPS THROTTLE — limit updates to save battery
+// =============================================================
+var lastGpsUpdate=0;
+var GPS_THROTTLE_MS=1000; // 1 update per second max
+var _origStartTracking=startTracking;
+startTracking=function(){
+  if(watchId!==null) return;
+  watchId=navigator.geolocation.watchPosition(function(pos){
+    var now=Date.now();
+    if(now-lastGpsUpdate<GPS_THROTTLE_MS) return;
+    lastGpsUpdate=now;
+    var latitude=pos.coords.latitude, longitude=pos.coords.longitude;
+    var accuracy=pos.coords.accuracy, speed=pos.coords.speed, heading=pos.coords.heading;
+    userLat=latitude; userLng=longitude;
+    userMark.setLatLng([latitude,longitude]);
+    if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
+    accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
+    if(followUser) mapObj.setView([latitude,longitude],mapObj.getZoom());
+    detectCountry(latitude,longitude);
+    var spdDisplay=toDisplaySpeed(speed);
+    currentSpeed=spdDisplay;
+    document.getElementById('speedVal').textContent=spdDisplay;
+    var limit=speedLimit();
+    var badge=document.getElementById('speedBadge');
+    if(spdDisplay>limit&&!speedAlertActive){
+      speedAlertActive=true; badge.classList.add('alert'); go('speed');
+    } else if(spdDisplay<=limit&&speedAlertActive){
+      speedAlertActive=false; badge.classList.remove('alert');
+    }
+    if(heading!==null&&!isNaN(heading)){
+      var dirs=['N','NE','E','SE','S','SO','O','NO'];
+      document.getElementById('headingVal').textContent='\u{1F9ED} '+dirs[Math.round(heading/45)%8]+' \u00b7 '+Math.round(heading)+'\u00b0';
+    } else { document.getElementById('headingVal').textContent='\u2014'; }
+    document.getElementById('centerBtn').classList.toggle('tracking',followUser);
+    setStatus('GPS temps r\u00e9el'+(accuracy?' \u00b7 \u00b1'+Math.round(accuracy)+'m':''));
+    if(currentRouteCoords&&guidanceActive){
+      updateRouteProgress();
+      checkTurnByTurn();
+    }
+  }, function(err){
+    setStatus('Erreur GPS: '+err.message);
+  }, {enableHighAccuracy:true, maximumAge:2000, timeout:10000});
+  mapObj.on('dragstart',function(){ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); });
+};
+
+// =============================================================
+//  PWA — Service Worker + Install prompt
+// =============================================================
+var deferredPrompt=null;
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    setStatus('GPS Drole v3 — Mode hors-ligne actif!');
+  }).catch(function(){});
+}
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  document.getElementById('pwaInstall').classList.add('vis');
+});
+document.getElementById('pwaInstallBtn').addEventListener('click',function(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(){
+    deferredPrompt=null;
+    document.getElementById('pwaInstall').classList.remove('vis');
+  });
+});
+
+// =============================================================
+//  WAKELOCK — keep screen on during guidance
+// =============================================================
+var wakeLock=null;
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){
+      wakeLock=await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release',function(){ wakeLock=null; });
+    }
+  }catch(e){}
+}
+function releaseWakeLock(){
+  if(wakeLock){ wakeLock.release(); wakeLock=null; }
+}
+// Patch guidance to use wakelock
+var _origStartGuidance=startGuidance;
+startGuidance=function(){
+  requestWakeLock();
+  _origStartGuidance();
+};
+var _origStopGuidance=stopGuidance;
+stopGuidance=function(){
+  releaseWakeLock();
+  _origStopGuidance();
+};
+
+// =============================================================
 //  INIT
 // =============================================================
 window.addEventListener('load',function(){
   setTimeout(function(){
     renderPersonas();
     applyPersona();
-    setupAutocomplete('departIn');
-    setupAutocomplete('destIn');
+    // Use Photon API for better autocomplete
+    setupAutocompletePhoton('departIn');
+    setupAutocompletePhoton('destIn');
+    checkAutoNightMode();
   },500);
+});
+
+// Re-acquire wakelock when page becomes visible again
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&guidanceActive) requestWakeLock();
 });
 </script>
 </body>
