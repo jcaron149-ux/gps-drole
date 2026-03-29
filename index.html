@@ -166,6 +166,24 @@ body.guidance-fullscreen .guidance-overlay{display:block}
 .guidance-stop-float{display:none;position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:1001;padding:10px 28px;border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;cursor:pointer;box-shadow:0 0 18px rgba(239,68,68,.5);letter-spacing:1px}
 body.guidance-fullscreen .guidance-stop-float{display:block}
 .guidance-stop-float:hover{background:#f87171;box-shadow:0 0 28px rgba(239,68,68,.7)}
+/* Favorites section */
+.fav-section{padding:10px 14px;border-bottom:1px solid var(--border)}
+.fav-quick{display:flex;gap:5px;margin-bottom:6px}
+.fav-quick-btn{flex:1;padding:8px 6px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--text);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:600;text-align:center;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px}
+.fav-quick-btn:hover{border-color:var(--neon);background:rgba(245,158,11,.1)}
+.fav-quick-btn.set{border-color:var(--neon2);color:var(--neon2)}
+.fav-quick-btn .fav-icon{font-size:1rem}
+.fav-list{max-height:120px;overflow-y:auto;scrollbar-width:thin}
+.fav-item{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:5px;cursor:pointer;font-size:.7rem;color:var(--text);transition:background .15s}
+.fav-item:hover{background:rgba(245,158,11,.1)}
+.fav-item-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav-item-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:0 2px}
+.fav-item-del:hover{color:var(--red)}
+.fav-add-row{display:flex;gap:4px;margin-top:5px}
+.fav-add-input{flex:1;padding:5px 8px;background:var(--s2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:.7rem}
+.fav-add-input:focus{outline:none;border-color:var(--neon)}
+.fav-add-btn{padding:5px 10px;border-radius:5px;border:1px solid var(--neon2);background:transparent;color:var(--neon2);cursor:pointer;font-size:.7rem;font-weight:600}
+.fav-add-btn:hover{background:rgba(16,185,129,.1)}
 /* PWA install banner */
 .pwa-install{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--s1);border-top:2px solid var(--neon);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--text)}
 .pwa-install.vis{display:flex}
@@ -268,6 +286,23 @@ body.guidance-fullscreen .guidance-stop-float{display:block}
       </div>
       <button class="btn-guide" id="btnGuide" onclick="toggleGuidance()">&#128640; DEMARRER LE GUIDAGE</button>
       <div style="font-size:.62rem;color:var(--muted);margin-top:5px">Ou cliquez sur la carte pour destination directe</div>
+    </div>
+
+    <div class="fav-section">
+      <div class="box-label">&#11088; Raccourcis &amp; Favoris</div>
+      <div class="fav-quick">
+        <button class="fav-quick-btn" id="favHome" onclick="useFav('home')">
+          <span class="fav-icon">&#127968;</span> <span id="favHomeLabel">Maison</span>
+        </button>
+        <button class="fav-quick-btn" id="favWork" onclick="useFav('work')">
+          <span class="fav-icon">&#128188;</span> <span id="favWorkLabel">Travail</span>
+        </button>
+      </div>
+      <div class="fav-list" id="favList"></div>
+      <div class="fav-add-row">
+        <input class="fav-add-input" id="favAddName" placeholder="Nom du favori (ex: Gym)">
+        <button class="fav-add-btn" onclick="addFavorite()">&#10133; Ajouter</button>
+      </div>
     </div>
 
     <div class="voice-section">
@@ -2198,6 +2233,134 @@ function setupAutocompletePhoton(inputId){
 }
 
 // =============================================================
+//  FAVORITES — Maison/Travail + liste personnalisée (localStorage)
+// =============================================================
+function getFavorites(){
+  try{ return JSON.parse(localStorage.getItem('gps-drole-favs')||'[]'); }catch(e){ return []; }
+}
+function saveFavorites(favs){
+  localStorage.setItem('gps-drole-favs',JSON.stringify(favs));
+}
+function getQuickFav(key){
+  try{ return JSON.parse(localStorage.getItem('gps-drole-'+key)||'null'); }catch(e){ return null; }
+}
+function saveQuickFav(key,data){
+  localStorage.setItem('gps-drole-'+key,JSON.stringify(data));
+}
+
+// Utiliser un favori rapide (maison/travail) ou le définir
+function useFav(key){
+  var fav=getQuickFav(key);
+  if(fav&&fav.address){
+    // Remplir la destination et calculer
+    document.getElementById('destIn').value=fav.address;
+    document.getElementById('destIn').dataset.lat=fav.lat;
+    document.getElementById('destIn').dataset.lng=fav.lng;
+    calcRoute();
+  } else {
+    // Demander de définir l'adresse
+    var destVal=document.getElementById('destIn').value.trim();
+    if(destVal){
+      // Sauvegarder l'adresse actuelle comme favori
+      var lat=document.getElementById('destIn').dataset.lat;
+      var lng=document.getElementById('destIn').dataset.lng;
+      if(lat&&lng){
+        saveQuickFav(key,{address:destVal,lat:+lat,lng:+lng});
+        showToast((key==='home'?'Maison':'Travail')+' sauvegardé!');
+        renderFavorites();
+      } else {
+        showToast('Entrez une destination d\'abord, puis recliquez pour sauvegarder');
+      }
+    } else {
+      showToast('Tapez une adresse dans Destination, puis cliquez '+(key==='home'?'Maison':'Travail')+' pour la sauvegarder');
+    }
+  }
+}
+
+// Ajouter un favori personnalisé
+function addFavorite(){
+  var nameInput=document.getElementById('favAddName');
+  var name=nameInput.value.trim();
+  var destInput=document.getElementById('destIn');
+  var address=destInput.value.trim();
+  var lat=destInput.dataset.lat;
+  var lng=destInput.dataset.lng;
+  if(!name){ showToast('Donnez un nom au favori'); return; }
+  if(!address||!lat||!lng){ showToast('Entrez et sélectionnez une destination d\'abord'); return; }
+  var favs=getFavorites();
+  // Éviter les doublons
+  favs=favs.filter(function(f){ return f.name!==name; });
+  favs.push({name:name,address:address,lat:+lat,lng:+lng});
+  saveFavorites(favs);
+  nameInput.value='';
+  renderFavorites();
+  showToast(name+' ajouté aux favoris!');
+}
+
+// Supprimer un favori
+function deleteFavorite(name){
+  var favs=getFavorites().filter(function(f){ return f.name!==name; });
+  saveFavorites(favs);
+  renderFavorites();
+}
+
+// Utiliser un favori de la liste
+function useFavorite(fav){
+  document.getElementById('destIn').value=fav.address;
+  document.getElementById('destIn').dataset.lat=fav.lat;
+  document.getElementById('destIn').dataset.lng=fav.lng;
+  calcRoute();
+}
+
+// Afficher les favoris
+function renderFavorites(){
+  // Raccourcis rapides
+  var home=getQuickFav('home');
+  var work=getQuickFav('work');
+  var homeBtn=document.getElementById('favHome');
+  var workBtn=document.getElementById('favWork');
+  document.getElementById('favHomeLabel').textContent=home?home.address.split(',')[0]:'Maison';
+  document.getElementById('favWorkLabel').textContent=work?work.address.split(',')[0]:'Travail';
+  homeBtn.classList.toggle('set',!!home);
+  workBtn.classList.toggle('set',!!work);
+  homeBtn.title=home?home.address+' (clic long pour modifier)':'Cliquez pour définir';
+  workBtn.title=work?work.address+' (clic long pour modifier)':'Cliquez pour définir';
+
+  // Liste personnalisée
+  var list=document.getElementById('favList');
+  var favs=getFavorites();
+  list.innerHTML='';
+  favs.forEach(function(f){
+    var div=document.createElement('div');
+    div.className='fav-item';
+    div.innerHTML='<span class="fav-icon">\u2B50</span><span class="fav-item-name" title="'+f.address+'">'+f.name+'</span><button class="fav-item-del" title="Supprimer">\u2716</button>';
+    div.querySelector('.fav-item-name').addEventListener('click',function(){ useFavorite(f); });
+    div.querySelector('.fav-item-del').addEventListener('click',function(e){ e.stopPropagation(); deleteFavorite(f.name); });
+    list.appendChild(div);
+  });
+}
+
+// Long press pour réinitialiser maison/travail
+['favHome','favWork'].forEach(function(id){
+  var el=document.getElementById(id);
+  var timer;
+  el.addEventListener('mousedown',function(){ timer=setTimeout(function(){
+    var key=id==='favHome'?'home':'work';
+    localStorage.removeItem('gps-drole-'+key);
+    renderFavorites();
+    showToast((key==='home'?'Maison':'Travail')+' réinitialisé');
+  },1500); });
+  el.addEventListener('mouseup',function(){ clearTimeout(timer); });
+  el.addEventListener('touchstart',function(){ timer=setTimeout(function(){
+    var key=id==='favHome'?'home':'work';
+    localStorage.removeItem('gps-drole-'+key);
+    renderFavorites();
+    showToast((key==='home'?'Maison':'Travail')+' réinitialisé');
+  },1500); });
+  el.addEventListener('touchend',function(){ clearTimeout(timer); });
+});
+
+// =============================================================
 //  GPS THROTTLE — limit updates to save battery
 // =============================================================
 var lastGpsUpdate=0;
@@ -2307,6 +2470,7 @@ window.addEventListener('load',function(){
     // Use Photon API for better autocomplete
     setupAutocompletePhoton('departIn');
     setupAutocompletePhoton('destIn');
+    renderFavorites();
     checkAutoNightMode();
   },500);
 });
