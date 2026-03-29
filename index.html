@@ -104,10 +104,18 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .autocomplete-item{padding:7px 10px;font-size:.72rem;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .autocomplete-item:hover{background:rgba(245,158,11,.15);color:var(--neon)}
 .autocomplete-item:last-child{border-bottom:none}
-.voice-section{padding:12px 14px;margin-top:auto;border-top:1px solid var(--border)}
+.voice-section{padding:8px 14px;border-top:1px solid var(--border)}
 .voice-row{display:flex;align-items:center;gap:8px}
 .voice-toggle{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;transition:all .2s}
 .voice-toggle.on{background:var(--blue);border-color:var(--blue);color:white}
+.settings-toggle-btn{padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:600;transition:all .2s;width:100%}
+.settings-toggle-btn:hover{border-color:var(--neon);color:var(--neon);background:rgba(245,158,11,.08)}
+.settings-panel{border-top:2px solid var(--neon);background:var(--s1);padding:0}
+.settings-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.settings-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px 8px;border-radius:4px;transition:all .2s}
+.settings-close:hover{color:var(--neon);background:rgba(245,158,11,.1)}
+.settings-group{padding:10px 14px;border-bottom:1px solid var(--border)}
+.settings-group-title{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;color:var(--neon);letter-spacing:1px;margin-bottom:6px}
 .voice-range{flex:1;accent-color:var(--neon);cursor:pointer}
 .status-bar{flex-shrink:0;background:var(--s1);border-top:1px solid var(--border);padding:5px 16px;display:flex;align-items:center;gap:10px;font-size:.67rem;color:var(--muted);z-index:100}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon2);box-shadow:0 0 5px var(--neon2);animation:blink 2s infinite;flex-shrink:0}
@@ -343,29 +351,9 @@ body.driver-mode .driver-hud{display:flex!important}
       <div class="char-name" id="charName">JANETTE GPS</div>
       <div class="char-desc" id="charDesc">Chaleureuse &middot; Quebecoise &middot; Style Janette Bertrand</div>
       <div class="persona-row" id="personaRow"></div>
-      <button class="test-voice-btn" onclick="testVoice()">&#128266; Tester la voix</button>
     </div>
 
-    <div class="instr-box">
-      <div class="box-label">&#128205; Instruction en cours</div>
-      <div class="instr-text" id="instrText">Choisis un mode et teste un scenario!</div>
-    </div>
-
-    <div class="demo-section">
-      <div class="box-label">&#127918; Scenarios de test</div>
-      <div class="demo-grid">
-        <button class="demo-btn" onclick="go('straight')">&#10145;&#65039; Tout droit</button>
-        <button class="demo-btn" onclick="go('right')">&#8618;&#65039; Droite</button>
-        <button class="demo-btn" onclick="go('left')">&#8617;&#65039; Gauche</button>
-        <button class="demo-btn" onclick="go('uturn')">&#128259; Demi-tour</button>
-        <button class="demo-btn" onclick="go('missed')">&#10060; Virage rate</button>
-        <button class="demo-btn" onclick="go('recalc')">&#128260; Recalcul</button>
-        <button class="demo-btn" onclick="go('traffic')">&#128663; Trafic</button>
-        <button class="demo-btn" onclick="go('speed')">&#9889; Radar</button>
-        <button class="demo-btn" onclick="go('tunnel')">&#128647; Tunnel</button>
-        <button class="demo-btn" onclick="go('arrived')">&#127937; Arrivee!</button>
-      </div>
-    </div>
+    <!-- Instruction box et scénarios de test déplacés dans Paramètres -->
 
     <div class="itin-section">
       <div class="box-label">&#128506;&#65039; Planifier un itineraire</div>
@@ -427,13 +415,62 @@ body.driver-mode .driver-hud{display:flex!important}
     </div>
 
     <div class="voice-section">
-      <div class="box-label">&#128266; Synthese vocale</div>
       <div class="voice-row">
         <button class="voice-toggle on" id="voiceToggle" onclick="toggleVoice()">&#128266; ON</button>
         <input type="range" class="voice-range" id="voiceSpeed" min="0.6" max="1.5" step="0.1" value="1">
         <span style="font-size:.68rem;color:var(--muted)" id="speedLabel">1.0x</span>
       </div>
-      <div style="font-size:.62rem;color:var(--muted);margin-top:4px">Chrome recommande pour les meilleures voix</div>
+    </div>
+
+    <div class="demo-section" style="text-align:center">
+      <button class="settings-toggle-btn" onclick="toggleSettings()">&#9881;&#65039; Parametres</button>
+    </div>
+
+    <!-- Panneau Paramètres (caché par défaut) -->
+    <div class="settings-panel" id="settingsPanel" style="display:none">
+      <div class="settings-header">
+        <span class="box-label">&#9881;&#65039; Parametres</span>
+        <button class="settings-close" onclick="toggleSettings()">&#10006;</button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#128266; Synthese vocale</div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:6px">Chrome recommande pour les meilleures voix</div>
+        <button class="test-voice-btn" onclick="testVoice()" style="width:100%;margin-bottom:8px">&#128266; Tester la voix du personnage</button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#127918; Scenarios de test</div>
+        <div style="font-size:.62rem;color:var(--muted);margin-bottom:6px">Tester les repliques sans etre en navigation</div>
+        <div class="demo-grid">
+          <button class="demo-btn" onclick="go('straight')">&#10145;&#65039; Tout droit</button>
+          <button class="demo-btn" onclick="go('right')">&#8618;&#65039; Droite</button>
+          <button class="demo-btn" onclick="go('left')">&#8617;&#65039; Gauche</button>
+          <button class="demo-btn" onclick="go('uturn')">&#128259; Demi-tour</button>
+          <button class="demo-btn" onclick="go('missed')">&#10060; Virage rate</button>
+          <button class="demo-btn" onclick="go('recalc')">&#128260; Recalcul</button>
+          <button class="demo-btn" onclick="go('traffic')">&#128663; Trafic</button>
+          <button class="demo-btn" onclick="go('speed')">&#9889; Radar</button>
+          <button class="demo-btn" onclick="go('tunnel')">&#128647; Tunnel</button>
+          <button class="demo-btn" onclick="go('arrived')">&#127937; Arrivee!</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#128203; Donnees</div>
+        <button class="demo-btn" onclick="clearHistory()" style="width:100%;margin-bottom:5px">&#128465; Effacer l'historique</button>
+        <button class="demo-btn" onclick="if(confirm('Effacer tous les favoris?')){localStorage.removeItem('gps-fav');loadFavorites()}" style="width:100%">&#128465; Effacer les favoris</button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#128712; A propos</div>
+        <div style="font-size:.62rem;color:var(--muted);line-height:1.5">
+          GPS Drole v3.3<br>
+          5 modes &times; 3 personas &times; 3 langues<br>
+          700+ repliques originales<br>
+          PWA installable &bull; Fonctionne hors-ligne
+        </div>
+      </div>
     </div>
 
   </div>
@@ -2731,14 +2768,18 @@ function toggleVoice(){
   if(!voiceOn&&window.speechSynthesis) window.speechSynthesis.cancel();
 }
 
+function toggleSettings(){
+  var panel=document.getElementById('settingsPanel');
+  panel.style.display=panel.style.display==='none'?'block':'none';
+  if(panel.style.display==='block') panel.scrollIntoView({behavior:'smooth'});
+}
+
 // =============================================================
 //  UI HELPERS
 // =============================================================
 function showInstr(txt){
-  var el=document.getElementById('instrText');
-  el.textContent=txt;
-  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-  // L'overlay guidage n'affiche PAS les répliques personnage — voir showNavInstr()
+  // Les répliques ne sont plus affichées dans l'interface (seulement parlées)
+  // L'overlay guidage affiche les instructions de navigation — voir showNavInstr()
 }
 // Instruction de navigation seulement dans l'overlay (pas la réplique drôle)
 function showNavInstr(txt){
