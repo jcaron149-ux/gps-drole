@@ -161,8 +161,8 @@ body.guidance-fullscreen .panel{display:none}
 body.guidance-fullscreen #map{height:100vh}
 body.guidance-fullscreen{overflow:hidden;height:100vh}
 /* Floating instruction overlay during guidance */
-.guidance-overlay{display:none;position:absolute;bottom:60px;left:10px;right:10px;z-index:1001;background:rgba(15,22,38,.92);backdrop-filter:blur(8px);border:2px solid var(--neon);border-radius:12px;padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--neon2);text-align:center;box-shadow:0 0 24px rgba(245,158,11,.3);pointer-events:none;visibility:hidden}
-body.guidance-fullscreen .guidance-overlay{display:block}
+.guidance-overlay{display:none;position:fixed;top:0;left:0;right:0;z-index:10001;background:rgba(15,23,60,.96);backdrop-filter:blur(12px);border-bottom:4px solid #3b82f6;border-radius:0;padding:clamp(12px,2vw,18px) clamp(14px,3vw,24px);font-size:clamp(.85rem,2.5vw,1.1rem);font-weight:700;color:#fff;text-align:center;box-shadow:0 4px 24px rgba(59,130,246,.4);pointer-events:none}
+body.guidance-fullscreen .guidance-overlay{display:block;visibility:visible}
 /* Floating stop button during guidance */
 .guidance-stop-float{display:none;position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:1001;padding:10px 28px;border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;cursor:pointer;box-shadow:0 0 18px rgba(239,68,68,.5);letter-spacing:1px}
 body.guidance-fullscreen .guidance-stop-float{display:block}
@@ -221,16 +221,17 @@ body.driver-mode .main{grid-template-columns:1fr;grid-template-rows:1fr}
 body.driver-mode #map{height:100vh}
 body.driver-mode{overflow:hidden;height:100vh}
 body.driver-mode .driver-hud{display:flex!important}
-.driver-hud{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1002;background:rgba(8,12,24,.92);backdrop-filter:blur(10px);border-top:3px solid var(--neon);padding:12px 20px;flex-direction:row;align-items:center;justify-content:space-around;gap:10px}
+.driver-hud{display:none;position:fixed;top:0;left:0;right:0;z-index:10001;background:rgba(15,23,60,.96);backdrop-filter:blur(12px);border-bottom:4px solid #3b82f6;padding:clamp(10px,2vw,20px) clamp(12px,3vw,24px);flex-direction:row;align-items:center;justify-content:space-around;gap:clamp(6px,2vw,16px);box-shadow:0 4px 24px rgba(59,130,246,.4)}
 .driver-speed{display:flex;align-items:baseline;gap:4px}
-.driver-speed span:first-child{font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;color:var(--neon);line-height:1}
-.driver-unit{font-family:'Orbitron',monospace;font-size:1rem;color:var(--muted)}
-.driver-next{display:flex;align-items:center;gap:8px;font-family:'Orbitron',monospace}
-.driver-next span:first-child{font-size:3rem;color:var(--neon2)}
-.driver-next span:last-child{font-size:1.2rem;color:var(--text);font-weight:700}
-.driver-eta{font-family:'Orbitron',monospace;font-size:1.5rem;color:var(--blue);font-weight:700}
-.driver-stop{padding:12px 24px;border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:.85rem;font-weight:900;cursor:pointer;min-height:64px;min-width:64px;letter-spacing:1px;box-shadow:0 0 16px rgba(239,68,68,.4)}
+.driver-speed span:first-child{font-family:'Orbitron',monospace;font-size:clamp(2rem,6vw,4rem);font-weight:900;color:#60a5fa;line-height:1}
+.driver-unit{font-family:'Orbitron',monospace;font-size:clamp(.7rem,1.5vw,1rem);color:#93c5fd}
+.driver-next{display:flex;align-items:center;gap:clamp(4px,1vw,8px);font-family:'Orbitron',monospace}
+.driver-next span:first-child{font-size:clamp(1.8rem,5vw,3rem);color:#60a5fa}
+.driver-next span:last-child{font-size:clamp(.8rem,2vw,1.2rem);color:#fff;font-weight:700}
+.driver-eta{font-family:'Orbitron',monospace;font-size:clamp(1rem,3vw,1.5rem);color:#93c5fd;font-weight:700}
+.driver-stop{padding:clamp(8px,1.5vw,12px) clamp(16px,3vw,24px);border-radius:30px;border:none;background:var(--red);color:white;font-family:'Orbitron',monospace;font-size:clamp(.7rem,1.5vw,.85rem);font-weight:900;cursor:pointer;min-height:48px;min-width:48px;letter-spacing:1px;box-shadow:0 0 16px rgba(239,68,68,.4)}
 .driver-stop:hover{background:#f87171}
+@media(max-width:600px){.driver-hud{padding:8px 10px;gap:6px}.driver-speed span:first-child{font-size:2.2rem}.driver-next span:first-child{font-size:2rem}}
 .driver-mode-btn{width:100%;padding:8px;margin-top:5px;border-radius:8px;border:1px solid var(--blue);background:transparent;color:var(--blue);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:600;transition:all .2s}
 .driver-mode-btn:hover{background:rgba(59,130,246,.1)}
 /* ===== PHASE 7: POI ===== */
@@ -3253,6 +3254,60 @@ setTimeout(function(){
   renderTripHistory();
   checkAutoNightMode();
 },600);
+
+// =============================================================
+//  NETWORK DETECTION — mode hors-ligne automatique
+// =============================================================
+var networkBanner=null;
+function createNetworkBanner(){
+  if(networkBanner) return;
+  networkBanner=document.createElement('div');
+  networkBanner.id='networkBanner';
+  networkBanner.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#dc2626;color:#fff;text-align:center;padding:10px 16px;font-family:Orbitron,monospace;font-size:clamp(.75rem,2vw,.9rem);font-weight:700;display:none;box-shadow:0 -2px 12px rgba(220,38,38,.4);';
+  document.body.appendChild(networkBanner);
+}
+createNetworkBanner();
+
+var offlineRetryInterval=null;
+
+function goOffline(){
+  if(networkBanner){
+    networkBanner.textContent='📡 Hors-ligne — Navigation GPS continue, carte en cache';
+    networkBanner.style.display='block';
+  }
+  showToast('Mode hors-ligne activé — carte en cache');
+  // Tenter de reconnecter toutes les 15 secondes
+  if(!offlineRetryInterval){
+    offlineRetryInterval=setInterval(function(){
+      // Ping léger pour vérifier si le réseau revient
+      fetch('https://tile.openstreetmap.org/0/0/0.png',{mode:'no-cors',cache:'no-store'})
+        .then(function(){
+          // Réseau revenu!
+          goOnline();
+        })
+        .catch(function(){
+          // Toujours hors-ligne
+        });
+    },15000);
+  }
+}
+
+function goOnline(){
+  if(offlineRetryInterval){ clearInterval(offlineRetryInterval); offlineRetryInterval=null; }
+  if(networkBanner) networkBanner.style.display='none';
+  showToast('Connexion rétablie!');
+  // Recharger les tuiles de carte si on est en guidage
+  if(guidanceActive&&mapObj){
+    mapObj.eachLayer(function(layer){
+      if(layer.redraw) layer.redraw();
+    });
+  }
+}
+
+window.addEventListener('offline',goOffline);
+window.addEventListener('online',goOnline);
+// Vérifier l'état initial
+if(!navigator.onLine) goOffline();
 </script>
 </body>
 </html>
