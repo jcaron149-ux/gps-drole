@@ -127,10 +127,10 @@
   <text x="100" y="205" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="26" font-weight="900" letter-spacing="4">
     <tspan fill="#ef4444">GPS</tspan>
     <tspan fill="#ffffff" dx="5">DR</tspan>
-    <tspan fill="#f59e0b" dx="15">LE</tspan>
+    <tspan fill="#f59e0b" dx="24">LE</tspan>
   </text>
   <!-- Smiley dans le Ô -->
-  <g transform="translate(112, 193)">
+  <g transform="translate(119, 193)">
     <!-- Cercle du Ô (fond) -->
     <circle cx="0" cy="0" r="10" fill="#f59e0b"/>
     <!-- Yeux du smiley -->
