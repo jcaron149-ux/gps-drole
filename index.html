@@ -260,9 +260,53 @@ body.driver-mode .driver-hud{display:flex!important}
 .share-btn:hover{background:rgba(168,85,247,.1)}
 .share-map-btn{position:absolute;bottom:70px;left:18px;z-index:1000;width:44px;height:44px;border-radius:50%;border:2px solid var(--purple);background:var(--s2);color:var(--purple);font-size:1.1rem;cursor:pointer;box-shadow:0 0 14px rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
 .share-map-btn:hover{background:var(--purple);color:white}
+/* ===== FEATURE 2: Smooth transitions ===== */
+.panel,.panel>div,.itin-section,.char-box,.demo-section,.fav-section,.history-section,.poi-section,.voice-section,.settings-panel,.instr-box{transition:all .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.guidance-overlay,.route-info,.pause-overlay{animation:slideUp .4s ease}
+/* ===== FEATURE 4: Glassmorphism ===== */
+.char-box,.itin-section,.route-info,.guidance-overlay{background:rgba(15,22,38,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+:root.light .char-box,:root.light .itin-section{background:rgba(255,255,255,.7)}
+/* ===== FEATURE 5: Bottom sheet mobile ===== */
+.drag-handle{display:none;width:40px;height:5px;border-radius:3px;background:var(--muted);margin:8px auto 4px;flex-shrink:0;cursor:grab}
+@media(max-width:700px){
+  .drag-handle{display:block}
+  .panel.bottom-sheet{position:fixed;bottom:0;left:0;right:0;z-index:9998;border-radius:18px 18px 0 0;border-top:2px solid var(--neon);border-left:none;max-height:85vh;height:80px;overflow:hidden;transition:height .3s ease;box-shadow:0 -4px 24px rgba(0,0,0,.4)}
+  .panel.bottom-sheet.half{height:50vh;overflow-y:auto}
+  .panel.bottom-sheet.full{height:85vh;overflow-y:auto}
+  .main{grid-template-rows:1fr!important}
+  body.bs-active #map{height:100vh}
+}
+/* ===== FEATURE 6: Bigger guidance buttons ===== */
+body.guidance-fullscreen .guidance-stop-float{padding:16px 40px;font-size:1rem;border-radius:40px}
+body.guidance-fullscreen .center-btn{width:56px;height:56px;font-size:1.6rem}
+body.guidance-fullscreen .speed-badge{padding:12px 18px;font-size:1rem}
+/* ===== FEATURE 7: 3D tilted view in guidance ===== */
+body.guidance-fullscreen #map{perspective:800px;transform:rotateX(25deg);transform-origin:center 70%;transition:transform .5s ease}
+/* ===== FEATURE 8: Directional arrow ===== */
+#navArrow{display:none;position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:10002;font-size:3rem;text-shadow:0 2px 10px rgba(0,0,0,.6);pointer-events:none;transition:all .3s ease}
+body.guidance-fullscreen #navArrow{display:block}
+/* ===== FEATURE 9: Splash screen ===== */
+#splashScreen{position:fixed;inset:0;z-index:9999999;background:linear-gradient(135deg,#080c18 0%,#0f1626 40%,#1c2a45 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .6s ease}
+#splashScreen.fade-out{opacity:0;pointer-events:none}
+.splash-logo{font-size:4rem;animation:splashBounce 1.2s ease-in-out infinite}
+@keyframes splashBounce{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.15) translateY(-10px)}}
+.splash-title{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;background:linear-gradient(90deg,#f59e0b,#fde68a,#f59e0b);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 2s linear infinite;letter-spacing:4px}
+.splash-sub{font-family:'Exo 2',sans-serif;font-size:.85rem;color:#64748b;letter-spacing:3px}
+/* ===== FEATURE 10: Confetti ===== */
+.confetti-piece{position:fixed;top:-10px;z-index:99999;width:10px;height:10px;border-radius:2px;pointer-events:none;animation:confettiFall 3s ease-in forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) translateX(0)}25%{transform:translateY(25vh) rotate(180deg) translateX(30px)}50%{transform:translateY(50vh) rotate(360deg) translateX(-20px)}75%{transform:translateY(75vh) rotate(540deg) translateX(25px)}100%{transform:translateY(105vh) rotate(720deg) translateX(-15px);opacity:0}}
 </style>
 </head>
 <body>
+
+<!-- FEATURE 9: Splash screen -->
+<div id="splashScreen">
+  <div class="splash-logo">&#128506;&#65039;</div>
+  <div class="splash-title">GPS DROLE</div>
+  <div class="splash-sub">Navigation avec personnalite</div>
+</div>
 
 <!-- DISCLAIMER: Affiché immédiatement AVANT tout le reste -->
 <div id="disclaimerOverlay" style="position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -282,7 +326,18 @@ body.driver-mode .driver-hud{display:flex!important}
 </div>
 <script>
 (function(){
+  // FEATURE 9: Splash screen auto-dismiss then show disclaimer
+  var splash=document.getElementById('splashScreen');
   var o=document.getElementById('disclaimerOverlay');
+  o.style.display='none';
+  setTimeout(function(){
+    splash.classList.add('fade-out');
+    setTimeout(function(){
+      splash.remove();
+      o.style.display='';
+      o.style.animation='fadeIn .4s ease';
+    },600);
+  },2500);
   // Si un nom est déjà sauvegardé, pré-remplir le champ
   var savedName=localStorage.getItem('gps-drole-username')||'';
   var nameInput=document.getElementById('disclaimerName');
@@ -354,8 +409,10 @@ body.driver-mode .driver-hud{display:flex!important}
       <button onclick="useFav('work');toggleQuickNav()">&#128188; Travail</button>
     </div>
     <button class="share-map-btn" id="shareMapBtn" onclick="sharePosition()" title="Partager ma position" style="display:none">&#128228;</button>
+    <div id="navArrow">&#11014;&#65039;</div>
   </div>
-  <div class="panel">
+  <div class="panel" id="mainPanel">
+    <div class="drag-handle" id="dragHandle"></div>
 
     <div class="char-box">
       <span class="char-av" id="charAv">&#128117;</span>
@@ -1832,6 +1889,12 @@ function toggleTheme(){
   var isLight=root.classList.toggle('light');
   document.getElementById('themeBtn').textContent=isLight?'\u2600\uFE0F':'\u{1F319}';
   localStorage.setItem('gps-drole-theme',isLight?'light':'dark');
+  // FEATURE 3: Switch tile layers dark/light
+  if(mapObj&&tileLayerDark&&tileLayerLight){
+    if(currentTileLayer) mapObj.removeLayer(currentTileLayer);
+    currentTileLayer=isLight?tileLayerLight:tileLayerDark;
+    currentTileLayer.addTo(mapObj);
+  }
 }
 (function initTheme(){
   var saved=localStorage.getItem('gps-drole-theme');
@@ -1844,11 +1907,18 @@ function toggleTheme(){
 // =============================================================
 //  MAP (Leaflet + OpenStreetMap)
 // =============================================================
+var tileLayerDark, tileLayerLight, currentTileLayer;
 function initMap(lat,lng){
   mapObj=L.map('map').setView([lat,lng],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  tileLayerDark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright">OSM</a> \u00a9 <a href="https://carto.com/">CARTO</a>',maxZoom:19
+  });
+  tileLayerLight=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19
-  }).addTo(mapObj);
+  });
+  var isLight=document.documentElement.classList.contains('light');
+  currentTileLayer=isLight?tileLayerLight:tileLayerDark;
+  currentTileLayer.addTo(mapObj);
   userMark=L.marker([lat,lng],{icon:L.divIcon({html:'\u{1F697}',className:'',iconSize:[28,28],iconAnchor:[14,14]})})
     .addTo(mapObj).bindPopup('Vous \u00eates ici!');
   mapObj.on('click',function(e){ quickDest(e.latlng.lat,e.latlng.lng); });
@@ -2354,6 +2424,8 @@ function checkTurnByTurn(){
     var dist=haversine(userLat,userLng,step.lat,step.lng);
     if(!stepAnnounced[i]) stepAnnounced[i]={far:false,mid:false,near:false};
 
+    // FEATURE 8: Update directional arrow based on next step
+    updateNavArrow(step);
     // Pré-annonce à ~500m: instruction de navigation parlée (pas de réplique drôle)
     if(dist<550 && dist>250 && !stepAnnounced[i].far){
       stepAnnounced[i].far=true;
@@ -2378,8 +2450,9 @@ function checkTurnByTurn(){
       if(scenario) go(scenario);
       var instrLabel=buildStepInstruction(step);
       if(instrLabel){ showNavInstr(instrLabel); }
-      // Arrivée: arrêter le guidage
+      // Arrivée: confettis + arrêter le guidage
       if(step.type==='arrive'){
+        launchConfetti();
         setTimeout(function(){ stopGuidance(); showToast('Destination atteinte!'); },3000);
       }
       break;
@@ -2519,6 +2592,12 @@ function applyPersona(){
   document.getElementById('charAv').textContent=p.av;
   document.getElementById('charName').textContent=p.name;
   document.getElementById('charDesc').textContent=p.desc;
+  // FEATURE 1: Theme per character — change CSS variables based on mode
+  var modeColors={grandmaman:'#ec4899',enfant:'#10b981',amis:'#3b82f6',drole:'#a855f7',insulte:'#ef4444'};
+  var c=modeColors[mode]||'#f59e0b';
+  var r=document.documentElement;
+  r.style.setProperty('--neon',c);
+  r.style.setProperty('--border','rgba('+parseInt(c.slice(1,3),16)+','+parseInt(c.slice(3,5),16)+','+parseInt(c.slice(5,7),16)+',.18)');
   updateIndicator();
 }
 
@@ -4028,6 +4107,91 @@ function loadCachedRoute(){
 }
 
 // Disclaimer moved to inline HTML at top of <body> for immediate display
+
+// =============================================================
+//  FEATURE 8: Directional arrow update
+// =============================================================
+function updateNavArrow(step){
+  var el=document.getElementById('navArrow');
+  if(!el||!step) return;
+  var arrows={'straight':'\u2B06\uFE0F','right':'\u2197\uFE0F','sharp right':'\u27A1\uFE0F','slight right':'\u2197\uFE0F',
+    'left':'\u2196\uFE0F','sharp left':'\u2B05\uFE0F','slight left':'\u2196\uFE0F','uturn':'\u2B07\uFE0F'};
+  var mod=step.modifier||'straight';
+  el.textContent=arrows[mod]||'\u2B06\uFE0F';
+}
+
+// =============================================================
+//  FEATURE 10: Confetti on arrival
+// =============================================================
+function launchConfetti(){
+  var colors=['#f59e0b','#10b981','#3b82f6','#ef4444','#a855f7','#ec4899','#fde68a','#34d399'];
+  var container=document.createElement('div');
+  container.id='confettiContainer';
+  document.body.appendChild(container);
+  for(var i=0;i<80;i++){
+    var piece=document.createElement('div');
+    piece.className='confetti-piece';
+    piece.style.left=Math.random()*100+'vw';
+    piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+    piece.style.width=(Math.random()*8+6)+'px';
+    piece.style.height=(Math.random()*8+6)+'px';
+    piece.style.animationDelay=(Math.random()*1.5)+'s';
+    piece.style.animationDuration=(Math.random()*2+2)+'s';
+    container.appendChild(piece);
+  }
+  setTimeout(function(){ if(container.parentNode) container.parentNode.removeChild(container); },5000);
+}
+
+// =============================================================
+//  FEATURE 5: Bottom sheet drag logic (mobile)
+// =============================================================
+(function initBottomSheet(){
+  if(window.innerWidth>700) return;
+  var panel=document.getElementById('mainPanel');
+  var handle=document.getElementById('dragHandle');
+  if(!panel||!handle) return;
+  panel.classList.add('bottom-sheet');
+  document.body.classList.add('bs-active');
+  var startY=0,startH=0,dragging=false;
+  function onStart(e){
+    dragging=true;
+    startY=e.touches?e.touches[0].clientY:e.clientY;
+    startH=panel.offsetHeight;
+    panel.style.transition='none';
+  }
+  function onMove(e){
+    if(!dragging) return;
+    var y=e.touches?e.touches[0].clientY:e.clientY;
+    var diff=startY-y;
+    var newH=Math.min(Math.max(startH+diff,80),window.innerHeight*.85);
+    panel.style.height=newH+'px';
+  }
+  function onEnd(){
+    if(!dragging) return;
+    dragging=false;
+    panel.style.transition='height .3s ease';
+    var h=panel.offsetHeight;
+    var vh=window.innerHeight;
+    // Snap to closest state: collapsed(80), half(50vh), full(85vh)
+    if(h<vh*.25){panel.style.height='80px';panel.className='panel bottom-sheet';}
+    else if(h<vh*.67){panel.style.height='50vh';panel.className='panel bottom-sheet half';}
+    else{panel.style.height='85vh';panel.className='panel bottom-sheet full';}
+  }
+  handle.addEventListener('touchstart',onStart,{passive:true});
+  handle.addEventListener('mousedown',onStart);
+  document.addEventListener('touchmove',onMove,{passive:true});
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('touchend',onEnd);
+  document.addEventListener('mouseup',onEnd);
+  // Tap on handle toggles between collapsed and half
+  handle.addEventListener('click',function(){
+    if(panel.classList.contains('half')||panel.classList.contains('full')){
+      panel.style.height='80px';panel.className='panel bottom-sheet';
+    } else {
+      panel.style.height='50vh';panel.className='panel bottom-sheet half';
+    }
+  });
+})();
 </script>
 </body>
 </html>
