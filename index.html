@@ -154,7 +154,6 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
   <span class="lang-label">Langue</span>
   <button class="lang-btn active" data-lang="fr" onclick="setLang('fr')">&#127467;&#127479; Francais</button>
   <button class="lang-btn" data-lang="en" onclick="setLang('en')">&#127468;&#127463; English</button>
-  <button class="lang-btn" data-lang="es" onclick="setLang('es')">&#127466;&#127480; Espanol</button>
 </div>
 
 <div class="main">
@@ -1715,7 +1714,7 @@ function pickVoice(l,gender){
     }
   }
   // 2. Fallback: filter by language, sort Natural > Google > Legacy, then by gender
-  var lm={fr:['fr','fr-FR','fr-CA'],en:['en','en-US','en-GB'],es:['es','es-ES','es-MX']};
+  var lm={fr:['fr','fr-FR','fr-CA'],en:['en','en-US','en-GB']};
   var codes=lm[l]||['fr'];
   var pool=voices.filter(function(v){ return codes.some(function(c){ return v.lang.toLowerCase().indexOf(c.toLowerCase())===0; }); });
   if(!pool.length) pool=voices;
@@ -1735,19 +1734,102 @@ function pickVoice(l,gender){
   return pool[0]||null;
 }
 
+// =============================================================
+//  NATURAL SPEECH ENGINE — 3 techniques anti-robotique
+//  1. Multi-utterance: découpe en segments avec pauses réelles
+//  2. Variation dynamique: rate/pitch varient légèrement à chaque segment
+//  3. Text hacking: micro-pauses via SSML-like ponctuation
+// =============================================================
+
+// Technique 3: Text hacking — ajoute des micro-pauses naturelles
+function humanizeText(txt){
+  // Ajouter micro-pauses après certains mots de liaison
+  txt=txt.replace(/\b(bon|bien|alors|donc|pis|t'sais|hmm|euh|like|well|so|okay|right)\b/gi, function(m){
+    return m+',';
+  });
+  // Éviter les doubles virgules
+  txt=txt.replace(/,,+/g,',');
+  return txt;
+}
+
+// Technique 1: Multi-utterance — découpe intelligente en segments
+function splitIntoSegments(txt){
+  // Découpe sur ... ou sur les phrases longues (après . ! ?)
+  var parts=txt.split(/(\.\.\.|[.!?])\s*/);
+  var segments=[];
+  var current='';
+  for(var i=0;i<parts.length;i++){
+    current+=parts[i];
+    // Si c'est un séparateur ou si le segment est assez long
+    if(/^[.!?]$/.test(parts[i]) || /\.\.\.$/.test(parts[i]) || current.length>60){
+      if(current.trim()) segments.push(current.trim());
+      current='';
+    }
+  }
+  if(current.trim()) segments.push(current.trim());
+  // Si un seul segment trop long, essayer de couper sur les virgules
+  if(segments.length===1 && segments[0].length>40){
+    var commaParts=segments[0].split(/,\s*/);
+    if(commaParts.length>=2){
+      segments=[];
+      var half=Math.ceil(commaParts.length/2);
+      segments.push(commaParts.slice(0,half).join(', '));
+      segments.push(commaParts.slice(half).join(', '));
+    }
+  }
+  return segments.length?segments:[txt];
+}
+
+// Technique 2: Variation dynamique — léger aléatoire sur rate/pitch
+function varyParam(base, range){
+  return base + (Math.random()*range*2 - range);
+}
+
 function speak(txt,l){
   if(!voiceOn||!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   var p=getP();
-  var u=new SpeechSynthesisUtterance(txt);
-  u.lang={fr:'fr-FR',en:'en-US',es:'es-ES'}[l]||'fr-FR';
-  u.rate=p.rate*parseFloat(vsEl.value);
-  u.pitch=p.pitch;
-  u.volume=p.volume||1;
   var v=pickVoice(l,p.gender);
-  if(v) u.voice=v;
-  setStatus(p.name+' \u00b7 '+(v?v.name:'default')+' \u00b7 pitch '+p.pitch+' \u00b7 x'+u.rate.toFixed(2));
-  window.speechSynthesis.speak(u);
+  var langCode={fr:'fr-FR',en:'en-US'}[l]||'fr-FR';
+  var baseRate=p.rate*parseFloat(vsEl.value);
+  var basePitch=p.pitch;
+  var vol=p.volume||1;
+
+  // Humaniser le texte puis découper
+  var humanized=humanizeText(txt);
+  var segments=splitIntoSegments(humanized);
+
+  setStatus(p.name+' · '+(v?v.name:'default')+' · '+segments.length+' seg · pitch '+basePitch);
+
+  // Jouer chaque segment avec variation + pause réelle entre eux
+  var delay=0;
+  for(var i=0;i<segments.length;i++){
+    (function(seg,idx){
+      setTimeout(function(){
+        if(!voiceOn) return;
+        var u=new SpeechSynthesisUtterance(seg);
+        u.lang=langCode;
+        // Variation dynamique: ±5% rate, ±3% pitch par segment
+        u.rate=Math.max(0.3, Math.min(2.0, varyParam(baseRate, baseRate*0.05)));
+        u.pitch=Math.max(0.3, Math.min(2.0, varyParam(basePitch, basePitch*0.03)));
+        u.volume=vol;
+        if(v) u.voice=v;
+        // Premier segment légèrement plus lent (attaque naturelle)
+        if(idx===0) u.rate*=0.95;
+        // Dernier segment légèrement plus lent (fin naturelle)
+        if(idx===segments.length-1) u.rate*=0.92;
+        window.speechSynthesis.speak(u);
+      }, delay);
+    })(segments[i],i);
+    // Pause réelle entre segments: 180-350ms (imite respiration humaine)
+    var pauseMs = 180 + Math.floor(Math.random()*170);
+    // Plus longue pause après "..."
+    if(/\.\.\./.test(segments[i])) pauseMs+=200;
+    // Estimer la durée du segment (très approximatif)
+    var wordCount=segments[i].split(/\s+/).length;
+    var segDuration=Math.max(400, (wordCount/2.5)*1000/baseRate);
+    delay+=segDuration+pauseMs;
+  }
 }
 
 function toggleVoice(){
