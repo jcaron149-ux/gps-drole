@@ -270,10 +270,8 @@ body.driver-mode .driver-hud{display:flex!important}
 </div>
 <script>
 (function(){
-  var k='gps-drole-disclaimer-v1',o=document.getElementById('disclaimerOverlay');
-  if(localStorage.getItem(k)==='accepted'){o.remove();return;}
+  var o=document.getElementById('disclaimerOverlay');
   document.getElementById('disclaimerAccept').onclick=function(){
-    localStorage.setItem(k,'accepted');
     o.style.opacity='0';o.style.transition='opacity .4s';
     setTimeout(function(){o.remove();},400);
   };
