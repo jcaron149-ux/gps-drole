@@ -13,14 +13,21 @@
   --neon:#f59e0b;--neon2:#10b981;--blue:#3b82f6;--red:#ef4444;--purple:#a855f7;
   --text:#e2e8f0;--muted:#64748b;--border:rgba(245,158,11,.18);
 }
+:root.light{
+  --bg:#f0f2f5;--s1:#ffffff;--s2:#e8eaed;--s3:#d1d5db;
+  --neon:#b45309;--neon2:#047857;--blue:#2563eb;--red:#dc2626;--purple:#7c3aed;
+  --text:#1e293b;--muted:#475569;--border:rgba(0,0,0,.12);
+}
 body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 /* HEADER */
 header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));border-bottom:2px solid var(--neon);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 0 40px rgba(245,158,11,.25);z-index:100}
 .logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;background:linear-gradient(90deg,var(--neon),#fde68a,var(--neon));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;letter-spacing:3px}
 @keyframes shimmer{to{background-position:200% center}}
 .tagline{font-size:.62rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
-.header-right{text-align:right;font-size:.68rem;color:var(--muted);line-height:1.6}
+.header-right{text-align:right;font-size:.68rem;color:var(--muted);line-height:1.6;display:flex;align-items:center;gap:10px}
 .header-right span{color:var(--neon2)}
+.theme-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:1rem;transition:all .2s}
+.theme-btn:hover{border-color:var(--neon);background:rgba(245,158,11,.1)}
 /* MODES BAR */
 .modes-bar{flex-shrink:0;background:var(--s1);padding:7px 16px;display:flex;gap:5px;overflow-x:auto;border-bottom:1px solid var(--border);scrollbar-width:none}
 .modes-bar::-webkit-scrollbar{display:none}
@@ -33,7 +40,6 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .lang-btn{padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:600;transition:all .2s}
 .lang-btn:hover{border-color:var(--neon2);color:var(--neon2)}
 .lang-btn.active{background:var(--neon2);border-color:var(--neon2);color:#080c18}
-.lang-btn.bi.active{background:var(--purple);border-color:var(--purple)}
 /* MAIN */
 .main{flex:1;display:grid;grid-template-columns:1fr 340px;min-height:0}
 /* MAP */
@@ -42,6 +48,15 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .toast.show{opacity:1}
 .leaflet-popup-content-wrapper{background:var(--s2);color:var(--text);border:1px solid var(--border)}
 .leaflet-popup-tip{background:var(--s2)}
+/* ROUTE INFO BAR */
+.route-info{position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(15,22,38,.85);backdrop-filter:blur(6px);padding:8px 16px;display:flex;justify-content:space-around;align-items:center;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--neon);border-bottom:1px solid var(--neon);opacity:0;transition:opacity .3s;pointer-events:none}
+.route-info.vis{opacity:1;pointer-events:auto}
+.route-info-item{display:flex;flex-direction:column;align-items:center;gap:2px}
+.route-info-label{font-size:.5rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.route-info-val{font-weight:700;font-size:.8rem}
+/* ROUTE PROGRESS BAR */
+.route-progress{position:absolute;bottom:0;left:0;right:0;z-index:1000;height:4px;background:rgba(15,22,38,.5);pointer-events:none}
+.route-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),var(--neon2));border-radius:0 2px 2px 0;transition:width .5s ease}
 /* PANEL */
 .panel{background:var(--s1);border-left:2px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 /* CHARACTER BOX */
@@ -65,12 +80,6 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .instr-text{font-size:.85rem;font-weight:600;color:var(--neon2);line-height:1.6;min-height:48px;padding:9px 11px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:7px;transition:all .3s}
 .instr-text.flash{animation:iFlash .5s ease}
 @keyframes iFlash{0%,100%{background:rgba(16,185,129,.08)}50%{background:rgba(16,185,129,.25);box-shadow:0 0 18px rgba(16,185,129,.3)}}
-/* BILINGUAL */
-.bi-box{padding:12px 14px;border-bottom:1px solid var(--border);display:none}
-.bi-box.vis{display:block}
-.es-text{font-style:italic;font-size:.8rem;color:#fb923c;padding:7px 11px;background:rgba(249,115,22,.08);border-left:3px solid #fb923c;border-radius:0 5px 5px 0;margin-bottom:5px}
-.fr-reply{font-size:.82rem;font-weight:600;color:var(--text);padding:7px 11px;background:rgba(168,85,247,.08);border-left:3px solid var(--purple);border-radius:0 5px 5px 0}
-.bi-label{font-size:.58rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
 /* DEMO GRID */
 .demo-section{padding:12px 14px;border-bottom:1px solid var(--border)}
 .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
@@ -79,7 +88,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .demo-btn:active{transform:translateY(0)}
 /* ITINERARY */
 .itin-section{padding:12px 14px;border-bottom:1px solid var(--border)}
-.itin-row{display:flex;gap:5px;margin-bottom:5px;align-items:center}
+.itin-row{display:flex;gap:5px;margin-bottom:5px;align-items:center;position:relative}
 .itin-icon{font-size:.78rem;min-width:18px;line-height:2.2;text-align:center}
 .dest-input{flex:1;padding:7px 10px;background:var(--s2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:.8rem}
 .dest-input:focus{outline:none;border-color:var(--neon)}
@@ -93,6 +102,12 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .btn-clear:hover{border-color:var(--red);color:var(--red)}
 .wp-remove{padding:3px 7px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.72rem;transition:all .2s;flex-shrink:0}
 .wp-remove:hover{border-color:var(--red);color:var(--red)}
+/* AUTOCOMPLETE */
+.autocomplete-dropdown{position:absolute;top:100%;left:24px;right:0;z-index:2000;background:var(--s2);border:1px solid var(--neon);border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;display:none}
+.autocomplete-dropdown.vis{display:block}
+.autocomplete-item{padding:7px 10px;font-size:.72rem;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.autocomplete-item:hover{background:rgba(245,158,11,.15);color:var(--neon)}
+.autocomplete-item:last-child{border-bottom:none}
 /* VOICE CONTROLS */
 .voice-section{padding:12px 14px;margin-top:auto;border-top:1px solid var(--border)}
 .voice-row{display:flex;align-items:center;gap:8px}
@@ -115,10 +130,13 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .center-btn{position:absolute;bottom:18px;right:18px;z-index:1000;width:40px;height:40px;border-radius:50%;border:2px solid var(--neon);background:var(--s2);color:var(--neon);font-size:1.2rem;cursor:pointer;box-shadow:0 0 14px rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
 .center-btn:hover{background:var(--neon);color:#080c18}
 .center-btn.tracking{border-color:var(--neon2);color:var(--neon2);box-shadow:0 0 14px rgba(16,185,129,.4)}
-.speed-badge{position:absolute;bottom:18px;left:18px;z-index:1000;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--muted);box-shadow:0 0 12px rgba(16,185,129,.2);display:flex;flex-direction:column;gap:2px;min-width:90px}
+.speed-badge{position:absolute;bottom:18px;left:18px;z-index:1000;background:var(--s2);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--muted);box-shadow:0 0 12px rgba(16,185,129,.2);display:flex;flex-direction:column;gap:2px;min-width:90px;transition:border-color .3s,box-shadow .3s}
 .speed-val{font-size:1.4rem;font-weight:900;color:var(--neon);line-height:1}
 .speed-unit{font-size:.55rem;color:var(--muted);letter-spacing:2px}
 .speed-heading{font-size:.6rem;color:var(--neon2);margin-top:2px}
+/* SPEED ALERT */
+.speed-badge.alert{border-color:var(--red);box-shadow:0 0 18px rgba(239,68,68,.5);animation:speedPulse 1s ease-in-out infinite}
+@keyframes speedPulse{0%,100%{box-shadow:0 0 18px rgba(239,68,68,.5)}50%{box-shadow:0 0 30px rgba(239,68,68,.8)}}
 @media(max-width:700px){
   .main{grid-template-columns:1fr;grid-template-rows:45vh 1fr}
   .panel{border-left:none;border-top:2px solid var(--border)}
@@ -131,9 +149,12 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 <header>
   <div>
     <div class="logo">GPS DRÔLE</div>
-    <div class="tagline">Navigation avec personnalité · Beta v1.3</div>
+    <div class="tagline">Navigation avec personnalité · v2.0</div>
   </div>
-  <div class="header-right">OpenStreetMap · Web Speech API · OSRM<br><span>● 100% Gratuit · Aucune API Key</span></div>
+  <div class="header-right">
+    <div>OpenStreetMap · Web Speech API · OSRM<br><span>● 100% Gratuit · Aucune API Key</span></div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Mode clair/sombre">🌙</button>
+  </div>
 </header>
 
 <div class="modes-bar">
@@ -149,18 +170,23 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
   <button class="lang-btn active" data-lang="fr" onclick="setLang('fr')">🇫🇷 Français</button>
   <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
   <button class="lang-btn" data-lang="es" onclick="setLang('es')">🇪🇸 Español</button>
-  <button class="lang-btn bi" data-lang="bilingual" onclick="setLang('bilingual')">🤌 ES→FR Mystère</button>
 </div>
 
 <div class="main">
   <div id="map">
     <div class="toast" id="toast"></div>
+    <div class="route-info" id="routeInfo">
+      <div class="route-info-item"><span class="route-info-label">ETA</span><span class="route-info-val" id="riEta">--:--</span></div>
+      <div class="route-info-item"><span class="route-info-label">Temps restant</span><span class="route-info-val" id="riTime">--</span></div>
+      <div class="route-info-item"><span class="route-info-label">Distance</span><span class="route-info-val" id="riDist">--</span></div>
+    </div>
     <button class="center-btn" id="centerBtn" onclick="centerOnUser()" title="Centrer sur ma position">🎯</button>
     <div class="speed-badge" id="speedBadge">
       <div class="speed-val" id="speedVal">0</div>
-      <div class="speed-unit">KM/H</div>
+      <div class="speed-unit" id="speedUnit">KM/H</div>
       <div class="speed-heading" id="headingVal">—</div>
     </div>
+    <div class="route-progress" id="routeProgress"><div class="route-progress-fill" id="routeProgressFill"></div></div>
   </div>
   <div class="panel">
 
@@ -177,14 +203,6 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
     <div class="instr-box">
       <div class="box-label">📍 Instruction en cours</div>
       <div class="instr-text" id="instrText">Choisis un mode et teste un scénario! 🎮</div>
-    </div>
-
-    <!-- BILINGUAL -->
-    <div class="bi-box" id="biBox">
-      <div class="bi-label">🌐 Ce que le GPS dit (Español)</div>
-      <div class="es-text" id="esText">— —</div>
-      <div class="bi-label" style="margin-top:5px">🇫🇷 Ce que "le grand" comprend</div>
-      <div class="fr-reply" id="frText">— —</div>
     </div>
 
     <!-- SCÉNARIOS -->
@@ -209,13 +227,13 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
       <div class="box-label">🗺️ Planifier un itinéraire</div>
       <div class="itin-row">
         <span class="itin-icon">🟢</span>
-        <input class="dest-input" id="departIn" placeholder="Départ (vide = ma position)">
+        <input class="dest-input" id="departIn" placeholder="Départ (vide = ma position)" autocomplete="off">
       </div>
       <div id="wpList"></div>
       <button class="add-wp-btn" onclick="addWp()">➕ Ajouter une étape (max 4)</button>
       <div class="itin-row">
         <span class="itin-icon">🔴</span>
-        <input class="dest-input" id="destIn" placeholder="Destination finale..." onkeypress="if(event.key==='Enter')calcRoute()">
+        <input class="dest-input" id="destIn" placeholder="Destination finale..." autocomplete="off" onkeypress="if(event.key==='Enter')calcRoute()">
       </div>
       <div class="btn-row" style="margin-top:7px">
         <button class="btn-calc" onclick="calcRoute()">🗺️ CALCULER</button>
@@ -247,7 +265,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════
-//  VOICE PERSONAS
+//  VOICE PERSONAS (15 total: 3 per mode)
 // ═══════════════════════════════════════════════════════
 const PERSONAS = {
   grandmaman:[
@@ -295,7 +313,7 @@ const activeP = {grandmaman:0,enfant:0,amis:0,drole:0,insulte:0};
 function getP(){ return PERSONAS[mode][activeP[mode]||0]; }
 
 // ═══════════════════════════════════════════════════════
-//  PHRASES DATABASE
+//  PHRASES DATABASE (all 5 modes × 3 langs × 10 scenarios)
 // ═══════════════════════════════════════════════════════
 const P = {
  grandmaman:{
@@ -491,22 +509,6 @@ const P = {
 };
 
 // ═══════════════════════════════════════════════════════
-//  BILINGUAL ES→FR
-// ═══════════════════════════════════════════════════════
-const BI = {
-  straight:{es:"Continúe recto, por favor.",fr:["Oui oui, tout droit! J'ai compris mon grand!","Parfaitement! On fonce tout droit! J'avais deviné!"]},
-  right:{es:"Gire a la derecha en quinientos metros.",fr:["À droite dans 500m! J'avais exactement ça en tête!","Oui oui! On vire à droite! Pas de problème!"]},
-  left:{es:"Gire a la izquierda, por favor.",fr:["Oui! À gauche! Comme je le savais déjà!","Absolutement! Gauche! C'est ce que j'allais dire!"]},
-  uturn:{es:"Realice un giro en U cuando sea posible.",fr:["Demi-tour! Oui oui j'avais compris depuis le début!","Bien sûr on revire! J'allais le suggérer!"]},
-  missed:{es:"Ha fallado el giro. Recalculando la ruta.",fr:["Ah oui j'avais compris le virage… c'est la voiture qui n'a pas suivi.","Oui oui j'avais saisi… mais on recalcule, c'est plus intéressant."]},
-  recalc:{es:"Recalculando la ruta. Por favor espere.",fr:["Oui oui je recalcule! Pas de panique, j'ai tout sous contrôle!","Bien sûr on recalcule! J'avais déjà une idée de rechange!"]},
-  traffic:{es:"Hay tráfico en la ruta. Paciencia.",fr:["Oui oui trafic! J'avais deviné! Mon instinct est infaillible!","Du trafic! Exactement ce que j'allais dire!"]},
-  speed:{es:"Atención! Radar de velocidad adelante.",fr:["Radar! Oui oui j'avais remarqué! On ralentit!","J'allais justement mentionner ce radar! Grande coïncidence!"]},
-  tunnel:{es:"Atención, entrando en un túnel.",fr:["Tunnel! Oui oui j'avais anticipé ça!","Bien sûr un tunnel! J'allais le dire exactement!"]},
-  arrived:{es:"Ha llegado a su destino. Felicitaciones!",fr:["Arrivé! Comme prévu! J'avais compris depuis le début!","Exactement comme je l'avais planifié! Bravo à moi!"]}
-};
-
-// ═══════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════
 let mode='grandmaman', lang='fr';
@@ -516,6 +518,53 @@ let voiceOn=true;
 let wpCount=0, routeMarkers=[];
 let cachedVoices=[];
 let watchId=null, accuracyCircle=null, followUser=true;
+
+// Route state for new features
+let currentRouteCoords=null; // Array of [lat,lng] from OSRM geometry
+let currentRouteDist=0;      // Total distance in meters
+let currentRouteDur=0;       // Total duration in seconds
+let routeDestCoords=null;    // {lat,lng} of final destination
+let routeSteps=[];           // Turn-by-turn steps from OSRM
+let lastAnnouncedStep=-1;    // Index of last announced step
+let rerouteInterval=null;    // Interval for off-route detection
+let currentSpeed=0;          // Current speed in km/h from GPS
+let speedAlertActive=false;
+let useImperial=false;       // true = MPH (USA), false = KM/H
+
+// ═══════════════════════════════════════════════════════
+//  AUTO-DETECT USA → MPH
+// ═══════════════════════════════════════════════════════
+function detectCountry(lat,lng){
+  // Quick bounding-box check: continental US + Alaska + Hawaii
+  const isUSA=(lat>=24.5&&lat<=49.5&&lng>=-125&&lng<=-66.9)  // continental
+    ||(lat>=51&&lat<=71.5&&lng>=-180&&lng<=-129)              // Alaska
+    ||(lat>=18.9&&lat<=22.3&&lng>=-160.3&&lng<=-154.8);       // Hawaii
+  if(isUSA!==useImperial){
+    useImperial=isUSA;
+    document.getElementById('speedUnit').textContent=useImperial?'MPH':'KM/H';
+    setStatus(useImperial?'🇺🇸 USA détecté · Vitesse en MPH':'🇨🇦 Vitesse en KM/H');
+  }
+}
+function toDisplaySpeed(mps){ return mps!==null&&mps>0?Math.round(mps*(useImperial?2.23694:3.6)):0; }
+function toDisplayDist(meters){ return useImperial?(meters/1609.344).toFixed(1)+' mi':(meters/1000).toFixed(1)+' km'; }
+function speedLimit(){ return useImperial?35:50; } // 35 mph ≈ 56 km/h zone urbaine
+
+// ═══════════════════════════════════════════════════════
+//  THEME (Dark/Light)
+// ═══════════════════════════════════════════════════════
+function toggleTheme(){
+  const root=document.documentElement;
+  const isLight=root.classList.toggle('light');
+  document.getElementById('themeBtn').textContent=isLight?'☀️':'🌙';
+  localStorage.setItem('gps-drole-theme',isLight?'light':'dark');
+}
+(function initTheme(){
+  const saved=localStorage.getItem('gps-drole-theme');
+  if(saved==='light'){
+    document.documentElement.classList.add('light');
+    setTimeout(()=>{ document.getElementById('themeBtn').textContent='☀️'; },0);
+  }
+})();
 
 // ═══════════════════════════════════════════════════════
 //  MAP
@@ -556,9 +605,29 @@ function startTracking(){
     if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
     accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
     if(followUser) mapObj.setView([latitude,longitude],mapObj.getZoom());
+
+    // Detect country for unit switch
+    detectCountry(latitude,longitude);
+
+    // Speed display + alert
+    const spdDisplay=toDisplaySpeed(speed);
+    currentSpeed=spdDisplay;
     const sVal=document.getElementById('speedVal');
     const hVal=document.getElementById('headingVal');
-    sVal.textContent=(speed!==null&&speed>0)?Math.round(speed*3.6):'0';
+    const badge=document.getElementById('speedBadge');
+    sVal.textContent=spdDisplay;
+
+    // Speed alert zone (adapts to unit: 50 km/h or 35 mph)
+    const limit=speedLimit();
+    if(spdDisplay>limit&&!speedAlertActive){
+      speedAlertActive=true;
+      badge.classList.add('alert');
+      go('speed'); // Auto-announce speed scenario
+    } else if(spdDisplay<=limit&&speedAlertActive){
+      speedAlertActive=false;
+      badge.classList.remove('alert');
+    }
+
     if(heading!==null&&!isNaN(heading)){
       const dirs=['N','NE','E','SE','S','SO','O','NO'];
       hVal.textContent='🧭 '+dirs[Math.round(heading/45)%8]+' · '+Math.round(heading)+'°';
@@ -566,6 +635,12 @@ function startTracking(){
     const btn=document.getElementById('centerBtn');
     btn.classList.toggle('tracking',followUser);
     setStatus('📡 GPS temps réel'+(accuracy?' · ±'+Math.round(accuracy)+'m':''));
+
+    // Update route progress + ETA + turn-by-turn proximity
+    if(currentRouteCoords){
+      updateRouteProgress();
+      checkTurnByTurn();
+    }
   }, err=>{
     setStatus('⚠️ Erreur GPS: '+err.message);
   }, {enableHighAccuracy:true, maximumAge:3000, timeout:10000});
@@ -584,6 +659,49 @@ function quickDest(lat,lng){
 }
 
 // ═══════════════════════════════════════════════════════
+//  AUTOCOMPLETE (Nominatim)
+// ═══════════════════════════════════════════════════════
+let acTimers={};
+function setupAutocomplete(inputId){
+  const input=document.getElementById(inputId);
+  if(!input) return;
+  // Create dropdown
+  let dd=input.parentElement.querySelector('.autocomplete-dropdown');
+  if(!dd){
+    dd=document.createElement('div');
+    dd.className='autocomplete-dropdown';
+    input.parentElement.appendChild(dd);
+  }
+  input.addEventListener('input',()=>{
+    clearTimeout(acTimers[inputId]);
+    const q=input.value.trim();
+    if(q.length<3){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
+    acTimers[inputId]=setTimeout(async()=>{
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=1`);
+        const data=await r.json();
+        if(!data.length){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
+        dd.innerHTML='';
+        data.forEach(item=>{
+          const div=document.createElement('div');
+          div.className='autocomplete-item';
+          div.textContent=item.display_name;
+          div.addEventListener('click',()=>{
+            input.value=item.display_name;
+            dd.classList.remove('vis');
+            dd.innerHTML='';
+          });
+          dd.appendChild(div);
+        });
+        dd.classList.add('vis');
+      }catch(e){ dd.classList.remove('vis'); }
+    },400);
+  });
+  // Close on blur
+  input.addEventListener('blur',()=>{ setTimeout(()=>{ dd.classList.remove('vis'); },200); });
+}
+
+// ═══════════════════════════════════════════════════════
 //  ITINERARY
 // ═══════════════════════════════════════════════════════
 function addWp(){
@@ -594,9 +712,10 @@ function addWp(){
   const d=document.createElement('div');
   d.id='wp'+n; d.className='itin-row';
   d.innerHTML=`<span class="itin-icon">🔵</span>
-    <input class="dest-input" id="wpIn${n}" placeholder="Étape ${n}...">
+    <input class="dest-input" id="wpIn${n}" placeholder="Étape ${n}..." autocomplete="off">
     <button class="wp-remove" onclick="removeWp(${n})">✕</button>`;
   list.appendChild(d);
+  setupAutocomplete('wpIn'+n);
 }
 function removeWp(n){ const el=document.getElementById('wp'+n); if(el) el.remove(); }
 
@@ -617,7 +736,6 @@ async function calcRoute(){
   if(dv){ const g=await geocode(dv); if(!g){setStatus('❌ Départ non trouvé');return;} pts.push(g); }
   else pts.push({lat:userLat,lng:userLng,name:'Ma position'});
   // Waypoints
-  document.querySelectorAll('[id^="wpIn"]').forEach(async()=>{});
   const wps=[...document.querySelectorAll('[id^="wpIn"]')];
   for(const el of wps){
     if(el.value.trim()){ const g=await geocode(el.value.trim()); if(g) pts.push(g); }
@@ -635,7 +753,7 @@ async function calcRoute(){
 async function osrmRoute(pts){
   const coords=pts.map(p=>`${p.lng},${p.lat}`).join(';');
   try{
-    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true`);
     const d=await r.json();
     if(d.routes&&d.routes.length){
       const rt=d.routes[0];
@@ -649,11 +767,50 @@ async function osrmRoute(pts){
         routeMarkers.push(m);
       });
       mapObj.fitBounds(routeLayer.getBounds(),{padding:[40,40]});
-      const km=(rt.distance/1000).toFixed(1);
+
+      const distLabel=toDisplayDist(rt.distance);
       const min=Math.round(rt.duration/60);
       const dur=min>=60?`${Math.floor(min/60)}h${min%60}min`:`${min} min`;
-      setStatus(`✅ Route: ${km} km · ~${dur} · ${pts.length} points`);
-      showToast(`${km} km · ~${dur}`);
+
+      // Store route data for progress / ETA / rerouting / turn-by-turn
+      currentRouteDist=rt.distance;
+      currentRouteDur=rt.duration;
+      currentRouteCoords=rt.geometry.coordinates.map(c=>[c[1],c[0]]); // [lat,lng]
+      routeDestCoords={lat:pts[pts.length-1].lat,lng:pts[pts.length-1].lng};
+
+      // Parse turn-by-turn steps
+      routeSteps=[];
+      lastAnnouncedStep=-1;
+      if(rt.legs){
+        rt.legs.forEach(leg=>{
+          if(leg.steps){
+            leg.steps.forEach(step=>{
+              if(step.maneuver&&step.maneuver.location){
+                routeSteps.push({
+                  lat:step.maneuver.location[1],
+                  lng:step.maneuver.location[0],
+                  type:step.maneuver.type,
+                  modifier:step.maneuver.modifier||'',
+                  instruction:step.name||step.maneuver.type,
+                  distance:step.distance
+                });
+              }
+            });
+          }
+        });
+      }
+
+      // Show route info bar
+      updateRouteInfoBar(rt.distance,rt.duration);
+
+      // Reset progress
+      document.getElementById('routeProgressFill').style.width='0%';
+
+      // Start auto-rerouting detection
+      startRerouteDetection();
+
+      setStatus(`✅ Route: ${distLabel} · ~${dur} · ${pts.length} points · ${routeSteps.length} étapes`);
+      showToast(`${distLabel} · ~${dur}`);
       setTimeout(()=>go('straight'),900);
     }
   }catch(e){ setStatus('⚠️ Routage OSRM indisponible · Mode démo actif'); }
@@ -666,7 +823,139 @@ function clearRoute(){
   document.getElementById('wpList').innerHTML=''; wpCount=0;
   document.getElementById('departIn').value='';
   document.getElementById('destIn').value='';
+  // Reset route state
+  currentRouteCoords=null; currentRouteDist=0; currentRouteDur=0;
+  routeDestCoords=null; routeSteps=[]; lastAnnouncedStep=-1;
+  if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
+  document.getElementById('routeInfo').classList.remove('vis');
+  document.getElementById('routeProgressFill').style.width='0%';
   setStatus('🗑️ Route effacée · Prêt pour un nouvel itinéraire');
+}
+
+// ═══════════════════════════════════════════════════════
+//  ROUTE INFO BAR (ETA, Time remaining, Distance)
+// ═══════════════════════════════════════════════════════
+function updateRouteInfoBar(distMeters,durSeconds){
+  const now=new Date();
+  const eta=new Date(now.getTime()+durSeconds*1000);
+  const etaStr=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
+  const minLeft=Math.round(durSeconds/60);
+  const timeStr=minLeft>=60?`${Math.floor(minLeft/60)}h${minLeft%60}min`:`${minLeft} min`;
+  const distStr=toDisplayDist(distMeters);
+
+  document.getElementById('riEta').textContent='~'+etaStr;
+  document.getElementById('riTime').textContent=timeStr;
+  document.getElementById('riDist').textContent=distStr;
+  document.getElementById('routeInfo').classList.add('vis');
+}
+
+// ═══════════════════════════════════════════════════════
+//  ROUTE PROGRESS BAR
+// ═══════════════════════════════════════════════════════
+function updateRouteProgress(){
+  if(!routeDestCoords||!currentRouteDist) return;
+  const distToDestM=haversine(userLat,userLng,routeDestCoords.lat,routeDestCoords.lng);
+  let pct=Math.max(0,Math.min(100,(1-distToDestM/currentRouteDist)*100));
+  document.getElementById('routeProgressFill').style.width=pct+'%';
+
+  // Also update remaining ETA/distance in info bar
+  const remainDist=Math.max(0,distToDestM);
+  const avgSpeed=currentRouteDist/currentRouteDur; // m/s
+  const remainTime=avgSpeed>0?remainDist/avgSpeed:0;
+  updateRouteInfoBar(remainDist,remainTime);
+}
+
+// ═══════════════════════════════════════════════════════
+//  AUTO-REROUTING DETECTION
+// ═══════════════════════════════════════════════════════
+function startRerouteDetection(){
+  if(rerouteInterval) clearInterval(rerouteInterval);
+  rerouteInterval=setInterval(()=>{
+    if(!currentRouteCoords||!currentRouteCoords.length) return;
+    const minDist=minDistToRoute(userLat,userLng,currentRouteCoords);
+    if(minDist>100){ // > 100m off route
+      showToast('🔄 Recalcul en cours...');
+      go('recalc');
+      // Recalculate route to destination
+      if(routeDestCoords){
+        osrmRoute([{lat:userLat,lng:userLng},{lat:routeDestCoords.lat,lng:routeDestCoords.lng}]);
+      }
+    }
+  },10000);
+}
+
+function minDistToRoute(lat,lng,routeCoords){
+  let min=Infinity;
+  for(let i=0;i<routeCoords.length;i++){
+    const d=haversine(lat,lng,routeCoords[i][0],routeCoords[i][1]);
+    if(d<min) min=d;
+  }
+  return min;
+}
+
+// ═══════════════════════════════════════════════════════
+//  TURN-BY-TURN GUIDANCE
+// ═══════════════════════════════════════════════════════
+function checkTurnByTurn(){
+  if(!routeSteps.length) return;
+  for(let i=lastAnnouncedStep+1;i<routeSteps.length;i++){
+    const step=routeSteps[i];
+    const dist=haversine(userLat,userLng,step.lat,step.lng);
+    if(dist<80){ // Within 80m of step
+      lastAnnouncedStep=i;
+      const scenario=mapManeuverToScenario(step.type,step.modifier);
+      if(scenario){
+        go(scenario);
+      }
+      // Show step instruction
+      const instrLabel=buildStepInstruction(step);
+      if(instrLabel) showInstr(instrLabel);
+      break;
+    }
+  }
+}
+
+function mapManeuverToScenario(type,modifier){
+  if(type==='arrive') return 'arrived';
+  if(type==='turn'){
+    if(modifier.includes('right')) return 'right';
+    if(modifier.includes('left')) return 'left';
+    if(modifier.includes('uturn')) return 'uturn';
+  }
+  if(type==='new name'||type==='continue') return 'straight';
+  if(type==='fork'){
+    if(modifier.includes('right')) return 'right';
+    if(modifier.includes('left')) return 'left';
+  }
+  if(type==='end of road'){
+    if(modifier.includes('right')) return 'right';
+    if(modifier.includes('left')) return 'left';
+  }
+  if(type==='roundabout'||type==='rotary') return 'right';
+  if(type==='depart') return 'straight';
+  return null;
+}
+
+function buildStepInstruction(step){
+  const labels={fr:{turn:'Tourner',arrive:'Arrivée',continue:'Continuer',fork:'Bifurquer','new name':'Continuer','end of road':'Fin de route',depart:'Départ',roundabout:'Rond-point',rotary:'Rond-point'},
+    en:{turn:'Turn',arrive:'Arrived',continue:'Continue',fork:'Fork','new name':'Continue','end of road':'End of road',depart:'Depart',roundabout:'Roundabout',rotary:'Roundabout'},
+    es:{turn:'Girar',arrive:'Llegada',continue:'Continuar',fork:'Bifurcar','new name':'Continuar','end of road':'Fin de calle',depart:'Salida',roundabout:'Rotonda',rotary:'Rotonda'}};
+  const l=lang;
+  const lb=(labels[l]&&labels[l][step.type])||(labels.fr[step.type])||step.type;
+  const mod=step.modifier?(' '+step.modifier):'';
+  const name=step.instruction&&step.instruction!==step.type?(' · '+step.instruction):'';
+  return lb+mod+name;
+}
+
+// ═══════════════════════════════════════════════════════
+//  HAVERSINE DISTANCE (meters)
+// ═══════════════════════════════════════════════════════
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371000;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
 // ═══════════════════════════════════════════════════════
@@ -682,7 +971,6 @@ function setMode(m){
 function setLang(l){
   lang=l;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
-  document.getElementById('biBox').classList.toggle('vis',l==='bilingual');
   updateIndicator();
 }
 
@@ -708,35 +996,25 @@ function applyPersona(){
 }
 
 function updateIndicator(){
-  const flags={fr:'🇫🇷',en:'🇬🇧',es:'🇪🇸',bilingual:'🤌'};
+  const flags={fr:'🇫🇷',en:'🇬🇧',es:'🇪🇸'};
   document.getElementById('modeIndicator').textContent=`${getP().name} · ${flags[lang]||'🇫🇷'}`;
 }
 
 function testVoice(){
   const s={grandmaman:'Ah oui mon beau, mamie est là!',enfant:'YESSSS ON EST EN FEU!!',amis:"T'as raté le virage, ostie de cave!",drole:'Bravo. La science ne comprend pas encore comment.',insulte:"T'AS MANQUÉ LE VIRAGE ESPÈCE D'IDIOT SANDWICH!"};
   const txt=s[mode]||'Test de voix!';
-  showInstr(txt); speak(txt,lang==='bilingual'?'fr':lang); animChar();
+  showInstr(txt); speak(txt,lang); animChar();
 }
 
 // ═══════════════════════════════════════════════════════
 //  SCENARIOS
 // ═══════════════════════════════════════════════════════
 function go(sc){
-  if(lang==='bilingual'){ goBilingual(sc); return; }
-  const l=lang==='bilingual'?'fr':lang;
+  const l=lang;
   const arr=P[mode]&&P[mode][l]&&P[mode][l][sc];
   if(!arr||!arr.length) return;
   const txt=arr[Math.floor(Math.random()*arr.length)];
   showInstr(txt); speak(txt,l); animChar();
-}
-
-function goBilingual(sc){
-  const bi=BI[sc]; if(!bi) return;
-  const fr=bi.fr[Math.floor(Math.random()*bi.fr.length)];
-  document.getElementById('esText').textContent='"'+bi.es+'"';
-  document.getElementById('frText').textContent='"'+fr+'"';
-  showInstr(fr); animChar();
-  speakThen(bi.es,'es',()=>setTimeout(()=>speak(fr,'fr'),400));
 }
 
 // ═══════════════════════════════════════════════════════
@@ -793,18 +1071,6 @@ function speak(txt,l){
   window.speechSynthesis.speak(u);
 }
 
-function speakThen(txt,l,cb){
-  if(!window.speechSynthesis){ cb&&cb(); return; }
-  window.speechSynthesis.cancel();
-  const p=getP();
-  const u=new SpeechSynthesisUtterance(txt);
-  u.lang={fr:'fr-FR',en:'en-US',es:'es-ES'}[l]||'fr-FR';
-  u.rate=p.rate; u.pitch=p.pitch; u.volume=p.volume||1;
-  const v=pickVoice(l,p.gender); if(v) u.voice=v;
-  u.onend=()=>cb&&cb();
-  window.speechSynthesis.speak(u);
-}
-
 function toggleVoice(){
   voiceOn=!voiceOn;
   const btn=document.getElementById('voiceToggle');
@@ -840,7 +1106,12 @@ function showToast(msg){
 
 // ═══ INIT ═══
 window.addEventListener('load',()=>{
-  setTimeout(()=>{ renderPersonas(); applyPersona(); },500);
+  setTimeout(()=>{
+    renderPersonas();
+    applyPersona();
+    setupAutocomplete('departIn');
+    setupAutocomplete('destIn');
+  },500);
 });
 </script>
 </body>
