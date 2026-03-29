@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPS DRÔLE 🗺️😂</title>
+<title>GPS DROLE</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -19,7 +19,6 @@
   --text:#1e293b;--muted:#475569;--border:rgba(0,0,0,.12);
 }
 body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-/* HEADER */
 header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));border-bottom:2px solid var(--neon);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 0 40px rgba(245,158,11,.25);z-index:100}
 .logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;background:linear-gradient(90deg,var(--neon),#fde68a,var(--neon));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;letter-spacing:3px}
 @keyframes shimmer{to{background-position:200% center}}
@@ -28,65 +27,52 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .header-right span{color:var(--neon2)}
 .theme-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:1rem;transition:all .2s}
 .theme-btn:hover{border-color:var(--neon);background:rgba(245,158,11,.1)}
-/* MODES BAR */
 .modes-bar{flex-shrink:0;background:var(--s1);padding:7px 16px;display:flex;gap:5px;overflow-x:auto;border-bottom:1px solid var(--border);scrollbar-width:none}
 .modes-bar::-webkit-scrollbar{display:none}
 .mode-btn{flex-shrink:0;padding:5px 13px;border-radius:50px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:600;transition:all .2s;white-space:nowrap}
 .mode-btn:hover{border-color:var(--neon);color:var(--neon)}
 .mode-btn.active{background:var(--neon);border-color:var(--neon);color:#080c18;box-shadow:0 0 16px rgba(245,158,11,.4)}
-/* LANG BAR */
 .lang-bar{flex-shrink:0;background:var(--s2);padding:5px 16px;display:flex;align-items:center;gap:5px;border-bottom:1px solid var(--border)}
 .lang-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-right:4px}
 .lang-btn{padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:600;transition:all .2s}
 .lang-btn:hover{border-color:var(--neon2);color:var(--neon2)}
 .lang-btn.active{background:var(--neon2);border-color:var(--neon2);color:#080c18}
-/* MAIN */
 .main{flex:1;display:grid;grid-template-columns:1fr 340px;min-height:0}
-/* MAP */
 #map{height:100%;z-index:1;position:relative}
 .toast{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--neon);border-radius:8px;padding:7px 16px;font-family:'Orbitron',monospace;font-size:.72rem;color:var(--neon);z-index:1000;box-shadow:0 0 18px rgba(245,158,11,.3);pointer-events:none;opacity:0;transition:opacity .3s}
 .toast.show{opacity:1}
 .leaflet-popup-content-wrapper{background:var(--s2);color:var(--text);border:1px solid var(--border)}
 .leaflet-popup-tip{background:var(--s2)}
-/* ROUTE INFO BAR */
 .route-info{position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(15,22,38,.85);backdrop-filter:blur(6px);padding:8px 16px;display:flex;justify-content:space-around;align-items:center;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--neon);border-bottom:1px solid var(--neon);opacity:0;transition:opacity .3s;pointer-events:none}
 .route-info.vis{opacity:1;pointer-events:auto}
 .route-info-item{display:flex;flex-direction:column;align-items:center;gap:2px}
 .route-info-label{font-size:.5rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
 .route-info-val{font-weight:700;font-size:.8rem}
-/* ROUTE PROGRESS BAR */
 .route-progress{position:absolute;bottom:0;left:0;right:0;z-index:1000;height:4px;background:rgba(15,22,38,.5);pointer-events:none}
 .route-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon),var(--neon2));border-radius:0 2px 2px 0;transition:width .5s ease}
-/* PANEL */
 .panel{background:var(--s1);border-left:2px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-/* CHARACTER BOX */
 .char-box{background:linear-gradient(135deg,var(--s2),var(--s3));border-bottom:1px solid var(--border);padding:14px 14px 10px;text-align:center;position:relative;overflow:hidden}
 .char-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(245,158,11,.12),transparent 70%);pointer-events:none}
 .char-av{font-size:3rem;display:block;margin-bottom:4px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(245,158,11,.4));cursor:default;user-select:none}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .char-name{font-family:'Orbitron',monospace;font-size:.8rem;font-weight:700;color:var(--neon);letter-spacing:2px}
 .char-desc{font-size:.58rem;color:var(--muted);margin-top:3px;line-height:1.4}
-/* PERSONA BUTTONS */
 .persona-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .persona-btn{padding:4px 8px;border-radius:20px;border:2px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.68rem;font-weight:600;transition:all .2s;white-space:nowrap}
 .persona-btn:hover{border-color:var(--neon);color:var(--neon)}
 .persona-btn.active{background:rgba(245,158,11,.15);border-color:var(--neon);color:var(--neon)}
 .test-voice-btn{margin-top:6px;padding:4px 12px;border-radius:6px;border:1px solid var(--neon2);background:transparent;color:var(--neon2);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.7rem;font-weight:600;transition:all .2s;width:100%}
 .test-voice-btn:hover{background:rgba(16,185,129,.1)}
-/* BOX LABEL */
 .box-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:7px}
-/* INSTRUCTION */
 .instr-box{padding:12px 14px;border-bottom:1px solid var(--border)}
 .instr-text{font-size:.85rem;font-weight:600;color:var(--neon2);line-height:1.6;min-height:48px;padding:9px 11px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:7px;transition:all .3s}
 .instr-text.flash{animation:iFlash .5s ease}
 @keyframes iFlash{0%,100%{background:rgba(16,185,129,.08)}50%{background:rgba(16,185,129,.25);box-shadow:0 0 18px rgba(16,185,129,.3)}}
-/* DEMO GRID */
 .demo-section{padding:12px 14px;border-bottom:1px solid var(--border)}
 .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .demo-btn{padding:7px 5px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--text);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;transition:all .2s;text-align:center}
 .demo-btn:hover{border-color:var(--neon);background:rgba(245,158,11,.1);transform:translateY(-1px);box-shadow:0 3px 10px rgba(245,158,11,.12)}
 .demo-btn:active{transform:translateY(0)}
-/* ITINERARY */
 .itin-section{padding:12px 14px;border-bottom:1px solid var(--border)}
 .itin-row{display:flex;gap:5px;margin-bottom:5px;align-items:center;position:relative}
 .itin-icon{font-size:.78rem;min-width:18px;line-height:2.2;text-align:center}
@@ -100,7 +86,6 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .btn-calc:hover{background:#fde68a;box-shadow:0 0 22px rgba(245,158,11,.5)}
 .btn-clear{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.8rem;transition:all .2s}
 .btn-clear:hover{border-color:var(--red);color:var(--red)}
-/* START GUIDANCE BUTTON */
 .btn-guide{width:100%;padding:10px;margin-top:7px;background:var(--neon2);border:none;border-radius:8px;color:#080c18;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;cursor:pointer;letter-spacing:1px;transition:all .3s;box-shadow:0 0 16px rgba(16,185,129,.4);display:none}
 .btn-guide.vis{display:block;animation:guideAppear .4s ease}
 .btn-guide:hover{background:#34d399;box-shadow:0 0 28px rgba(16,185,129,.6);transform:translateY(-1px)}
@@ -109,31 +94,25 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 @keyframes guideAppear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .wp-remove{padding:3px 7px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.72rem;transition:all .2s;flex-shrink:0}
 .wp-remove:hover{border-color:var(--red);color:var(--red)}
-/* AUTOCOMPLETE */
 .autocomplete-dropdown{position:absolute;top:100%;left:24px;right:0;z-index:2000;background:var(--s2);border:1px solid var(--neon);border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;display:none}
 .autocomplete-dropdown.vis{display:block}
 .autocomplete-item{padding:7px 10px;font-size:.72rem;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .autocomplete-item:hover{background:rgba(245,158,11,.15);color:var(--neon)}
 .autocomplete-item:last-child{border-bottom:none}
-/* VOICE CONTROLS */
 .voice-section{padding:12px 14px;margin-top:auto;border-top:1px solid var(--border)}
 .voice-row{display:flex;align-items:center;gap:8px}
 .voice-toggle{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;transition:all .2s}
 .voice-toggle.on{background:var(--blue);border-color:var(--blue);color:white}
 .voice-range{flex:1;accent-color:var(--neon);cursor:pointer}
-/* STATUS BAR */
 .status-bar{flex-shrink:0;background:var(--s1);border-top:1px solid var(--border);padding:5px 16px;display:flex;align-items:center;gap:10px;font-size:.67rem;color:var(--muted);z-index:100}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon2);box-shadow:0 0 5px var(--neon2);animation:blink 2s infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 #modeIndicator{margin-left:auto;color:var(--neon);font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:1px}
-/* SPEAKING ANIM */
 .speaking{animation:speakBounce .35s ease-in-out infinite alternate !important}
 @keyframes speakBounce{from{transform:scale(1) translateY(0)}to{transform:scale(1.15) translateY(-6px)}}
-/* SCROLLBAR */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-/* LIVE GPS */
 .center-btn{position:absolute;bottom:18px;right:18px;z-index:1000;width:40px;height:40px;border-radius:50%;border:2px solid var(--neon);background:var(--s2);color:var(--neon);font-size:1.2rem;cursor:pointer;box-shadow:0 0 14px rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
 .center-btn:hover{background:var(--neon);color:#080c18}
 .center-btn.tracking{border-color:var(--neon2);color:var(--neon2);box-shadow:0 0 14px rgba(16,185,129,.4)}
@@ -141,7 +120,6 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .speed-val{font-size:1.4rem;font-weight:900;color:var(--neon);line-height:1}
 .speed-unit{font-size:.55rem;color:var(--muted);letter-spacing:2px}
 .speed-heading{font-size:.6rem;color:var(--neon2);margin-top:2px}
-/* SPEED ALERT */
 .speed-badge.alert{border-color:var(--red);box-shadow:0 0 18px rgba(239,68,68,.5);animation:speedPulse 1s ease-in-out infinite}
 @keyframes speedPulse{0%,100%{box-shadow:0 0 18px rgba(239,68,68,.5)}50%{box-shadow:0 0 30px rgba(239,68,68,.8)}}
 @media(max-width:700px){
@@ -155,28 +133,28 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 
 <header>
   <div>
-    <div class="logo">GPS DRÔLE</div>
-    <div class="tagline">Navigation avec personnalité · v2.0</div>
+    <div class="logo">GPS DROLE</div>
+    <div class="tagline">Navigation avec personnalite &middot; v2.1</div>
   </div>
   <div class="header-right">
-    <div>OpenStreetMap · Web Speech API · OSRM<br><span>● 100% Gratuit · Aucune API Key</span></div>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Mode clair/sombre">🌙</button>
+    <div>OpenStreetMap &middot; Web Speech API &middot; OSRM<br><span>&#9679; 100% Gratuit &middot; Aucune API Key</span></div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Mode clair/sombre">&#127769;</button>
   </div>
 </header>
 
 <div class="modes-bar">
-  <button class="mode-btn active" data-mode="grandmaman" onclick="setMode('grandmaman')">👵 Grand-maman</button>
-  <button class="mode-btn" data-mode="enfant" onclick="setMode('enfant')">👶 Enfant à bord</button>
-  <button class="mode-btn" data-mode="amis" onclick="setMode('amis')">🍺 Gang de chums</button>
-  <button class="mode-btn" data-mode="drole" onclick="setMode('drole')">😂 Extrême drôle</button>
-  <button class="mode-btn" data-mode="insulte" onclick="setMode('insulte')">💀 Extrême insulte</button>
+  <button class="mode-btn active" data-mode="grandmaman" onclick="setMode('grandmaman')">&#128117; Grand-maman</button>
+  <button class="mode-btn" data-mode="enfant" onclick="setMode('enfant')">&#128118; Enfant a bord</button>
+  <button class="mode-btn" data-mode="amis" onclick="setMode('amis')">&#127866; Gang de chums</button>
+  <button class="mode-btn" data-mode="drole" onclick="setMode('drole')">&#128514; Extreme drole</button>
+  <button class="mode-btn" data-mode="insulte" onclick="setMode('insulte')">&#128128; Extreme insulte</button>
 </div>
 
 <div class="lang-bar">
   <span class="lang-label">Langue</span>
-  <button class="lang-btn active" data-lang="fr" onclick="setLang('fr')">🇫🇷 Français</button>
-  <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
-  <button class="lang-btn" data-lang="es" onclick="setLang('es')">🇪🇸 Español</button>
+  <button class="lang-btn active" data-lang="fr" onclick="setLang('fr')">&#127467;&#127479; Francais</button>
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">&#127468;&#127463; English</button>
+  <button class="lang-btn" data-lang="es" onclick="setLang('es')">&#127466;&#127480; Espanol</button>
 </div>
 
 <div class="main">
@@ -187,78 +165,73 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
       <div class="route-info-item"><span class="route-info-label">Temps restant</span><span class="route-info-val" id="riTime">--</span></div>
       <div class="route-info-item"><span class="route-info-label">Distance</span><span class="route-info-val" id="riDist">--</span></div>
     </div>
-    <button class="center-btn" id="centerBtn" onclick="centerOnUser()" title="Centrer sur ma position">🎯</button>
+    <button class="center-btn" id="centerBtn" onclick="centerOnUser()" title="Centrer sur ma position">&#127919;</button>
     <div class="speed-badge" id="speedBadge">
       <div class="speed-val" id="speedVal">0</div>
       <div class="speed-unit" id="speedUnit">KM/H</div>
-      <div class="speed-heading" id="headingVal">—</div>
+      <div class="speed-heading" id="headingVal">&#8212;</div>
     </div>
     <div class="route-progress" id="routeProgress"><div class="route-progress-fill" id="routeProgressFill"></div></div>
   </div>
   <div class="panel">
 
-    <!-- CHARACTER -->
     <div class="char-box">
-      <span class="char-av" id="charAv">👵</span>
-      <div class="char-name" id="charName">MAMIE GPS</div>
-      <div class="char-desc" id="charDesc">Voix grave-douce · Rauque · Lente</div>
+      <span class="char-av" id="charAv">&#128117;</span>
+      <div class="char-name" id="charName">LISE GPS</div>
+      <div class="char-desc" id="charDesc">Grave-douce &middot; Quebecoise &middot; Style Lise Payette</div>
       <div class="persona-row" id="personaRow"></div>
-      <button class="test-voice-btn" onclick="testVoice()">🔊 Tester la voix</button>
+      <button class="test-voice-btn" onclick="testVoice()">&#128266; Tester la voix</button>
     </div>
 
-    <!-- INSTRUCTION -->
     <div class="instr-box">
-      <div class="box-label">📍 Instruction en cours</div>
-      <div class="instr-text" id="instrText">Choisis un mode et teste un scénario! 🎮</div>
+      <div class="box-label">&#128205; Instruction en cours</div>
+      <div class="instr-text" id="instrText">Choisis un mode et teste un scenario!</div>
     </div>
 
-    <!-- SCÉNARIOS -->
     <div class="demo-section">
-      <div class="box-label">🎮 Scénarios de test</div>
+      <div class="box-label">&#127918; Scenarios de test</div>
       <div class="demo-grid">
-        <button class="demo-btn" onclick="go('straight')">➡️ Tout droit</button>
-        <button class="demo-btn" onclick="go('right')">↪️ Droite</button>
-        <button class="demo-btn" onclick="go('left')">↩️ Gauche</button>
-        <button class="demo-btn" onclick="go('uturn')">🔃 Demi-tour</button>
-        <button class="demo-btn" onclick="go('missed')">❌ Virage raté</button>
-        <button class="demo-btn" onclick="go('recalc')">🔄 Recalcul</button>
-        <button class="demo-btn" onclick="go('traffic')">🚗 Trafic</button>
-        <button class="demo-btn" onclick="go('speed')">⚡ Radar</button>
-        <button class="demo-btn" onclick="go('tunnel')">🚇 Tunnel</button>
-        <button class="demo-btn" onclick="go('arrived')">🏁 Arrivée!</button>
+        <button class="demo-btn" onclick="go('straight')">&#10145;&#65039; Tout droit</button>
+        <button class="demo-btn" onclick="go('right')">&#8618;&#65039; Droite</button>
+        <button class="demo-btn" onclick="go('left')">&#8617;&#65039; Gauche</button>
+        <button class="demo-btn" onclick="go('uturn')">&#128259; Demi-tour</button>
+        <button class="demo-btn" onclick="go('missed')">&#10060; Virage rate</button>
+        <button class="demo-btn" onclick="go('recalc')">&#128260; Recalcul</button>
+        <button class="demo-btn" onclick="go('traffic')">&#128663; Trafic</button>
+        <button class="demo-btn" onclick="go('speed')">&#9889; Radar</button>
+        <button class="demo-btn" onclick="go('tunnel')">&#128647; Tunnel</button>
+        <button class="demo-btn" onclick="go('arrived')">&#127937; Arrivee!</button>
       </div>
     </div>
 
-    <!-- ITINÉRAIRE -->
     <div class="itin-section">
-      <div class="box-label">🗺️ Planifier un itinéraire</div>
+      <div class="box-label">&#128506;&#65039; Planifier un itineraire</div>
       <div class="itin-row">
-        <span class="itin-icon">🟢</span>
-        <input class="dest-input" id="departIn" placeholder="Départ (vide = ma position)" autocomplete="off">
+        <span class="itin-icon">&#128994;</span>
+        <input class="dest-input" id="departIn" placeholder="Depart (vide = ma position)" autocomplete="off">
       </div>
       <div id="wpList"></div>
-      <button class="add-wp-btn" onclick="addWp()">➕ Ajouter une étape (max 4)</button>
+      <button class="add-wp-btn" onclick="addWp()">&#10133; Ajouter une etape (max 4)</button>
       <div class="itin-row">
-        <span class="itin-icon">🔴</span>
+        <span class="itin-icon">&#128308;</span>
         <input class="dest-input" id="destIn" placeholder="Destination finale..." autocomplete="off" onkeypress="if(event.key==='Enter')calcRoute()">
       </div>
       <div class="btn-row" style="margin-top:7px">
-        <button class="btn-calc" onclick="calcRoute()">🗺️ CALCULER</button>
-        <button class="btn-clear" onclick="clearRoute()" title="Effacer">🗑️</button>
+        <button class="btn-calc" onclick="calcRoute()">&#128506;&#65039; CALCULER</button>
+        <button class="btn-clear" onclick="clearRoute()" title="Effacer">&#128465;&#65039;</button>
       </div>
-      <button class="btn-guide" id="btnGuide" onclick="toggleGuidance()">🚀 DÉMARRER LE GUIDAGE</button>
-      <div style="font-size:.62rem;color:var(--muted);margin-top:5px">Ou cliquez sur la carte pour destination directe 📍</div>
+      <button class="btn-guide" id="btnGuide" onclick="toggleGuidance()">&#128640; DEMARRER LE GUIDAGE</button>
+      <div style="font-size:.62rem;color:var(--muted);margin-top:5px">Ou cliquez sur la carte pour destination directe</div>
     </div>
 
-    <!-- VOICE CONTROLS -->
     <div class="voice-section">
-      <div class="box-label">🔊 Synthèse vocale</div>
+      <div class="box-label">&#128266; Synthese vocale</div>
       <div class="voice-row">
-        <button class="voice-toggle on" id="voiceToggle" onclick="toggleVoice()">🔊 ON</button>
+        <button class="voice-toggle on" id="voiceToggle" onclick="toggleVoice()">&#128266; ON</button>
         <input type="range" class="voice-range" id="voiceSpeed" min="0.6" max="1.5" step="0.1" value="1">
-        <span style="font-size:.68rem;color:var(--muted)" id="speedLabel">1.0×</span>
+        <span style="font-size:.68rem;color:var(--muted)" id="speedLabel">1.0x</span>
       </div>
-      <div style="font-size:.62rem;color:var(--muted);margin-top:4px">⚠️ Chrome recommandé pour les meilleures voix</div>
+      <div style="font-size:.62rem;color:var(--muted);margin-top:4px">Chrome recommande pour les meilleures voix</div>
     </div>
 
   </div>
@@ -266,310 +239,878 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 
 <div class="status-bar">
   <div class="status-dot"></div>
-  <span id="statusTxt">GPS prêt · Testez un scénario ou calculez un itinéraire!</span>
-  <span id="modeIndicator">MAMIE GPS · 🇫🇷</span>
+  <span id="statusTxt">GPS pret - Testez un scenario ou calculez un itineraire!</span>
+  <span id="modeIndicator">LISE GPS</span>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════
-//  VOICE PERSONAS (15 total: 3 per mode)
-// ═══════════════════════════════════════════════════════
-// ─────────────────────────────────────────────────────
-// Voice matching strategy:
-//   preferVoice is now {fr:[...], en:[...], es:[...]}
-//   Each language gets voices that ACTUALLY SPEAK that language
-//   Rate/pitch tuned for comprehensibility + character feel
-// ─────────────────────────────────────────────────────
+// =============================================================
+//  VOICE PERSONAS (15 total: 3 per mode, 5 modes)
+//  ANTI-SIRI: rate AND pitch both pushed away from 1.0
+//  preferVoice is language-dependent {fr:[...], en:[...], es:[...]}
+// =============================================================
 const PERSONAS = {
   grandmaman:[
-    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.75,  pitch:.90, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
+    {id:'lise', label:'\u{1F475} Lise', av:'\u{1F475}', name:'LISE GPS',
+     rate:.72, pitch:.90, volume:.9, gender:'female',
+     desc:'Grave-douce \u00b7 Qu\u00e9b\u00e9coise \u00b7 Style Lise Payette',
      preferVoice:{
-       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],
+       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Microsoft Denise Online','Denise','Google fran\u00e7ais','Am\u00e9lie'],
+       en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Microsoft Aria Online','Aria'],
+       es:['Microsoft Dalia Online','Dalia','Google espa\u00f1ol','Microsoft Sabina']
+     }},
+    {id:'betty', label:'\u{1F92D} Betty', av:'\u{1F92D}', name:'BETTY GPS',
+     rate:.85, pitch:1.15, volume:1, gender:'female',
+     desc:'Espi\u00e8gle \u00b7 Directe \u00b7 Style Betty White',
+     preferVoice:{
+       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google fran\u00e7ais','Am\u00e9lie'],
        en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha'],
-       es:['Microsoft Dalia Online','Dalia','Google español','Microsoft Sabina']}},
-    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.85,  pitch:1.12, volume:1, gender:'female', desc:'Espiègle · Directe · Style Betty White',
+       es:['Microsoft Dalia Online','Dalia','Google espa\u00f1ol','Microsoft Sabina']
+     }},
+    {id:'kate', label:'\u{1F3A9} Katharine', av:'\u{1F3A9}', name:'KATHARINE GPS',
+     rate:.68, pitch:.82, volume:.85, gender:'female',
+     desc:'Classe \u00b7 Franc-parler \u00b7 Katharine Hepburn',
      preferVoice:{
-       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google français','Amélie'],
-       en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Karen'],
-       es:['Microsoft Dalia Online','Dalia','Google español','Microsoft Sabina']}},
-    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.72,  pitch:.85, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
-     preferVoice:{
-       fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google français'],
-       en:['Microsoft Aria Online','Aria','Google UK English Female','Microsoft Linda','Samantha'],
-       es:['Microsoft Dalia Online','Dalia','Google español']}},
+       fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google fran\u00e7ais','Am\u00e9lie'],
+       en:['Microsoft Aria Online','Aria','Google UK English Female','Samantha','Microsoft Zira'],
+       es:['Microsoft Dalia Online','Dalia','Google espa\u00f1ol']
+     }},
   ],
   enfant:[
-    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.28, pitch:1.55,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
+    {id:'dory', label:'\u{1F41F} Dory', av:'\u{1F41F}', name:'DORY GPS',
+     rate:1.28, pitch:1.55, volume:1, gender:'female',
+     desc:'Aigu\u00eb \u00b7 \u00c9nergie max \u00b7 Style Dory Nemo',
      preferVoice:{
-       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google français','Amélie'],
+       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google fran\u00e7ais','Am\u00e9lie'],
        en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha'],
-       es:['Microsoft Dalia Online','Dalia','Google español']}},
-    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.88,  pitch:.65, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
+       es:['Microsoft Dalia Online','Dalia','Google espa\u00f1ol']
+     }},
+    {id:'buzz', label:'\u{1F680} Buzz', av:'\u{1F680}', name:'BUZZ GPS',
+     rate:.85, pitch:.62, volume:1, gender:'male',
+     desc:'H\u00e9ro\u00efque \u00b7 Dramatique \u00b7 Buzz Lightyear',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
        en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español','Microsoft Pablo']}},
-    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.20, pitch:1.30,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol','Microsoft Pablo']
+     }},
+    {id:'timon', label:'\u{1F981} Timon', av:'\u{1F981}', name:'TIMON GPS',
+     rate:1.22, pitch:1.30, volume:1, gender:'male',
+     desc:'Sarcastique joyeux \u00b7 Style Timon',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
-       en:['Microsoft Eric Online','Eric','Google US English','Microsoft Mark','Microsoft David','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
+       en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
   ],
   amis:[
-    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.15, pitch:1.08,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
+    {id:'deadpool', label:'\u{1F480} Deadpool', av:'\u{1F480}', name:'DEADPOOL GPS',
+     rate:1.18, pitch:1.08, volume:1, gender:'male',
+     desc:'Brise le 4e mur \u00b7 Insulte affectueuse',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
-       en:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Microsoft Mark','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
-    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.82,  pitch:.78, volume:.92,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
+       en:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Alex','Microsoft Ryan Online','Ryan'],
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
+    {id:'seth', label:'\u{1F602} Seth', av:'\u{1F602}', name:'SETH GPS',
+     rate:.78, pitch:.72, volume:.92, gender:'male',
+     desc:'Relax \u00b7 Rires \u00b7 Style Seth Rogen',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
        en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
-    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.78,  pitch:.60, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
+    {id:'kronk', label:'\u{1F3FA} Kronk', av:'\u{1F3FA}', name:'KRONK GPS',
+     rate:.75, pitch:.58, volume:1, gender:'male',
+     desc:'Friendly \u00b7 Pas trop bright \u00b7 Kronk',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
        en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
   ],
   drole:[
-    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.68,  pitch:.52, volume:.82,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
+    {id:'morgan', label:'\u{1F399}\uFE0F Morgan', av:'\u{1F399}\uFE0F', name:'MORGAN GPS',
+     rate:.65, pitch:.52, volume:.82, gender:'male',
+     desc:'Grave documentaire \u00b7 Morgan Freeman',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
        en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
-    {id:'ron',    label:'📺 Ron',       av:'📺', name:'RON GPS',       rate:1.05, pitch:.92, volume:1,  gender:'male',   desc:'Pompeux confiant · Ron Burgundy',
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
+    {id:'ron', label:'\u{1F4FA} Ron', av:'\u{1F4FA}', name:'RON GPS',
+     rate:1.08, pitch:.90, volume:1, gender:'male',
+     desc:'Pompeux confiant \u00b7 Ron Burgundy',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
-       en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Mark','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
-    {id:'jarvis', label:'🤖 Jarvis',   av:'🤖', name:'JARVIS GPS',    rate:.90,  pitch:.82, volume:.88,gender:'male',   desc:'IA sarcastique · Jarvis Iron Man',
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
+       en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Alex','Microsoft Ryan Online','Ryan'],
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
+    {id:'jarvis', label:'\u{1F916} Jarvis', av:'\u{1F916}', name:'JARVIS GPS',
+     rate:.88, pitch:.80, volume:.88, gender:'male',
+     desc:'IA sarcastique \u00b7 Jarvis Iron Man',
      preferVoice:{
-       fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google français'],
+       fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google fran\u00e7ais'],
        en:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft David'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
   ],
   insulte:[
-    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.25, pitch:.92, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
+    {id:'gordon', label:'\u{1F468}\u200D\u{1F373} Gordon', av:'\u{1F468}\u200D\u{1F373}', name:'GORDON GPS',
+     rate:1.28, pitch:.95, volume:1, gender:'male',
+     desc:'Rage culinaire \u00b7 Gordon Ramsay',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
        en:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft Guy Online'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
-    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.25, pitch:.78, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
+    {id:'ermey', label:'\u{1F482} Ermey', av:'\u{1F482}', name:'ERMEY GPS',
+     rate:1.25, pitch:.75, volume:1, gender:'male',
+     desc:'Sergent instructeur \u00b7 Full Metal Jacket',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
-       en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Microsoft Mark','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
-    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.68,  pitch:.45, volume:.78,gender:'male',   desc:'Calme certain · Thanos',
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
+       en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
+    {id:'thanos', label:'\u{1F30C} Thanos', av:'\u{1F30C}', name:'THANOS GPS',
+     rate:.65, pitch:.48, volume:.78, gender:'male',
+     desc:'Calme certain \u00b7 Thanos',
      preferVoice:{
-       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google fran\u00e7ais'],
        en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
-       es:['Microsoft Jorge Online','Jorge','Google español']}},
+       es:['Microsoft Jorge Online','Jorge','Google espa\u00f1ol']
+     }},
   ],
 };
-const activeP = {grandmaman:0,enfant:0,amis:0,drole:0,insulte:0};
+const activeP = {grandmaman:0, enfant:0, amis:0, drole:0, insulte:0};
 function getP(){ return PERSONAS[mode][activeP[mode]||0]; }
 
-// ═══════════════════════════════════════════════════════
-//  PHRASES DATABASE (all 5 modes × 3 langs × 10 scenarios)
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  PHRASES DATABASE - ALL HUMAN-SOUNDING
+//  Rules: "..." pauses, contractions, "euh/hmm/bon/like" fillers,
+//  CAPS emphasis, persona quirks
+// =============================================================
 const P = {
  grandmaman:{
   fr:{
-   straight:["Continuez tout droit, mon beau… c'est ça, tout doucement!","Allez tout droit! T'as-tu compris? Parfait, mamie est fière de toi!","Tout droit mon p'tit coeur, et garde les deux mains sur le volant!"],
-   right:["Dans 500 mètres, tourne à droite mon chéri… pas trop vite hein!","Tourne à droite! C'est ça bravo! Mamie répète: à droite!","À droite dans 500 mètres… t'as-tu compris mon trésor?"],
-   left:["Prends à gauche mon grand… à gauche! L'autre gauche!","Tourne à gauche… doucement, y'a pas le feu!","À gauche mon beau… l'autre gauche mon cœur!"],
-   uturn:["Fais un demi-tour s'il te plaît mon beau… doucement, doucement!","On tourne de bord mon chéri… fais attention aux autres voitures!"],
-   missed:["Oh mon dieu… t'as raté le virage mon p'tit coeur. Mamie recalcule…","Aïe aïe aïe, c'était là! C'est correct, mamie te pardonne. On recalcule!","Oh non non non… c'est pas grave hein. On trouve un autre chemin!","La vie c'est comme une boîte de chocolats mon beau… on sait jamais quel virage on va rater."],
-   recalc:["Mamie recalcule la route… attends-moi une seconde mon beau!","Un moment mon chéri, mamie trouve un nouveau chemin pour toi!","Mamie va trouver un autre chemin. Elle a toujours trouvé. Elle trouvera encore."],
-   traffic:["Y'a du trafic là… c'est comme le dimanche soir à Noël ça!","Ah du trafic… ça me rappelle quand ton grand-père conduisait. On attendait des heures!","Patience mon beau… même les hobbits sont arrivés à destination."],
-   speed:["Ralentis mon beau, y'a un radar! Mamie veut pas que t'aies un ticket!","Doucement doucement! Radar devant! Mamie t'aime trop pour te laisser avoir une contravention!","Avec grand pouvoir vient grande responsabilité… et les radars mon chéri."],
-   tunnel:["On entre dans un tunnel mon chéri… accroche-toi!","Tunnel devant mon beau… c'est correct mamie est là!"],
-   arrived:["T'es arrivé mon trésor!! Mamie est tellement fière! Veux-tu un biscuit?","Ah voilà! On est arrivé! Bravo bravo bravo! Mamie t'aime!","Il n'y a pas d'endroit comme chez nous mon trésor!"]
+   straight:[
+     "Continue tout droit, mon beau... c'est \u00e7a, tout DOUCEMENT!",
+     "Allez tout droit! T'as-tu compris? Bon... mamie est FI\u00c8RE de toi!",
+     "Tout droit mon p'tit coeur... euh... garde les deux mains sur le volant, l\u00e0!",
+     "Droit devant toi, mon tr\u00e9sor... mamie te surveille, t'sais!"
+   ],
+   right:[
+     "Dans 500 m\u00e8tres... euh... tourne \u00e0 DROITE mon ch\u00e9ri... pas trop vite hein!",
+     "Tourne \u00e0 droite! C'est \u00e7a BRAVO! Mamie r\u00e9p\u00e8te: \u00e0 droite, l\u00e0!",
+     "\u00c0 droite dans 500 m\u00e8tres... t'as-tu compris mon tr\u00e9sor? \u00c0 DROITE!"
+   ],
+   left:[
+     "Prends \u00e0 gauche mon grand... \u00e0 GAUCHE! L'autre gauche!",
+     "Tourne \u00e0 gauche... euh... doucement, y'a pas le feu, l\u00e0!",
+     "\u00c0 gauche mon beau... bon, l'AUTRE gauche mon coeur... voyons!"
+   ],
+   uturn:[
+     "Fais un demi-tour s'il te pla\u00eet mon beau... doucement, DOUCEMENT!",
+     "On tourne de bord mon ch\u00e9ri... euh... fais attention aux autres voitures, l\u00e0!"
+   ],
+   missed:[
+     "Oh mon dieu... t'as rat\u00e9 le virage mon p'tit coeur... bon, mamie recalcule...",
+     "A\u00efe a\u00efe a\u00efe... c'\u00e9tait L\u00c0! C'est correct, mamie te pardonne... on recalcule!",
+     "Oh non non non... c'est pas grave hein... euh... on trouve un autre chemin!",
+     "La vie c'est comme une bo\u00eete de chocolats mon beau... on sait JAMAIS quel virage on va rater, t'sais."
+   ],
+   recalc:[
+     "Mamie recalcule la route... euh... attends-moi une seconde mon beau!",
+     "Un moment mon ch\u00e9ri... bon, mamie trouve un NOUVEAU chemin pour toi!",
+     "Mamie va trouver un autre chemin... elle a TOUJOURS trouv\u00e9... elle trouvera encore, l\u00e0."
+   ],
+   traffic:[
+     "Y'a du trafic l\u00e0... c'est comme le dimanche soir \u00e0 No\u00ebl \u00e7a, bon!",
+     "Ah du trafic... euh... \u00e7a me rappelle quand ton grand-p\u00e8re conduisait... on attendait des HEURES!",
+     "Patience mon beau... m\u00eame les hobbits sont arriv\u00e9s \u00e0 destination, t'sais..."
+   ],
+   speed:[
+     "RALENTIS mon beau, y'a un radar! Mamie veut PAS que t'aies un ticket!",
+     "Doucement doucement! Radar devant! Mamie t'aime TROP pour te laisser avoir une contravention!",
+     "Avec grand pouvoir vient grande responsabilit\u00e9... euh... et les radars mon ch\u00e9ri."
+   ],
+   tunnel:[
+     "On entre dans un tunnel mon ch\u00e9ri... bon, accroche-toi!",
+     "Tunnel devant mon beau... c'est correct, mamie est L\u00c0 avec toi!"
+   ],
+   arrived:[
+     "T'es ARRIV\u00c9 mon tr\u00e9sor!! Mamie est tellement FI\u00c8RE! Veux-tu un biscuit?",
+     "Ah voil\u00e0! On est arriv\u00e9! BRAVO bravo bravo! Mamie t'aime!",
+     "Il n'y a pas d'endroit comme chez nous... mon tr\u00e9sor, t'sais!"
+   ]
   },
   en:{
-   straight:["Keep going straight, sweetheart… nice and slow!","Straight ahead dear, grandma is right here with you!"],
-   right:["In 500 meters turn right honey… not too fast now!","Turn right darling! That's it! Grandma is so proud!"],
-   left:["Turn left dear… the OTHER left, sweetie!","Go left now honey, gently, there's no rush!"],
-   uturn:["Make a U-turn sweetheart… nice and easy!","We're turning around dear… careful of the other cars!"],
-   missed:["Oh my goodness… you missed the turn dear. Grandma is recalculating…","Oh oh oh, it was right there! That's okay, we'll find another way!","Life is like a box of chocolates sweetheart… you never know which turn you'll miss."],
-   recalc:["Grandma is finding a new route… hold on sweetheart!","One moment honey, grandma will figure this out!"],
-   traffic:["There's traffic ahead dear… patience is a virtue!","Oh traffic… reminds me of Christmas with your grandfather!"],
-   speed:["Slow down honey, there's a speed camera! Grandma doesn't want you getting a ticket!","Gently gently! Speed camera ahead!"],
-   tunnel:["We're going through a tunnel sweetheart… hold on!","Tunnel ahead dear… grandma is right here!"],
-   arrived:["You made it!! Grandma is SO proud! Want a cookie?","We're here my treasure! Wonderful job darling!","There's no place like home my treasure!"]
+   straight:[
+     "Keep going straight, sweetheart... nice and SLOW, okay?",
+     "Straight ahead dear... hmm... grandma is RIGHT here with you!",
+     "Just keep going forward, honey... you're doing WONDERFUL!"
+   ],
+   right:[
+     "In 500 meters turn right honey... euh, not too fast now!",
+     "Turn RIGHT darling! That's it! Grandma is so PROUD!",
+     "Right turn coming up, dear... hmm... you can do this!"
+   ],
+   left:[
+     "Turn left dear... the OTHER left, sweetie! Hmm...",
+     "Go left now honey... gently, there's NO rush, okay?"
+   ],
+   uturn:[
+     "Make a U-turn sweetheart... nice and EASY does it!",
+     "We're turning around dear... careful of the other cars, okay?"
+   ],
+   missed:[
+     "Oh my GOODNESS... you missed the turn dear... grandma is recalculating...",
+     "Oh oh oh... it was RIGHT there! That's okay, we'll find another way, hmm...",
+     "Life is like a box of chocolates sweetheart... you NEVER know which turn you'll miss."
+   ],
+   recalc:[
+     "Grandma is finding a new route... hold on, sweetheart!",
+     "One moment honey... hmm... grandma will FIGURE this out!"
+   ],
+   traffic:[
+     "There's traffic ahead dear... patience is a VIRTUE, you know!",
+     "Oh traffic... reminds me of Christmas with your grandfather... hmm..."
+   ],
+   speed:[
+     "SLOW DOWN honey, there's a speed camera! Grandma doesn't want you getting a ticket!",
+     "Gently gently! Speed camera AHEAD! Oh my..."
+   ],
+   tunnel:[
+     "We're going through a tunnel sweetheart... HOLD on!",
+     "Tunnel ahead dear... grandma is RIGHT here, okay?"
+   ],
+   arrived:[
+     "You MADE it!! Grandma is SO proud! Want a cookie, dear?",
+     "We're HERE my treasure! Wonderful job, darling!",
+     "There's no place like HOME... my treasure!"
+   ]
   },
   es:{
-   straight:["Sigue recto mi amor… despacio y con cuidado!","Todo derecho cariño, abuelita está aquí contigo!"],
-   right:["En 500 metros gira a la derecha mi niño… con cuidadito!","Gira a la derecha! Así se hace! Abuelita está orgullosa!"],
-   left:["Gira a la izquierda mi amor… el otro izquierda!","A la izquierda cariño… despacio, no hay prisa!"],
-   uturn:["Da media vuelta mi cielo… despacito!","Giramos mi amor… cuidado con los otros coches!"],
-   missed:["Ay dios mío… te pasaste el giro mi cielo. Abuelita recalcula…","Ay ay ay, era ahí! No importa mi amor, buscamos otro camino!"],
-   recalc:["Abuelita busca nueva ruta… espera un momentito!","Un momento mi amor, abuelita lo resuelve!"],
-   traffic:["Hay tráfico mi amor… paciencia corazón!","Ay tráfico… me recuerda a tu abuelo manejando!"],
-   speed:["Baja la velocidad mi amor, hay un radar! Abuelita no quiere que te multen!","Despacito despacito, radar adelante!"],
-   tunnel:["Entramos en un túnel mi cielo… agárrate!","Túnel adelante mi amor… abuelita está aquí!"],
-   arrived:["Llegaste mi tesoro!! Abuelita está tan orgullosa! ¿Quieres una galleta?","Aquí estamos mi cielo! Qué bien lo has hecho!"]
+   straight:[
+     "Sigue recto mi amor... despacito y con CUIDADO!",
+     "Todo derecho cari\u00f1o... euh... abuelita est\u00e1 aqu\u00ed contigo!",
+     "Recto, recto, mi ni\u00f1o... TRANQUILO, que no pasa nada."
+   ],
+   right:[
+     "En 500 metros gira a la DERECHA mi ni\u00f1o... con cuidadito!",
+     "Gira a la derecha! As\u00ed se hace! Abuelita est\u00e1 ORGULLOSA!"
+   ],
+   left:[
+     "Gira a la IZQUIERDA mi amor... el otro izquierda, ay!",
+     "A la izquierda cari\u00f1o... despacio, no hay PRISA!"
+   ],
+   uturn:[
+     "Da media vuelta mi cielo... euh... DESPACITO!",
+     "Giramos mi amor... cuidado con los otros coches, vale?"
+   ],
+   missed:[
+     "Ay DIOS m\u00edo... te pasaste el giro mi cielo... abuelita recalcula...",
+     "Ay ay ay... era AH\u00cd! No importa mi amor, buscamos otro camino!"
+   ],
+   recalc:[
+     "Abuelita busca NUEVA ruta... espera un momentito!",
+     "Un momento mi amor... euh... abuelita lo resuelve!"
+   ],
+   traffic:[
+     "Hay tr\u00e1fico mi amor... PACIENCIA coraz\u00f3n!",
+     "Ay tr\u00e1fico... me recuerda a tu abuelo manejando, hmm..."
+   ],
+   speed:[
+     "BAJA la velocidad mi amor, hay un radar! Abuelita no quiere que te multen!",
+     "Despacito despacito... RADAR adelante, ay!"
+   ],
+   tunnel:[
+     "Entramos en un t\u00fanel mi cielo... euh... AG\u00c1RRATE!",
+     "T\u00fanel adelante mi amor... abuelita est\u00e1 AQU\u00cd!"
+   ],
+   arrived:[
+     "LLEGASTE mi tesoro!! Abuelita est\u00e1 tan orgullosa! Quieres una galleta?",
+     "Aqu\u00ed estamos mi cielo! Qu\u00e9 BIEN lo has hecho, ay!"
+   ]
   }
  },
  enfant:{
   fr:{
-   straight:["TOUT DROIT!! T'ES LE MEILLEUR CONDUCTEUR EVER! 🎉","Continue!! C'EST TROP COOL! Comme dans Mario Kart!","À L'INFINI ET AU-DELÀ!! FONCE!! 🚀"],
-   right:["TOURNE À DROITE DANS 500 MÈTRES! Ouiiiii! T'ES EN FEU! 🔥","Droite droite droite! WOOHOO!","HAKUNA MATATA!! On tourne à droite et la vie est belle!!"],
-   left:["À GAUCHE!! YESSS!! Come on t'es capable!","Gauche! L'autre côté! ALLER ALLEZ ALLEZ!"],
-   uturn:["DEMI-TOUR!! COMME UN SPIN!! TROP COOL! 🌀","On fait un U-TURN?! C'EST COMME UN JEU VIDÉO!"],
-   missed:["OHHH NON T'AS RATÉ!! C'est correct on recalcule! Niveau bonus! 🎮","Oops! Ha ha! Nouvelle route! C'EST ENCORE PLUS D'AVENTURE!","On est perdu! Mais comme dit Dory: FAUT JUSTE CONTINUER À NAGER!! 🐟"],
-   recalc:["ON RECALCULE! DING DING DING! Nouveau niveau débloqué! 🏆","Recalcul en cours… 3… 2… 1… PARTIIIII!"],
-   traffic:["Y'A DES VOITURES PARTOUT!! Comme dans un jeu vidéo!","TRAFIC! On peut écouter une chanson?! Hein hein?!"],
-   speed:["RADAR RADAR! Ralentis vite vite VITE! ⚡","OH NON UN RADAR! Tes parents vont pas être contents!"],
-   tunnel:["TUNNEL!!! C'EST COMME UNE GROTTE MAGIQUE! 🌑✨","OH WOW UN TUNNEL! Fais coucou à Batman!"],
-   arrived:["YAYYYYYYY T'ES ARRIVÉÉÉÉ! 🎊🎉🏆 CHAMPION DU MONDE!","VICTOIRE!! T'AS GAGNÉ LE JEU!! HIGHEST SCORE!","ON EST LÀ!! BIENVENUE AU PAYS DES RÊVES!! ✨"]
+   straight:[
+     "TOUT DROIT!! T'es le MEILLEUR conducteur ever!",
+     "Continue!! C'est TROP COOL! Comme dans Mario Kart, genre!",
+     "\u00c0 L'INFINI ET AU-DEL\u00c0!! FONCE... euh... attends... o\u00f9 on allait d\u00e9j\u00e0?",
+     "On NAGE on nage on nage... euh... on ROULE on roule on roule!"
+   ],
+   right:[
+     "TOURNE \u00c0 DROITE DANS 500 M\u00c8TRES! Ouiiiii! T'ES EN FEU!",
+     "Droite droite droite! WOOHOO! C'est... euh... c'\u00e9tait quoi la question?",
+     "HAKUNA MATATA!! On tourne \u00e0 droite et la vie est BELLE!!"
+   ],
+   left:[
+     "\u00c0 GAUCHE!! YESSS!! Come on t'es capable! Genre... VRAIMENT!",
+     "Gauche! L'autre c\u00f4t\u00e9! ALLER ALLEZ... euh... attends c'est par O\u00d9?"
+   ],
+   uturn:[
+     "DEMI-TOUR!! COMME UN SPIN!! TROP COOL!",
+     "On fait un U-TURN?! C'EST COMME UN JEU VID\u00c9O! J'adore... j'adore... c'\u00e9tait quoi?"
+   ],
+   missed:[
+     "OHHH NON T'AS RAT\u00c9!! C'est correct on recalcule! NIVEAU BONUS!",
+     "Oops! Ha ha! Nouvelle route! C'EST ENCORE PLUS D'AVENTURE!!",
+     "On est perdu! Mais comme dit... euh... qui d\u00e9j\u00e0?... ah oui: FAUT JUSTE CONTINUER \u00c0 NAGER!!",
+     "Oh non oh non oh... euh... de quoi on parlait? Ah oui! NOUVEAU CHEMIN!"
+   ],
+   recalc:[
+     "ON RECALCULE! DING DING DING! Nouveau niveau D\u00c9BLOQU\u00c9!",
+     "Recalcul en cours... 3... 2... 1... PARTIIIII!!"
+   ],
+   traffic:[
+     "Y'A DES VOITURES PARTOUT!! Comme dans un jeu vid\u00e9o, genre!!",
+     "TRAFIC! On peut \u00e9couter une CHANSON?! Hein hein?! DIIIIIS OUI!"
+   ],
+   speed:[
+     "RADAR RADAR! Ralentis VITE vite VITE!",
+     "OH NON UN RADAR! Tes parents vont PAS \u00eatre contents! Euh... oups!"
+   ],
+   tunnel:[
+     "TUNNEL!!! C'EST COMME UNE GROTTE MAGIQUE!! Oh WOW!",
+     "OH WOW UN TUNNEL! Fais coucou \u00e0 Batman! Euh... il est o\u00f9 Batman?"
+   ],
+   arrived:[
+     "YAYYYYYYY T'ES ARRIV\u00c9\u00c9\u00c9\u00c9! CHAMPION DU MONDE!! Wooooo!",
+     "VICTOIRE!! T'AS GAGN\u00c9 LE JEU!! HIGHEST SCORE! C'est... c'est QUOI un score?",
+     "ON EST L\u00c0!! BIENVENUE AU PAYS DES R\u00caVES!! Euh... c'est o\u00f9 \u00e7a?"
+   ]
   },
   en:{
-   straight:["STRAIGHT AHEAD!! YOU'RE THE BEST DRIVER EVER! 🎉","Keep going!! THIS IS SO COOL! Like Mario Kart!","TO INFINITY AND BEYOND!! GO!! 🚀"],
-   right:["TURN RIGHT IN 500 METERS! YESSSSS! YOU'RE ON FIRE! 🔥","Right right right! WOOHOO!","HAKUNA MATATA!! Turn right and life is beautiful!!"],
-   left:["LEFT!! YESSSS!! Come on you've got this!","The other side! GO GO GO!"],
-   uturn:["U-TURN!! LIKE A SPIN!! SO COOL! 🌀","We're doing a U-TURN?! IT'S LIKE A VIDEO GAME!"],
-   missed:["OHHH NOOO YOU MISSED IT!! Bonus level! 🎮","Oops! Haha! New route! EVEN MORE ADVENTURE!","We're lost! But like Dory says: JUST KEEP SWIMMING!! 🐟"],
-   recalc:["RECALCULATING! DING DING DING! New level unlocked! 🏆","Recalculating… 3… 2… 1… GOOO!"],
-   traffic:["CARS EVERYWHERE!! It's like a video game!","TRAFFIC! Can we listen to a song?! Huh huh?!"],
-   speed:["SPEED CAMERA! Slow down fast fast FAST! ⚡","OH NO A RADAR! Your parents won't be happy!"],
-   tunnel:["TUNNEL!!! IT'S LIKE A MAGIC CAVE! 🌑✨","OH WOW A TUNNEL! Say hi to Batman!"],
-   arrived:["YAYYYYYY YOU MADE ITTTT! 🎊🎉🏆 WORLD CHAMPION!","VICTORY!! YOU WON THE GAME!! HIGHEST SCORE!","WE'RE HERE!! WELCOME TO THE DREAM WORLD!! ✨"]
+   straight:[
+     "STRAIGHT AHEAD!! You're the BEST driver EVER!",
+     "Keep going!! THIS IS SO COOL! Like... like... what's that game? MARIO KART!",
+     "TO INFINITY AND BEYOND!! GO GO GO!",
+     "Just keep SWIMMING... wait no... just keep DRIVING!!"
+   ],
+   right:[
+     "TURN RIGHT IN 500 METERS! YESSSSS! YOU'RE ON FIRE!",
+     "Right right right! WOOHOO! I love... hmm... what was I saying?",
+     "HAKUNA MATATA!! Turn right and LIFE IS BEAUTIFUL!!"
+   ],
+   left:[
+     "LEFT!! YESSSS!! Come on you've GOT this! Like... TOTALLY!",
+     "The other side! GO GO GO! Wait... which other side?"
+   ],
+   uturn:[
+     "U-TURN!! LIKE A SPIN!! SO COOL!!",
+     "We're doing a U-TURN?! IT'S LIKE A VIDEO GAME! I love video... what are those?"
+   ],
+   missed:[
+     "OHHH NOOO YOU MISSED IT!! That's okay... BONUS LEVEL!",
+     "Oops! Haha! New route! EVEN MORE ADVENTURE!!",
+     "We're lost! But like Dory says: JUST KEEP SWIMMING!! Wait... who's Dory?"
+   ],
+   recalc:[
+     "RECALCULATING! DING DING DING! New level UNLOCKED!",
+     "Recalculating... 3... 2... 1... GOOO!!"
+   ],
+   traffic:[
+     "CARS EVERYWHERE!! It's like a video game... VROOM VROOM!",
+     "TRAFFIC! Can we listen to a SONG?! Huh huh?! PLEASE say yes!"
+   ],
+   speed:[
+     "SPEED CAMERA! Slow down FAST fast FAST!",
+     "OH NO A RADAR! Your parents won't be HAPPY! Euh... oops!"
+   ],
+   tunnel:[
+     "TUNNEL!!! IT'S LIKE A MAGIC CAVE!! So DARK and cool!",
+     "OH WOW A TUNNEL! Say hi to Batman! Wait... where IS Batman?"
+   ],
+   arrived:[
+     "YAYYYYYY YOU MADE ITTTT! WORLD CHAMPION!! Woooooo!",
+     "VICTORY!! YOU WON THE GAME!! HIGHEST SCORE! What's a score again?",
+     "WE'RE HERE!! WELCOME TO THE DREAM WORLD!! Hmm... where are we?"
+   ]
   },
   es:{
-   straight:["TODO RECTO!! ERES EL MEJOR CONDUCTOR DEL MUNDO!! 🎉","Sigue!! ES GENIAL! Como Mario Kart!","AL INFINITO Y MÁS ALLÁ!! VAMOS!! 🚀"],
-   right:["GIRA A LA DERECHA EN 500 METROS! SÍIIIII! 🔥","Derecha derecha derecha! WOOHOO!"],
-   left:["IZQUIERDA!! YESSS!! Tú puedes!","El otro lado! VAMOS VAMOS VAMOS!"],
-   uturn:["MEDIA VUELTA!! COMO UN SPIN!! QUÉ CHULO! 🌀","Hacemos un U-TURN?! ES COMO UN VIDEOJUEGO!"],
-   missed:["AYYY SE TE PASÓ!! No pasa nada nivel bonus! 🎮","Ups! Jaja! Ruta nueva! MÁS AVENTURA!"],
-   recalc:["RECALCULANDO! DING DING DING! Nuevo nivel! 🏆","Recalculando… 3… 2… 1… YA!"],
-   traffic:["COCHES POR TODOS LADOS!! Como un videojuego!","TRÁFICO! Podemos poner una canción? Eh eh?!"],
-   speed:["RADAR RADAR! Frena rápido rápido RÁPIDO! ⚡","OH NO UN RADAR! Tus padres no van a estar contentos!"],
-   tunnel:["TÚNEL!!! ES COMO UNA CUEVA MÁGICA! 🌑✨","OH WOW UN TÚNEL! Saluda a Batman!"],
-   arrived:["LLEGASTEEEEE! 🎊🎉🏆 CAMPEÓN DEL MUNDO!","VICTORIA!! GANASTE EL JUEGO!! PUNTUACIÓN MÁXIMA!"]
+   straight:[
+     "TODO RECTO!! ERES EL MEJOR CONDUCTOR DEL MUNDO!!",
+     "Sigue!! ES GENIAL! Como... como... MARIO KART!",
+     "AL INFINITO Y M\u00c1S ALL\u00c1!! VAMOS VAMOS!"
+   ],
+   right:[
+     "GIRA A LA DERECHA EN 500 METROS! S\u00cdIIII! Est\u00e1s EN FUEGO!",
+     "Derecha derecha derecha! WOOHOO! Me encanta... euh... qu\u00e9 dec\u00eda?"
+   ],
+   left:[
+     "IZQUIERDA!! YESSS!! T\u00fa PUEDES! Como... TOTALMENTE!",
+     "El otro lado! VAMOS VAMOS! Espera... cu\u00e1l otro lado?"
+   ],
+   uturn:[
+     "MEDIA VUELTA!! COMO UN SPIN!! QU\u00c9 CHULO!",
+     "Hacemos un U-TURN?! ES COMO UN VIDEOJUEGO! Me gustan los... qu\u00e9 eran?"
+   ],
+   missed:[
+     "AYYY SE TE PAS\u00d3!! No pasa nada... NIVEL BONUS!",
+     "Ups! Jaja! Ruta nueva! M\u00c1S AVENTURA!! Oh... d\u00f3nde estamos?"
+   ],
+   recalc:[
+     "RECALCULANDO! DING DING DING! NUEVO nivel!",
+     "Recalculando... 3... 2... 1... YA!!"
+   ],
+   traffic:[
+     "COCHES POR TODOS LADOS!! Como un VIDEOJUEGO!",
+     "TR\u00c1FICO! Podemos poner una CANCI\u00d3N? Eh eh?!"
+   ],
+   speed:[
+     "RADAR RADAR! FRENA r\u00e1pido r\u00e1pido R\u00c1PIDO!",
+     "OH NO UN RADAR! Tus padres no van a estar CONTENTOS! Euh..."
+   ],
+   tunnel:[
+     "T\u00daNEL!!! ES COMO UNA CUEVA M\u00c1GICA!!",
+     "OH WOW UN T\u00daNEL! Saluda a Batman! Euh... d\u00f3nde est\u00e1?"
+   ],
+   arrived:[
+     "LLEGASTEEEEE! CAMPE\u00d3N DEL MUNDO!! Woooo!",
+     "VICTORIA!! GANASTE EL JUEGO!! PUNTUACI\u00d3N M\u00c1XIMA!"
+   ]
   }
  },
  amis:{
   fr:{
-   straight:["Tout droit! Même toi t'es capable de ça… normalement.","Continue tout droit, champion. C'est la seule affaire que t'as pas ratée aujourd'hui.","La Force est avec toi… pour les virages par contre, pas du tout."],
-   right:["Dans 500 mètres à droite… si t'arrives à te souvenir c'est quoi droite.","Droite! Ta droite! Pas celle de ta blonde, LA TIENNE!","Tourne à droite. Ma grand-mère aveugle l'aurait déjà fait."],
-   left:["À gauche! L'autre gauche! T'as deux mains mon estie, laquelle c'est la gauche?!","Gauche là. Comme ton sens de l'orientation depuis qu'on est partis.","Prends à gauche. Pis cette fois fais-le pour vrai."],
-   uturn:["Fais un demi-tour. Comme ta vie, ça peut juste s'améliorer.","On revire de bord. T'aurais dû y penser avant, mais bon."],
-   missed:["T'as raté le virage. ENCORE. On te laisse plus conduire après ça.","Ostie de cave… c'était là! Y'avait une pancarte pis toute!","Sérieusement? Ma sœur a 12 ans et conduit mieux que ça sur Mario Kart!","Tu peux pas gérer la vérité… et visiblement pas les virages non plus!"],
-   recalc:["Recalcul en cours… parce que le chauffeur lui est pas en cours pantoute.","Je trouve un autre chemin parce que le tien c'était un désastre.","Je serai de retour… avec une meilleure route que toi."],
-   traffic:["Trafic! Le parfait prétexte pour un gars qui conduit déjà comme un tracteur.","Houston, on a un problème. En fait t'en as plusieurs."],
-   speed:["RADAR! Lève le pied espèce de Dale Earnhardt de Sainte-Perpétue!","Speed cam! Ralentis! T'as-tu envie de payer 300 piasses pour impressionner personne?"],
-   tunnel:["Tunnel. Essaie de pas rentrer dans le mur, on vient de repeinturer le char.","On plonge dans le noir. Comme tes décisions de ce soir."],
-   arrived:["T'es arrivé. Moi j'aurais pris le même chemin depuis le début mais whatever.","On est là! Contre toute attente! Quelqu'un appelle les nouvelles!","Hasta la vista, mauvais chemin."]
+   straight:[
+     "Tout droit! M\u00eame TOI t'es capable de \u00e7a... normalement, genre.",
+     "Continue tout droit, champion... c'est la seule affaire que t'as PAS rat\u00e9e aujourd'hui.",
+     "La Force est avec toi... pour les virages par contre, euh... PAS DU TOUT.",
+     "Droit devant... bon, essaie de pas trouver le moyen de scrapper \u00e7a, l\u00e0."
+   ],
+   right:[
+     "Dans 500 m\u00e8tres \u00e0 droite... si t'arrives \u00e0 te souvenir c'est QUOI droite, genre.",
+     "Droite! TA droite! Pas celle de ta blonde, LA TIENNE, ostie!",
+     "Tourne \u00e0 droite... ma grand-m\u00e8re aveugle l'aurait D\u00c9J\u00c0 fait, t'sais."
+   ],
+   left:[
+     "\u00c0 gauche! L'AUTRE gauche! T'as deux mains mon estie... laquelle c'est la gauche?!",
+     "Gauche l\u00e0... comme ton sens de l'orientation depuis qu'on est partis, genre.",
+     "Prends \u00e0 gauche... pis cette fois, euh... FAIS-LE pour vrai."
+   ],
+   uturn:[
+     "Fais un demi-tour... comme ta vie, \u00e7a peut juste S'AM\u00c9LIORER, t'sais.",
+     "On revire de bord... t'aurais d\u00fb y penser AVANT, mais bon, genre."
+   ],
+   missed:[
+     "T'as rat\u00e9 le virage... ENCORE. On te laisse plus conduire apr\u00e8s \u00e7a, s\u00e9rieux.",
+     "Ostie de cave... c'\u00e9tait L\u00c0! Y'avait une pancarte pis TOUTE!",
+     "S\u00e9rieusement? Ma soeur a 12 ans et conduit MIEUX que \u00e7a sur Mario Kart, genre!",
+     "Tu peux pas g\u00e9rer la v\u00e9rit\u00e9... et visiblement pas les VIRAGES non plus!"
+   ],
+   recalc:[
+     "Recalcul en cours... parce que le chauffeur lui est PAS en cours pantoute, genre.",
+     "Je trouve un autre chemin parce que le tien c'\u00e9tait un D\u00c9SASTRE, t'sais.",
+     "Je serai de retour... euh... avec une meilleure route que toi."
+   ],
+   traffic:[
+     "Trafic! Le PARFAIT pr\u00e9texte pour un gars qui conduit d\u00e9j\u00e0 comme un tracteur, genre.",
+     "Houston, on a un probl\u00e8me... en fait t'en as PLUSIEURS, t'sais."
+   ],
+   speed:[
+     "RADAR! L\u00e8ve le pied espece de Dale Earnhardt de Sainte-Perp\u00e9tue!",
+     "Speed cam! Ralentis! T'as-tu envie de payer 300 piasses pour IMPRESSIONNER personne?"
+   ],
+   tunnel:[
+     "Tunnel... essaie de pas rentrer dans le MUR, on vient de repeinturer le char, genre.",
+     "On plonge dans le noir... comme tes D\u00c9CISIONS de ce soir, t'sais."
+   ],
+   arrived:[
+     "T'es arriv\u00e9... MOI j'aurais pris le m\u00eame chemin depuis le d\u00e9but mais whatever, genre.",
+     "On est l\u00e0! Contre TOUTE attente! Quelqu'un appelle les nouvelles!",
+     "Hasta la vista... mauvais chemin. Bon, on est l\u00e0 PAREIL."
+   ]
   },
   en:{
-   straight:["Straight ahead! Even you can manage that… usually.","Keep going straight, champ. It's the only thing you haven't screwed up today.","The Force is with you… for turns though, totally gone."],
-   right:["500 meters, turn right… if you can remember which side that is.","Right! YOUR right! Not your girlfriend's, YOURS!","Turn right. My blind grandma would've done it already."],
-   left:["LEFT! The OTHER left! You've got two hands, which one is left?!","Left there. Like your sense of direction since we left."],
-   uturn:["Make a U-turn. Like your life, it can only get better.","We're turning around. You should've thought of that earlier."],
-   missed:["You missed the turn. AGAIN. We're not letting you drive after this.","Are you serious?! There was a SIGN and everything!","You can't handle the truth… and apparently not turns either!"],
-   recalc:["Recalculating… because the driver is clearly not calculating anything.","Finding another route because yours was a disaster.","I'll be back… with a better route than you."],
-   traffic:["Traffic! The perfect excuse for a guy who already drives like a tractor.","Houston, we have a problem. Actually you have several."],
-   speed:["SPEED CAMERA! Ease off, Dale Earnhardt of the suburbs!","Radar! Slow down! You wanna pay 300 bucks to impress nobody?"],
-   tunnel:["Tunnel. Try not to hit the wall, we just repainted the car.","Going into the dark. Like your decisions tonight."],
-   arrived:["You're there. I would've taken the same route from the start but whatever.","We made it! Against all odds! Someone call the news!","Hasta la vista, bad route."]
+   straight:[
+     "Straight ahead! Even YOU can manage that... usually, like.",
+     "Keep going straight, champ... it's the only thing you haven't SCREWED UP today.",
+     "The Force is with you... for turns though, hmm... totally GONE.",
+     "Just go forward... and like, TRY not to mess this up."
+   ],
+   right:[
+     "500 meters, turn right... if you can REMEMBER which side that is, like.",
+     "Right! YOUR right! Not your girlfriend's... YOURS!",
+     "Turn right... my blind grandma would've DONE it already, just saying."
+   ],
+   left:[
+     "LEFT! The OTHER left! You've got two hands... which one IS left?!",
+     "Left there... like your sense of direction since we left, hmm."
+   ],
+   uturn:[
+     "Make a U-turn... like your life, it can only get BETTER, you know.",
+     "We're turning around... you should've thought of that EARLIER, like."
+   ],
+   missed:[
+     "You missed the turn... AGAIN. We're not letting you drive after this, seriously.",
+     "Are you SERIOUS?! There was a SIGN and everything!",
+     "You can't handle the truth... and apparently not TURNS either! Hmm."
+   ],
+   recalc:[
+     "Recalculating... because the driver is clearly NOT calculating anything, like.",
+     "Finding another route because yours was a DISASTER, seriously.",
+     "I'll be back... hmm... with a BETTER route than you."
+   ],
+   traffic:[
+     "Traffic! The PERFECT excuse for a guy who already drives like a tractor, like.",
+     "Houston, we have a problem... actually you have SEVERAL, hmm."
+   ],
+   speed:[
+     "SPEED CAMERA! Ease off, Dale Earnhardt of the SUBURBS!",
+     "Radar! Slow down! You wanna pay 300 bucks to impress NOBODY? Like, seriously?"
+   ],
+   tunnel:[
+     "Tunnel... try not to hit the WALL, we just repainted the car, like.",
+     "Going into the dark... like your DECISIONS tonight, hmm."
+   ],
+   arrived:[
+     "You're there... I would've taken the same route from the START but whatever.",
+     "We made it! Against ALL odds! Someone call the news, seriously!",
+     "Hasta la vista... bad route. Well, we're HERE anyway."
+   ]
   },
   es:{
-   straight:["Todo recto! Incluso tú puedes con eso… normalmente.","Sigue todo recto, campeón. Es lo único que no has cagado hoy."],
-   right:["500 metros y gira a la derecha… si recuerdas qué lado es ese.","Derecha! TU derecha! No la de tu novia, LA TUYA!"],
-   left:["IZQUIERDA! El OTRO izquierda! Tienes dos manos, cuál es la izquierda?!","Izquierda. Como tu sentido de la orientación desde que salimos."],
-   uturn:["Da media vuelta. Como tu vida, solo puede mejorar.","Nos damos la vuelta. Deberías haberlo pensado antes."],
-   missed:["Te pasaste el giro. OTRA VEZ. Ya no te dejamos conducir después de esto.","En serio?! Había una SEÑAL y todo!"],
-   recalc:["Recalculando… porque el conductor claramente no está calculando nada.","Buscando otra ruta porque la tuya fue un desastre."],
-   traffic:["Tráfico! La excusa perfecta para un tío que ya conduce como un tractor.","Houston, tenemos un problema. En realidad tú tienes varios."],
-   speed:["RADAR! Levanta el pie, Dale Earnhardt de barrio!","Radar! Frena! Quieres pagar 300 euros para no impresionar a nadie?"],
-   tunnel:["Túnel. Intenta no chocar con la pared, acabamos de pintar el coche.","Nos metemos en la oscuridad. Como tus decisiones esta noche."],
-   arrived:["Estás ahí. Yo habría tomado la misma ruta desde el principio pero bueno.","Llegamos! Contra todo pronóstico! Que alguien llame a las noticias!"]
+   straight:[
+     "Todo recto! Incluso T\u00da puedes con eso... normalmente.",
+     "Sigue todo recto, campe\u00f3n... es lo \u00fanico que no has CAGADO hoy, euh."
+   ],
+   right:[
+     "500 metros y gira a la derecha... si recuerdas qu\u00e9 lado es ESE.",
+     "Derecha! TU derecha! No la de tu novia... LA TUYA!"
+   ],
+   left:[
+     "IZQUIERDA! El OTRO izquierda! Tienes dos manos... cu\u00e1l es la izquierda?!",
+     "Izquierda... como tu sentido de la orientaci\u00f3n desde que SALIMOS, euh."
+   ],
+   uturn:[
+     "Da media vuelta... como tu vida, solo puede MEJORAR.",
+     "Nos damos la vuelta... deber\u00edas haberlo pensado ANTES, euh."
+   ],
+   missed:[
+     "Te pasaste el giro... OTRA VEZ. Ya no te dejamos conducir despu\u00e9s de esto.",
+     "En SERIO?! Hab\u00eda una SE\u00d1AL y todo! Madre m\u00eda..."
+   ],
+   recalc:[
+     "Recalculando... porque el conductor claramente NO est\u00e1 calculando nada.",
+     "Buscando otra ruta porque la tuya fue un DESASTRE, euh."
+   ],
+   traffic:[
+     "Tr\u00e1fico! La excusa PERFECTA para un t\u00edo que ya conduce como un tractor.",
+     "Houston, tenemos un problema... en realidad t\u00fa tienes VARIOS."
+   ],
+   speed:[
+     "RADAR! Levanta el pie, Dale Earnhardt de BARRIO!",
+     "Radar! Frena! Quieres pagar 300 euros para no impresionar a NADIE?"
+   ],
+   tunnel:[
+     "T\u00fanel... intenta no CHOCAR con la pared, acabamos de pintar el coche.",
+     "Nos metemos en la OSCURIDAD... como tus decisiones esta noche, euh."
+   ],
+   arrived:[
+     "Est\u00e1s ah\u00ed... yo habr\u00eda tomado la misma ruta desde el PRINCIPIO pero bueno.",
+     "Llegamos! Contra TODO pron\u00f3stico! Que alguien llame a las noticias!"
+   ]
   }
  },
  drole:{
   fr:{
-   straight:["Continue tout droit… comme si tu savais où tu vas!","Tout droit! Et cette fois, FAIS SEMBLANT que t'as un plan!","Droit devant toi… mais je te fais confiance modérément."],
-   right:["Dans 500 mètres tourne à droite. Si tes réflexes sont meilleurs que ton sens de l'orientation.","À droite! C'est-à-dire… l'opposé de ton instinct habituel.","Droite dans 500m. Note: droite, pas gauche, pas en face, pas en arrière."],
-   left:["Tourne à gauche! Et non, je ne parle pas de ta philosophie de vie.","Gauche! Comme toutes les décisions de ta vie apparemment!","À gauche dans 300m. Oui, cette fois c'est vrai."],
-   uturn:["Fais un demi-tour. Comme ta situation actuelle d'ailleurs.","On revire. Comme plusieurs de tes choix de vie."],
-   missed:["RECALCUL… comme ta carrière! On recommence!","T'as manqué le virage. Impressionnant. Vraiment. Niveau professionnel.","Bravo. T'as réussi à rater ce qui était indiqué sur un écran. Talent.","Stupide c'est ce que stupide fait… et là t'as ben prouvé le point."],
-   recalc:["Je recalcule… donne-moi un moment pendant que je pleure en silence.","Recalcul en cours… et moi qui pensais que t'étais capable de suivre des instructions.","Nouvelle route. Parce que ton chemin original c'était apparemment trop raisonnable."],
-   traffic:["Du trafic! L'univers te punit. Tu le sais hein?","Trafic… parfait timing. Comme tout dans ta vie.","La route? On a besoin de route? On va nulle part de toute façon!"],
-   speed:["Radar! Ralentis! À moins que t'aies envie de sponsoriser la ville!","Speed camera! Lève le pied… à moins que t'aimes les formulaires administratifs!"],
-   tunnel:["Tunnel dans 200m. Si tu ressors de l'autre côté c'est un succès pour toi.","On plonge dans le tunnel… essaie de ne pas t'y perdre."],
-   arrived:["Félicitations, t'es arrivé. Les autres avaient perdu espoir il y a 20 minutes.","DESTINATION ATTEINTE! Contre toute attente! Un vrai miracle!","T'es là. La science ne comprend pas encore comment. Bravo.","Après tout ce temps?… Toujours."]
+   straight:[
+     "Continue tout droit... comme si tu SAVAIS o\u00f9 tu vas, genre!",
+     "Tout droit! Et cette fois... euh... FAIS SEMBLANT que t'as un plan!",
+     "Droit devant toi... mais je te fais confiance MOD\u00c9R\u00c9MENT, t'sais.",
+     "Tout droit... bon, c'est pas comme si t'avais le CHOIX de toute fa\u00e7on."
+   ],
+   right:[
+     "Dans 500 m\u00e8tres tourne \u00e0 droite... si tes r\u00e9flexes sont meilleurs que ton sens de l'ORIENTATION.",
+     "\u00c0 droite! C'est-\u00e0-dire... euh... l'OPPOS\u00c9 de ton instinct habituel.",
+     "Droite dans 500m... note: droite, PAS gauche, pas en face, pas en arri\u00e8re."
+   ],
+   left:[
+     "Tourne \u00e0 gauche! Et non... je parle PAS de ta philosophie de vie.",
+     "Gauche! Comme TOUTES les d\u00e9cisions de ta vie apparemment, genre!",
+     "\u00c0 gauche dans 300m... oui, cette fois c'est VRAI. S\u00e9rieux."
+   ],
+   uturn:[
+     "Fais un demi-tour... comme ta situation actuelle d'AILLEURS, t'sais.",
+     "On revire... comme plusieurs de tes CHOIX de vie, genre."
+   ],
+   missed:[
+     "RECALCUL... comme ta carri\u00e8re! On RECOMMENCE!",
+     "T'as manqu\u00e9 le virage... impressionnant. VRAIMENT. Niveau professionnel.",
+     "Bravo. T'as r\u00e9ussi \u00e0 rater ce qui \u00e9tait indiqu\u00e9 sur un \u00e9cran... euh... TALENT.",
+     "Stupide c'est ce que stupide fait... et l\u00e0 t'as BEN prouv\u00e9 le point."
+   ],
+   recalc:[
+     "Je recalcule... euh... donne-moi un moment pendant que je pleure en SILENCE.",
+     "Recalcul en cours... et moi qui pensais que t'\u00e9tais capable de suivre des INSTRUCTIONS, genre.",
+     "Nouvelle route... parce que ton chemin original c'\u00e9tait apparemment trop RAISONNABLE."
+   ],
+   traffic:[
+     "Du trafic! L'univers te PUNIT... tu le sais hein?",
+     "Trafic... parfait TIMING. Comme tout dans ta vie, t'sais.",
+     "La route? On a besoin de ROUTE? On va nulle part de toute fa\u00e7on, genre!"
+   ],
+   speed:[
+     "Radar! RALENTIS! \u00c0 moins que t'aies envie de sponsoriser la VILLE!",
+     "Speed camera! L\u00e8ve le pied... euh... \u00e0 moins que t'aimes les formulaires ADMINISTRATIFS!"
+   ],
+   tunnel:[
+     "Tunnel dans 200m... si tu ressors de l'autre c\u00f4t\u00e9 c'est un SUCC\u00c8S pour toi, genre.",
+     "On plonge dans le tunnel... essaie de PAS t'y perdre."
+   ],
+   arrived:[
+     "F\u00e9licitations, t'es arriv\u00e9... les autres avaient perdu ESPOIR il y a 20 minutes, t'sais.",
+     "DESTINATION ATTEINTE! Contre toute attente! Un vrai MIRACLE, genre!",
+     "T'es l\u00e0... la science ne comprend PAS encore comment. Bravo.",
+     "Apr\u00e8s tout ce temps?... TOUJOURS. Bon, t'es l\u00e0."
+   ]
   },
   en:{
-   straight:["Keep going straight… as if you actually know where you're going!","Straight ahead! This time, PRETEND you have a plan!","Forward you go… I trust you. Moderately."],
-   right:["In 500 meters, turn right. If your reflexes are better than your sense of direction.","Turn right! That means the opposite of your usual instinct."],
-   left:["Turn left! And no, I don't mean your life philosophy.","Left! Like every decision you've ever made apparently!"],
-   uturn:["Make a U-turn. Like your current situation, really.","Turning around. Like several of your life choices."],
-   missed:["RECALCULATING… like your career! Starting over!","You missed the turn. Impressive. Truly. Professional level stuff.","Stupid is as stupid does… and you just proved the point."],
-   recalc:["Recalculating… give me a moment while I cry silently.","New route. Because your original path was apparently too straightforward."],
-   traffic:["Traffic! The universe is punishing you. You know that, right?","Roads? We don't need roads! We're going nowhere anyway!"],
-   speed:["Speed camera! Slow down! Unless you want to sponsor the city!","Radar! Ease off… unless you enjoy government paperwork!"],
-   tunnel:["Tunnel in 200m. If you come out the other side it's a win for you.","We're going into the tunnel… try not to get lost in there."],
-   arrived:["Congratulations, you arrived. Others had given up hope 20 minutes ago.","DESTINATION REACHED! Against all odds! A genuine miracle!","After all this time?… Always."]
+   straight:[
+     "Keep going straight... as if you ACTUALLY know where you're going, like!",
+     "Straight ahead! This time... hmm... PRETEND you have a plan!",
+     "Forward you go... I trust you. MODERATELY.",
+     "Straight... well, it's not like you have much CHOICE anyway."
+   ],
+   right:[
+     "In 500 meters, turn right... if your reflexes are better than your sense of DIRECTION.",
+     "Turn right! That means the OPPOSITE of your usual instinct, hmm."
+   ],
+   left:[
+     "Turn left! And no... I don't mean your life PHILOSOPHY, like.",
+     "Left! Like every decision you've EVER made apparently! Hmm."
+   ],
+   uturn:[
+     "Make a U-turn... like your current situation, REALLY.",
+     "Turning around... like several of your life CHOICES, hmm."
+   ],
+   missed:[
+     "RECALCULATING... like your career! Starting OVER!",
+     "You missed the turn... impressive. TRULY. Professional level stuff.",
+     "Stupid is as stupid does... and you just PROVED the point, like."
+   ],
+   recalc:[
+     "Recalculating... give me a moment while I cry SILENTLY, hmm.",
+     "New route... because your original path was apparently too STRAIGHTFORWARD."
+   ],
+   traffic:[
+     "Traffic! The universe is PUNISHING you... you know that, right?",
+     "Roads? We don't need roads! We're going NOWHERE anyway, like!"
+   ],
+   speed:[
+     "Speed camera! SLOW DOWN! Unless you want to sponsor the CITY!",
+     "Radar! Ease off... hmm... unless you enjoy government PAPERWORK!"
+   ],
+   tunnel:[
+     "Tunnel in 200m... if you come out the other side it's a WIN for you, like.",
+     "We're going into the tunnel... try not to get LOST in there, hmm."
+   ],
+   arrived:[
+     "Congratulations, you arrived... others had given up HOPE 20 minutes ago, like.",
+     "DESTINATION REACHED! Against all odds! A genuine MIRACLE!",
+     "After all this time?... ALWAYS. Well, you're here."
+   ]
   },
   es:{
-   straight:["Sigue recto… como si supieras a dónde vas!","Todo recto! Esta vez FINGE que tienes un plan!"],
-   right:["En 500 metros gira a la derecha. Si tus reflejos son mejores que tu sentido de orientación.","A la derecha! O sea… lo opuesto a tu instinto habitual."],
-   left:["Gira a la izquierda! Y no, no hablo de tu filosofía de vida.","Izquierda! Como todas las decisiones de tu vida al parecer!"],
-   uturn:["Da media vuelta. Como tu situación actual, realmente.","Giramos. Como varias de tus decisiones vitales."],
-   missed:["RECALCULANDO… como tu carrera! Empezamos de nuevo!","Te pasaste el giro. Impresionante. De verdad. Nivel profesional."],
-   recalc:["Recalculando… dame un momento mientras lloro en silencio.","Nueva ruta. Porque la original era aparentemente demasiado razonable."],
-   traffic:["Tráfico! El universo te está castigando. Ya lo sabes verdad?","Carreteras? No necesitamos carreteras! De todas formas no vamos a ningún lado!"],
-   speed:["Radar! Frena! A menos que quieras patrocinar al municipio!","Speed camera! Levanta el pie… a menos que te gusten los trámites!"],
-   tunnel:["Túnel en 200m. Si sales por el otro lado es un éxito para ti.","Entramos al túnel… intenta no perderte ahí dentro."],
-   arrived:["Felicidades, llegaste. Los demás habían perdido la esperanza hace 20 minutos.","DESTINO ALCANZADO! Contra todo pronóstico! Un auténtico milagro!","Después de todo este tiempo?… Siempre."]
+   straight:[
+     "Sigue recto... como si SUPIERAS a d\u00f3nde vas, euh!",
+     "Todo recto! Esta vez FINGE que tienes un plan!"
+   ],
+   right:[
+     "En 500 metros gira a la derecha... si tus reflejos son mejores que tu sentido de ORIENTACI\u00d3N.",
+     "A la derecha! O sea... lo OPUESTO a tu instinto habitual, euh."
+   ],
+   left:[
+     "Gira a la izquierda! Y no... no hablo de tu FILOSOF\u00cdA de vida.",
+     "Izquierda! Como TODAS las decisiones de tu vida al parecer!"
+   ],
+   uturn:[
+     "Da media vuelta... como tu situaci\u00f3n actual, REALMENTE.",
+     "Giramos... como varias de tus decisiones VITALES, euh."
+   ],
+   missed:[
+     "RECALCULANDO... como tu carrera! Empezamos de NUEVO!",
+     "Te pasaste el giro... impresionante. De VERDAD. Nivel profesional."
+   ],
+   recalc:[
+     "Recalculando... dame un momento mientras lloro en SILENCIO.",
+     "Nueva ruta... porque la original era aparentemente demasiado RAZONABLE."
+   ],
+   traffic:[
+     "Tr\u00e1fico! El universo te est\u00e1 CASTIGANDO... ya lo sabes verdad?",
+     "Carreteras? No necesitamos carreteras! De todas formas no vamos a NING\u00daN lado!"
+   ],
+   speed:[
+     "Radar! FRENA! A menos que quieras patrocinar al MUNICIPIO!",
+     "Speed camera! Levanta el pie... euh... a menos que te gusten los TR\u00c1MITES!"
+   ],
+   tunnel:[
+     "T\u00fanel en 200m... si sales por el otro lado es un \u00c9XITO para ti.",
+     "Entramos al t\u00fanel... euh... intenta no PERDERTE ah\u00ed dentro."
+   ],
+   arrived:[
+     "Felicidades, llegaste... los dem\u00e1s hab\u00edan perdido la ESPERANZA hace 20 minutos.",
+     "DESTINO ALCANZADO! Contra todo pron\u00f3stico! Un aut\u00e9ntico MILAGRO!",
+     "Despu\u00e9s de todo este tiempo?... SIEMPRE."
+   ]
   }
  },
  insulte:{
   fr:{
-   straight:["Tout droit, génie. T'as besoin qu'on te fasse un dessin?","Tout droit! C'est incroyable que ça te prend une instruction pour ÇA!","Continue tout droit. Même Voldemort aurait tourné au bon endroit."],
-   right:["Tourne à droite dans 500 mètres, et essaie de pas rater ça comme le reste de ta vie.","À droite! Essaie de te rappeler de quel côté c'est, pour une fois!","Droite dans 500m. R-O-I-T-E. T'as compris?"],
-   left:["À GAUCHE. L-A-U-C-H-E. Ça rentre?","Gauche! Non l'autre gauche! T'as deux mains, laquelle c'est la gauche?!","À gauche. Si ton cerveau daigne coopérer."],
-   uturn:["Fais un demi-tour. Essaie juste de pas t'arrêter dans le décor.","Demi-tour! Et tâche de pas bloquer toute la rue cette fois!"],
-   missed:["T'AS MANQUÉ LE VIRAGE ESPÈCE D'IDIOT SANDWICH!","BRAVO! Raté! Félicitations pour cette performance exceptionnelle de nullité!","Comment on rate un virage indiqué? Mystère. RECALCUL!"],
-   recalc:["Je recalcule parce qu'apparemment T'ES PAS CAPABLE DE SUIVRE UN CHEMIN!","RECALCUL! Parce que le cerveau au volant est visiblement en mode veille!","Nouvelle route. Parce que l'ancienne était trop compliquée pour toi."],
-   traffic:["Du trafic! Parfait pour quelqu'un qui conduit déjà comme une tortue!","TRAFIC! Le dernier conducteur aussi lent que toi est aussi là!"],
-   speed:["RADAR! Ralentis espèce de Mario Andretti de pacotille!","Speed camera! Pied sur le frein! Ou t'as besoin d'un dessin pour ça aussi?"],
-   tunnel:["Tunnel. Essaie de pas te perdre dans le noir, ça devrait être à ta portée.","On rentre dans le tunnel. Tâche de ressortir du bon côté."],
-   arrived:["Arrivé à destination… miracle. T'aurais dû prendre le taxi.","T'es là. Finalement. L'humanité peut respirer.","Destination atteinte malgré toi. Encadre ce moment.","T'es là. Personne y croyait. Moi le premier."]
+   straight:[
+     "Tout droit, G\u00c9NIE... t'as besoin qu'on te fasse un dessin?",
+     "Tout droit! C'est INCROYABLE que \u00e7a te prend une instruction pour \u00c7A, genre!",
+     "Continue tout droit... m\u00eame Voldemort aurait tourn\u00e9 au BON endroit, t'sais.",
+     "TOUT DROIT! Pis si tu rates \u00e7a... euh... je d\u00e9missionne."
+   ],
+   right:[
+     "Tourne \u00e0 droite dans 500 m\u00e8tres... et essaie de PAS rater \u00e7a comme le reste de ta vie.",
+     "\u00c0 DROITE! Essaie de te rappeler de quel c\u00f4t\u00e9 c'est, pour une FOIS!",
+     "Droite dans 500m... R-O-I-T-E. T'as COMPRIS, l\u00e0?"
+   ],
+   left:[
+     "\u00c0 GAUCHE. G-A-U-C-H-E... \u00e7a rentre? Euh... non s\u00e9rieux, \u00e7a RENTRE?",
+     "Gauche! Non l'AUTRE gauche! T'as deux mains... laquelle c'est la gauche?!",
+     "\u00c0 gauche... si ton cerveau DAIGNE coop\u00e9rer, l\u00e0."
+   ],
+   uturn:[
+     "Fais un demi-tour... essaie JUSTE de pas t'arr\u00eater dans le d\u00e9cor, genre.",
+     "DEMI-TOUR! Et t\u00e2che de pas bloquer toute la rue cette fois... bon sang!"
+   ],
+   missed:[
+     "T'AS MANQU\u00c9 LE VIRAGE ESP\u00c8CE D'IDIOT SANDWICH! C'est CRRRU!",
+     "BRAVO! Rat\u00e9! F\u00e9licitations pour cette performance EXCEPTIONNELLE de nullit\u00e9!",
+     "Comment on rate un virage indiqu\u00e9? MYST\u00c8RE... RECALCUL!",
+     "OH l\u00e0 l\u00e0... c'est TELLEMENT cru que m\u00eame la route a honte de toi."
+   ],
+   recalc:[
+     "Je recalcule parce qu'apparemment T'ES PAS CAPABLE DE SUIVRE UN CHEMIN, genre!",
+     "RECALCUL! Parce que le cerveau au volant est visiblement en mode VEILLE!",
+     "Nouvelle route... parce que l'ancienne \u00e9tait trop COMPLIQU\u00c9E pour toi, t'sais."
+   ],
+   traffic:[
+     "Du trafic! PARFAIT pour quelqu'un qui conduit d\u00e9j\u00e0 comme une tortue!",
+     "TRAFIC! Le dernier conducteur aussi LENT que toi est aussi l\u00e0, genre!"
+   ],
+   speed:[
+     "RADAR! Ralentis espece de Mario Andretti de PACOTILLE!",
+     "Speed camera! Pied sur le FREIN! Ou t'as besoin d'un dessin pour \u00e7a aussi?"
+   ],
+   tunnel:[
+     "Tunnel... essaie de pas te perdre dans le NOIR, \u00e7a devrait \u00eatre \u00e0 ta port\u00e9e.",
+     "On rentre dans le tunnel... t\u00e2che de RESSORTIR du bon c\u00f4t\u00e9, genre."
+   ],
+   arrived:[
+     "Arriv\u00e9 \u00e0 destination... MIRACLE. T'aurais d\u00fb prendre le taxi, s\u00e9rieux.",
+     "T'es l\u00e0. FINALEMENT... l'humanit\u00e9 peut respirer.",
+     "Destination atteinte MALGR\u00c9 toi... encadre ce moment, genre.",
+     "T'es l\u00e0... PERSONNE y croyait. Moi le premier, t'sais."
+   ]
   },
   en:{
-   straight:["Straight ahead, genius. Need a diagram?","Straight! It's incredible you need instructions for THIS!","Even Voldemort would've turned correctly. And he's dead."],
-   right:["Turn right in 500 meters, and try not to mess it up like everything else.","Right! Try to remember which side that is, for once!","Right in 500m. R-I-G-H-T. Got it?"],
-   left:["LEFT. L-E-F-T. Does it compute?","Left! No the OTHER left! You have two hands, which one is left?!","To the left. If your brain decides to cooperate."],
-   uturn:["Make a U-turn. Try not to take out a guardrail.","U-turn! And try not to block the entire road this time!"],
-   missed:["YOU MISSED THE TURN YOU ABSOLUTE IDIOT SANDWICH!","BRAVO! Missed it! Congratulations on that exceptional display of uselessness!","How do you miss a signposted turn? Mystery. RECALCULATING!"],
-   recalc:["Recalculating because apparently YOU CAN'T FOLLOW A SIMPLE PATH!","REROUTING! Because the brain driving is clearly in sleep mode!"],
-   traffic:["Traffic! Perfect for someone who already drives like a turtle!","TRAFFIC! The last driver as slow as you is here too!"],
-   speed:["SPEED CAMERA! Slow down you discount Mario Andretti!","Radar! Foot on the brake! Or do you need a diagram for that too?"],
-   tunnel:["Tunnel. Try not to get lost in the dark, should be within your abilities.","We're going in the tunnel. Try to come out the right side."],
-   arrived:["Arrived at destination… miracle. Should've taken a cab.","You're here. Finally. Humanity can breathe again.","Destination reached despite yourself. Frame this moment."]
+   straight:[
+     "Straight ahead, GENIUS... need a diagram? Hmm?",
+     "STRAIGHT! It's incredible you need instructions for THIS, like!",
+     "Even Voldemort would've turned correctly... and he's DEAD, you know.",
+     "Just go STRAIGHT... if you mess THIS up, I'm done. Seriously."
+   ],
+   right:[
+     "Turn right in 500 meters... and TRY not to mess it up like everything else.",
+     "RIGHT! Try to remember which side that is... for ONCE!",
+     "Right in 500m... R-I-G-H-T. Got IT? Hmm?"
+   ],
+   left:[
+     "LEFT. L-E-F-T... does it COMPUTE?",
+     "Left! No the OTHER left! You have two hands... which one IS left?!",
+     "To the left... if your brain decides to COOPERATE, like."
+   ],
+   uturn:[
+     "Make a U-turn... try not to take out a GUARDRAIL, hmm.",
+     "U-TURN! And try not to block the ENTIRE road this time!"
+   ],
+   missed:[
+     "YOU MISSED THE TURN YOU ABSOLUTE IDIOT SANDWICH! It's RAAWW!",
+     "BRAVO! Missed it! Congratulations on that exceptional display of USELESSNESS!",
+     "How do you MISS a signposted turn? Mystery... RECALCULATING!",
+     "Oh for... it's so RAW even the road is embarrassed for you."
+   ],
+   recalc:[
+     "Recalculating because apparently YOU CAN'T FOLLOW A SIMPLE PATH!",
+     "REROUTING! Because the brain driving is clearly in SLEEP MODE, like!",
+     "New route... because the old one was too COMPLICATED for you, hmm."
+   ],
+   traffic:[
+     "Traffic! PERFECT for someone who already drives like a turtle!",
+     "TRAFFIC! The last driver as SLOW as you is here too, like!"
+   ],
+   speed:[
+     "SPEED CAMERA! Slow down you discount Mario Andretti!",
+     "Radar! FOOT on the brake! Or do you need a DIAGRAM for that too? Hmm?"
+   ],
+   tunnel:[
+     "Tunnel... try not to get LOST in the dark, should be within your abilities.",
+     "We're going in the tunnel... try to come out the RIGHT side, like."
+   ],
+   arrived:[
+     "Arrived at destination... MIRACLE. Should've taken a cab, seriously.",
+     "You're here. FINALLY... humanity can breathe again.",
+     "Destination reached DESPITE yourself... frame this moment, hmm.",
+     "You're here... NOBODY believed it. Me first."
+   ]
   },
   es:{
-   straight:["Todo recto, genio. Necesitas un diagrama?","Recto! Es increíble que necesites instrucciones para ESTO!"],
-   right:["Gira a la derecha en 500 metros, e intenta no cagarlo como todo lo demás.","A la derecha! Intenta recordar de qué lado es, por una vez!"],
-   left:["IZQUIERDA. I-Z-Q-U-I-E-R-D-A. Entra?","Izquierda! No el otro izquierda! Tienes dos manos, cuál es la izquierda?!"],
-   uturn:["Da media vuelta. Intenta no llevarte una valla por delante.","Media vuelta! E intenta no bloquear toda la calle esta vez!"],
-   missed:["TE PASASTE EL GIRO PEDAZO DE SANDWICH IDIOTA!","BRAVO! Fallaste! Felicidades por esa actuación excepcional de ineptitud!"],
-   recalc:["Recalculando porque al parecer NO PUEDES SEGUIR UN CAMINO SIMPLE!","RECALCULANDO! Porque el cerebro al volante está claramente en modo dormido!"],
-   traffic:["Tráfico! Perfecto para alguien que ya conduce como una tortuga!","TRÁFICO! El último conductor tan lento como tú también está aquí!"],
-   speed:["RADAR! Frena Mario Andretti de pacotilla!","Speed camera! Pie en el freno! O necesitas un diagrama para eso también?"],
-   tunnel:["Túnel. Intenta no perderte en la oscuridad, debería estar a tu alcance.","Entramos al túnel. Intenta salir por el lado correcto."],
-   arrived:["Llegado al destino… milagro. Deberías haber tomado un taxi.","Ya estás. Por fin. La humanidad puede respirar.","Destino alcanzado a pesar de ti. Enmarca este momento."]
+   straight:[
+     "Todo recto, GENIO... necesitas un diagrama?",
+     "RECTO! Es incre\u00edble que necesites instrucciones para ESTO!"
+   ],
+   right:[
+     "Gira a la derecha en 500 metros... e intenta no CAGARLO como todo lo dem\u00e1s.",
+     "A la DERECHA! Intenta recordar de qu\u00e9 lado es, por una VEZ!"
+   ],
+   left:[
+     "IZQUIERDA. I-Z-Q-U-I-E-R-D-A... entra?",
+     "Izquierda! No el OTRO izquierda! Tienes dos manos... cu\u00e1l es la izquierda?!"
+   ],
+   uturn:[
+     "Da media vuelta... intenta no llevarte una VALLA por delante.",
+     "Media vuelta! E intenta no BLOQUEAR toda la calle esta vez!"
+   ],
+   missed:[
+     "TE PASASTE EL GIRO PEDAZO DE SANDWICH IDIOTA! Est\u00e1 CRRUDO!",
+     "BRAVO! Fallaste! Felicidades por esa actuaci\u00f3n EXCEPCIONAL de ineptitud!"
+   ],
+   recalc:[
+     "Recalculando porque al parecer NO PUEDES SEGUIR UN CAMINO SIMPLE!",
+     "RECALCULANDO! Porque el cerebro al volante est\u00e1 claramente en modo DORMIDO!"
+   ],
+   traffic:[
+     "Tr\u00e1fico! PERFECTO para alguien que ya conduce como una tortuga!",
+     "TR\u00c1FICO! El \u00faltimo conductor tan LENTO como t\u00fa tambi\u00e9n est\u00e1 aqu\u00ed!"
+   ],
+   speed:[
+     "RADAR! Frena Mario Andretti de PACOTILLA!",
+     "Speed camera! PIE en el freno! O necesitas un diagrama para eso tambi\u00e9n?"
+   ],
+   tunnel:[
+     "T\u00fanel... intenta no PERDERTE en la oscuridad, deber\u00eda estar a tu alcance.",
+     "Entramos al t\u00fanel... intenta salir por el lado CORRECTO."
+   ],
+   arrived:[
+     "Llegado al destino... MILAGRO. Deber\u00edas haber tomado un taxi, en serio.",
+     "Ya est\u00e1s. POR FIN... la humanidad puede respirar.",
+     "Destino alcanzado A PESAR de ti... enmarca este momento."
+   ]
   }
  }
 };
 
-// ═══════════════════════════════════════════════════════
+// =============================================================
 //  STATE
-// ═══════════════════════════════════════════════════════
+// =============================================================
 let mode='grandmaman', lang='fr';
 let mapObj, userMark, destMark, routeLayer;
 let userLat=45.5017, userLng=-73.5673;
@@ -577,134 +1118,122 @@ let voiceOn=true;
 let wpCount=0, routeMarkers=[];
 let cachedVoices=[];
 let watchId=null, accuracyCircle=null, followUser=true;
-
-// Route state for new features
-let currentRouteCoords=null; // Array of [lat,lng] from OSRM geometry
-let currentRouteDist=0;      // Total distance in meters
-let currentRouteDur=0;       // Total duration in seconds
-let routeDestCoords=null;    // {lat,lng} of final destination
-let routeSteps=[];           // Turn-by-turn steps from OSRM
-let lastAnnouncedStep=-1;    // Index of last announced step
-let rerouteInterval=null;    // Interval for off-route detection
-let currentSpeed=0;          // Current speed in km/h from GPS
+let currentRouteCoords=null;
+let currentRouteDist=0;
+let currentRouteDur=0;
+let routeDestCoords=null;
+let routeSteps=[];
+let lastAnnouncedStep=-1;
+let rerouteInterval=null;
+let currentSpeed=0;
 let speedAlertActive=false;
-let useImperial=false;       // true = MPH (USA), false = KM/H
-let guidanceActive=false;    // true = guidage en cours
+let useImperial=false;
+let guidanceActive=false;
 
-// ═══════════════════════════════════════════════════════
-//  AUTO-DETECT USA → MPH
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  AUTO-DETECT USA -> MPH
+// =============================================================
 function detectCountry(lat,lng){
-  // Quick bounding-box check: continental US + Alaska + Hawaii
-  const isUSA=(lat>=24.5&&lat<=49.5&&lng>=-125&&lng<=-66.9)  // continental
-    ||(lat>=51&&lat<=71.5&&lng>=-180&&lng<=-129)              // Alaska
-    ||(lat>=18.9&&lat<=22.3&&lng>=-160.3&&lng<=-154.8);       // Hawaii
+  var isUSA=(lat>=24.5&&lat<=49.5&&lng>=-125&&lng<=-66.9)
+    ||(lat>=51&&lat<=71.5&&lng>=-180&&lng<=-129)
+    ||(lat>=18.9&&lat<=22.3&&lng>=-160.3&&lng<=-154.8);
   if(isUSA!==useImperial){
     useImperial=isUSA;
     document.getElementById('speedUnit').textContent=useImperial?'MPH':'KM/H';
-    setStatus(useImperial?'🇺🇸 USA détecté · Vitesse en MPH':'🇨🇦 Vitesse en KM/H');
+    setStatus(useImperial?'USA detected - Speed in MPH':'Speed in KM/H');
   }
 }
 function toDisplaySpeed(mps){ return mps!==null&&mps>0?Math.round(mps*(useImperial?2.23694:3.6)):0; }
 function toDisplayDist(meters){ return useImperial?(meters/1609.344).toFixed(1)+' mi':(meters/1000).toFixed(1)+' km'; }
-function speedLimit(){ return useImperial?35:50; } // 35 mph ≈ 56 km/h zone urbaine
+function speedLimit(){ return useImperial?35:50; }
 
-// ═══════════════════════════════════════════════════════
-//  THEME (Dark/Light)
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  THEME (Dark/Light) with localStorage
+// =============================================================
 function toggleTheme(){
-  const root=document.documentElement;
-  const isLight=root.classList.toggle('light');
-  document.getElementById('themeBtn').textContent=isLight?'☀️':'🌙';
+  var root=document.documentElement;
+  var isLight=root.classList.toggle('light');
+  document.getElementById('themeBtn').textContent=isLight?'\u2600\uFE0F':'\u{1F319}';
   localStorage.setItem('gps-drole-theme',isLight?'light':'dark');
 }
 (function initTheme(){
-  const saved=localStorage.getItem('gps-drole-theme');
+  var saved=localStorage.getItem('gps-drole-theme');
   if(saved==='light'){
     document.documentElement.classList.add('light');
-    setTimeout(()=>{ document.getElementById('themeBtn').textContent='☀️'; },0);
+    setTimeout(function(){ document.getElementById('themeBtn').textContent='\u2600\uFE0F'; },0);
   }
 })();
 
-// ═══════════════════════════════════════════════════════
-//  MAP
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  MAP (Leaflet + OpenStreetMap)
+// =============================================================
 function initMap(lat,lng){
   mapObj=L.map('map').setView([lat,lng],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19
+    attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19
   }).addTo(mapObj);
-  userMark=L.marker([lat,lng],{icon:L.divIcon({html:'🚗',className:'',iconSize:[28,28],iconAnchor:[14,14]})})
-    .addTo(mapObj).bindPopup('📍 Vous êtes ici!');
-  mapObj.on('click',e=>quickDest(e.latlng.lat,e.latlng.lng));
-  setStatus('Carte chargée · Cliquez sur la carte pour destination rapide');
+  userMark=L.marker([lat,lng],{icon:L.divIcon({html:'\u{1F697}',className:'',iconSize:[28,28],iconAnchor:[14,14]})})
+    .addTo(mapObj).bindPopup('Vous \u00eates ici!');
+  mapObj.on('click',function(e){ quickDest(e.latlng.lat,e.latlng.lng); });
+  setStatus('Carte charg\u00e9e - Cliquez sur la carte pour destination rapide');
 }
 
-// Init carte immédiatement avec Montréal, puis tenter GPS
 initMap(45.5017,-73.5673);
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
-    p=>{
+    function(p){
       userLat=p.coords.latitude; userLng=p.coords.longitude;
       userMark.setLatLng([userLat,userLng]);
       mapObj.setView([userLat,userLng],13);
-      setStatus('📡 Position GPS trouvée!');
+      setStatus('Position GPS trouv\u00e9e!');
       startTracking();
     },
-    ()=>{ setStatus('GPS indisponible · Montréal par défaut'); },
+    function(){ setStatus('GPS indisponible - Montr\u00e9al par d\u00e9faut'); },
     {enableHighAccuracy:true, timeout:8000, maximumAge:0}
   );
 }
 
 function startTracking(){
   if(watchId!==null) return;
-  watchId=navigator.geolocation.watchPosition(pos=>{
-    const {latitude,longitude,accuracy,speed,heading}=pos.coords;
+  watchId=navigator.geolocation.watchPosition(function(pos){
+    var latitude=pos.coords.latitude, longitude=pos.coords.longitude;
+    var accuracy=pos.coords.accuracy, speed=pos.coords.speed, heading=pos.coords.heading;
     userLat=latitude; userLng=longitude;
     userMark.setLatLng([latitude,longitude]);
     if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
     accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
     if(followUser) mapObj.setView([latitude,longitude],mapObj.getZoom());
-
-    // Detect country for unit switch
     detectCountry(latitude,longitude);
-
-    // Speed display + alert
-    const spdDisplay=toDisplaySpeed(speed);
+    var spdDisplay=toDisplaySpeed(speed);
     currentSpeed=spdDisplay;
-    const sVal=document.getElementById('speedVal');
-    const hVal=document.getElementById('headingVal');
-    const badge=document.getElementById('speedBadge');
+    var sVal=document.getElementById('speedVal');
+    var hVal=document.getElementById('headingVal');
+    var badge=document.getElementById('speedBadge');
     sVal.textContent=spdDisplay;
-
-    // Speed alert zone (adapts to unit: 50 km/h or 35 mph)
-    const limit=speedLimit();
+    var limit=speedLimit();
     if(spdDisplay>limit&&!speedAlertActive){
       speedAlertActive=true;
       badge.classList.add('alert');
-      go('speed'); // Auto-announce speed scenario
+      go('speed');
     } else if(spdDisplay<=limit&&speedAlertActive){
       speedAlertActive=false;
       badge.classList.remove('alert');
     }
-
     if(heading!==null&&!isNaN(heading)){
-      const dirs=['N','NE','E','SE','S','SO','O','NO'];
-      hVal.textContent='🧭 '+dirs[Math.round(heading/45)%8]+' · '+Math.round(heading)+'°';
-    } else { hVal.textContent='—'; }
-    const btn=document.getElementById('centerBtn');
+      var dirs=['N','NE','E','SE','S','SO','O','NO'];
+      hVal.textContent='\u{1F9ED} '+dirs[Math.round(heading/45)%8]+' \u00b7 '+Math.round(heading)+'\u00b0';
+    } else { hVal.textContent='\u2014'; }
+    var btn=document.getElementById('centerBtn');
     btn.classList.toggle('tracking',followUser);
-    setStatus('📡 GPS temps réel'+(accuracy?' · ±'+Math.round(accuracy)+'m':''));
-
-    // Update route progress + ETA + turn-by-turn (only when guidance active)
+    setStatus('GPS temps r\u00e9el'+(accuracy?' \u00b7 \u00b1'+Math.round(accuracy)+'m':''));
     if(currentRouteCoords&&guidanceActive){
       updateRouteProgress();
       checkTurnByTurn();
     }
-  }, err=>{
-    setStatus('⚠️ Erreur GPS: '+err.message);
+  }, function(err){
+    setStatus('Erreur GPS: '+err.message);
   }, {enableHighAccuracy:true, maximumAge:3000, timeout:10000});
-  mapObj.on('dragstart',()=>{ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); });
+  mapObj.on('dragstart',function(){ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); });
 }
 
 function centerOnUser(){
@@ -713,176 +1242,175 @@ function centerOnUser(){
 
 function quickDest(lat,lng){
   if(destMark) mapObj.removeLayer(destMark);
-  destMark=L.marker([lat,lng],{icon:L.divIcon({html:'📍',className:'',iconSize:[28,28],iconAnchor:[14,28]})})
-    .addTo(mapObj).bindPopup('🏁 Destination!').openPopup();
-  osrmRoute([{lat:userLat,lng:userLng},{lat,lng}]);
+  destMark=L.marker([lat,lng],{icon:L.divIcon({html:'\u{1F4CD}',className:'',iconSize:[28,28],iconAnchor:[14,28]})})
+    .addTo(mapObj).bindPopup('Destination!').openPopup();
+  osrmRoute([{lat:userLat,lng:userLng},{lat:lat,lng:lng}]);
 }
 
-// ═══════════════════════════════════════════════════════
-//  AUTOCOMPLETE (Nominatim)
-// ═══════════════════════════════════════════════════════
-let acTimers={};
+// =============================================================
+//  AUTOCOMPLETE (Nominatim, debounce 400ms, 5 results)
+// =============================================================
+var acTimers={};
 function setupAutocomplete(inputId){
-  const input=document.getElementById(inputId);
+  var input=document.getElementById(inputId);
   if(!input) return;
-  // Create dropdown
-  let dd=input.parentElement.querySelector('.autocomplete-dropdown');
+  var dd=input.parentElement.querySelector('.autocomplete-dropdown');
   if(!dd){
     dd=document.createElement('div');
     dd.className='autocomplete-dropdown';
     input.parentElement.appendChild(dd);
   }
-  input.addEventListener('input',()=>{
+  input.addEventListener('input',function(){
     clearTimeout(acTimers[inputId]);
-    const q=input.value.trim();
+    var q=input.value.trim();
     if(q.length<3){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
-    acTimers[inputId]=setTimeout(async()=>{
-      try{
-        const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=1`);
-        const data=await r.json();
-        if(!data.length){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
-        dd.innerHTML='';
-        data.forEach(item=>{
-          const div=document.createElement('div');
-          div.className='autocomplete-item';
-          div.textContent=item.display_name;
-          div.addEventListener('click',()=>{
-            input.value=item.display_name;
-            dd.classList.remove('vis');
-            dd.innerHTML='';
+    acTimers[inputId]=setTimeout(function(){
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&addressdetails=1')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(!data.length){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
+          dd.innerHTML='';
+          data.forEach(function(item){
+            var div=document.createElement('div');
+            div.className='autocomplete-item';
+            div.textContent=item.display_name;
+            div.addEventListener('click',function(){
+              input.value=item.display_name;
+              dd.classList.remove('vis');
+              dd.innerHTML='';
+            });
+            dd.appendChild(div);
           });
-          dd.appendChild(div);
-        });
-        dd.classList.add('vis');
-      }catch(e){ dd.classList.remove('vis'); }
+          dd.classList.add('vis');
+        })
+        .catch(function(){ dd.classList.remove('vis'); });
     },400);
   });
-  // Close on blur
-  input.addEventListener('blur',()=>{ setTimeout(()=>{ dd.classList.remove('vis'); },200); });
+  input.addEventListener('blur',function(){ setTimeout(function(){ dd.classList.remove('vis'); },200); });
 }
 
-// ═══════════════════════════════════════════════════════
-//  ITINERARY
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  ITINERARY (multi-stop: departure + 4 waypoints + destination)
+// =============================================================
 function addWp(){
-  if(wpCount>=4){ setStatus('⚠️ Maximum 4 étapes'); return; }
+  if(wpCount>=4){ setStatus('Maximum 4 etapes'); return; }
   wpCount++;
-  const n=wpCount;
-  const list=document.getElementById('wpList');
-  const d=document.createElement('div');
+  var n=wpCount;
+  var list=document.getElementById('wpList');
+  var d=document.createElement('div');
   d.id='wp'+n; d.className='itin-row';
-  d.innerHTML=`<span class="itin-icon">🔵</span>
-    <input class="dest-input" id="wpIn${n}" placeholder="Étape ${n}..." autocomplete="off">
-    <button class="wp-remove" onclick="removeWp(${n})">✕</button>`;
+  d.innerHTML='<span class="itin-icon">\u{1F535}</span><input class="dest-input" id="wpIn'+n+'" placeholder="Etape '+n+'..." autocomplete="off"><button class="wp-remove" onclick="removeWp('+n+')">&#10005;</button>';
   list.appendChild(d);
   setupAutocomplete('wpIn'+n);
 }
-function removeWp(n){ const el=document.getElementById('wp'+n); if(el) el.remove(); }
+function removeWp(n){ var el=document.getElementById('wp'+n); if(el) el.remove(); }
 
-async function geocode(q){
-  if(!q.trim()) return null;
-  try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`);
-    const d=await r.json();
-    return d.length?{lat:+d[0].lat,lng:+d[0].lon,name:d[0].display_name}:null;
-  }catch(e){ return null; }
+function geocode(q){
+  if(!q.trim()) return Promise.resolve(null);
+  return fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=1')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ return d.length?{lat:+d[0].lat,lng:+d[0].lon,name:d[0].display_name}:null; })
+    .catch(function(){ return null; });
 }
 
-async function calcRoute(){
-  setStatus('🔄 Calcul de l\'itinéraire...');
-  const pts=[];
-  // Départ
-  const dv=document.getElementById('departIn').value.trim();
-  if(dv){ const g=await geocode(dv); if(!g){setStatus('❌ Départ non trouvé');return;} pts.push(g); }
-  else pts.push({lat:userLat,lng:userLng,name:'Ma position'});
-  // Waypoints
-  const wps=[...document.querySelectorAll('[id^="wpIn"]')];
-  for(const el of wps){
-    if(el.value.trim()){ const g=await geocode(el.value.trim()); if(g) pts.push(g); }
-  }
-  // Destination
-  const dstv=document.getElementById('destIn').value.trim();
-  if(!dstv){setStatus('❌ Entrez une destination');return;}
-  const gd=await geocode(dstv);
-  if(!gd){setStatus('❌ Destination non trouvée');return;}
-  pts.push(gd);
-  if(pts.length<2){setStatus('❌ Départ + destination requis');return;}
-  osrmRoute(pts);
-}
+function calcRoute(){
+  setStatus('Calcul de l\'itin\u00e9raire...');
+  var pts=[];
+  var dv=document.getElementById('departIn').value.trim();
 
-async function osrmRoute(pts){
-  const coords=pts.map(p=>`${p.lng},${p.lat}`).join(';');
-  try{
-    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true`);
-    const d=await r.json();
-    if(d.routes&&d.routes.length){
-      const rt=d.routes[0];
-      if(routeLayer) mapObj.removeLayer(routeLayer);
-      routeMarkers.forEach(m=>mapObj.removeLayer(m)); routeMarkers=[];
-      routeLayer=L.geoJSON(rt.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
-      pts.forEach((p,i)=>{
-        const em=i===0?'🟢':i===pts.length-1?'🔴':'🔵';
-        const m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:em,className:'',iconSize:[22,22],iconAnchor:[11,11]})})
-          .addTo(mapObj).bindPopup((p.name||'').split(',')[0]||em);
-        routeMarkers.push(m);
+  var pDepart;
+  if(dv){ pDepart=geocode(dv); }
+  else { pDepart=Promise.resolve({lat:userLat,lng:userLng,name:'Ma position'}); }
+
+  pDepart.then(function(startPt){
+    if(!startPt&&dv){ setStatus('D\u00e9part non trouv\u00e9'); return; }
+    if(startPt) pts.push(startPt);
+
+    var wpEls=[].slice.call(document.querySelectorAll('[id^="wpIn"]'));
+    var wpPromises=wpEls.map(function(el){
+      return el.value.trim()?geocode(el.value.trim()):Promise.resolve(null);
+    });
+
+    return Promise.all(wpPromises).then(function(wpResults){
+      wpResults.forEach(function(g){ if(g) pts.push(g); });
+
+      var dstv=document.getElementById('destIn').value.trim();
+      if(!dstv){ setStatus('Entrez une destination'); return; }
+      return geocode(dstv).then(function(gd){
+        if(!gd){ setStatus('Destination non trouv\u00e9e'); return; }
+        pts.push(gd);
+        if(pts.length<2){ setStatus('D\u00e9part + destination requis'); return; }
+        osrmRoute(pts);
       });
-      mapObj.fitBounds(routeLayer.getBounds(),{padding:[40,40]});
+    });
+  });
+}
 
-      const distLabel=toDisplayDist(rt.distance);
-      const min=Math.round(rt.duration/60);
-      const dur=min>=60?`${Math.floor(min/60)}h${min%60}min`:`${min} min`;
-
-      // Store route data for progress / ETA / rerouting / turn-by-turn
-      currentRouteDist=rt.distance;
-      currentRouteDur=rt.duration;
-      currentRouteCoords=rt.geometry.coordinates.map(c=>[c[1],c[0]]); // [lat,lng]
-      routeDestCoords={lat:pts[pts.length-1].lat,lng:pts[pts.length-1].lng};
-
-      // Parse turn-by-turn steps
-      routeSteps=[];
-      lastAnnouncedStep=-1;
-      if(rt.legs){
-        rt.legs.forEach(leg=>{
-          if(leg.steps){
-            leg.steps.forEach(step=>{
-              if(step.maneuver&&step.maneuver.location){
-                routeSteps.push({
-                  lat:step.maneuver.location[1],
-                  lng:step.maneuver.location[0],
-                  type:step.maneuver.type,
-                  modifier:step.maneuver.modifier||'',
-                  instruction:step.name||step.maneuver.type,
-                  distance:step.distance
-                });
-              }
-            });
-          }
+function osrmRoute(pts){
+  var coords=pts.map(function(p){ return p.lng+','+p.lat; }).join(';');
+  fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.routes&&d.routes.length){
+        var rt=d.routes[0];
+        if(routeLayer) mapObj.removeLayer(routeLayer);
+        routeMarkers.forEach(function(m){ mapObj.removeLayer(m); }); routeMarkers=[];
+        routeLayer=L.geoJSON(rt.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
+        pts.forEach(function(p,i){
+          var em=i===0?'\u{1F7E2}':i===pts.length-1?'\u{1F534}':'\u{1F535}';
+          var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:em,className:'',iconSize:[22,22],iconAnchor:[11,11]})})
+            .addTo(mapObj).bindPopup((p.name||'').split(',')[0]||em);
+          routeMarkers.push(m);
         });
+        mapObj.fitBounds(routeLayer.getBounds(),{padding:[40,40]});
+
+        var distLabel=toDisplayDist(rt.distance);
+        var min=Math.round(rt.duration/60);
+        var dur=min>=60?Math.floor(min/60)+'h'+(min%60)+'min':min+' min';
+
+        currentRouteDist=rt.distance;
+        currentRouteDur=rt.duration;
+        currentRouteCoords=rt.geometry.coordinates.map(function(c){ return [c[1],c[0]]; });
+        routeDestCoords={lat:pts[pts.length-1].lat,lng:pts[pts.length-1].lng};
+
+        routeSteps=[];
+        lastAnnouncedStep=-1;
+        if(rt.legs){
+          rt.legs.forEach(function(leg){
+            if(leg.steps){
+              leg.steps.forEach(function(step){
+                if(step.maneuver&&step.maneuver.location){
+                  routeSteps.push({
+                    lat:step.maneuver.location[1],
+                    lng:step.maneuver.location[0],
+                    type:step.maneuver.type,
+                    modifier:step.maneuver.modifier||'',
+                    instruction:step.name||step.maneuver.type,
+                    distance:step.distance
+                  });
+                }
+              });
+            }
+          });
+        }
+
+        updateRouteInfoBar(rt.distance,rt.duration);
+        document.getElementById('routeProgressFill').style.width='0%';
+        showGuideButton();
+        setStatus('Route: '+distLabel+' \u00b7 ~'+dur+' \u00b7 '+pts.length+' points \u00b7 '+routeSteps.length+' etapes');
+        showToast(distLabel+' \u00b7 ~'+dur);
       }
-
-      // Show route info bar
-      updateRouteInfoBar(rt.distance,rt.duration);
-
-      // Reset progress
-      document.getElementById('routeProgressFill').style.width='0%';
-
-      // Show guidance button (don't auto-start guidance)
-      showGuideButton();
-
-      setStatus(`✅ Route: ${distLabel} · ~${dur} · ${pts.length} points · ${routeSteps.length} étapes`);
-      showToast(`${distLabel} · ~${dur}`);
-    }
-  }catch(e){ setStatus('⚠️ Routage OSRM indisponible · Mode démo actif'); }
+    })
+    .catch(function(){ setStatus('Routage OSRM indisponible - Mode d\u00e9mo actif'); });
 }
 
 function clearRoute(){
   if(routeLayer){mapObj.removeLayer(routeLayer);routeLayer=null;}
-  routeMarkers.forEach(m=>mapObj.removeLayer(m)); routeMarkers=[];
+  routeMarkers.forEach(function(m){ mapObj.removeLayer(m); }); routeMarkers=[];
   if(destMark){mapObj.removeLayer(destMark);destMark=null;}
   document.getElementById('wpList').innerHTML=''; wpCount=0;
   document.getElementById('departIn').value='';
   document.getElementById('destIn').value='';
-  // Reset route state
   currentRouteCoords=null; currentRouteDist=0; currentRouteDur=0;
   routeDestCoords=null; routeSteps=[]; lastAnnouncedStep=-1;
   if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
@@ -890,17 +1418,17 @@ function clearRoute(){
   document.getElementById('routeProgressFill').style.width='0%';
   stopGuidance();
   document.getElementById('btnGuide').classList.remove('vis');
-  setStatus('🗑️ Route effacée · Prêt pour un nouvel itinéraire');
+  setStatus('Route effac\u00e9e - Pr\u00eat pour un nouvel itin\u00e9raire');
 }
 
-// ═══════════════════════════════════════════════════════
-//  GUIDANCE CONTROL
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  GUIDANCE CONTROL (start/stop toggle: green->red)
+// =============================================================
 function showGuideButton(){
-  const btn=document.getElementById('btnGuide');
+  var btn=document.getElementById('btnGuide');
   btn.classList.add('vis');
   btn.classList.remove('active');
-  btn.textContent='🚀 DÉMARRER LE GUIDAGE';
+  btn.textContent='\u{1F680} D\u00c9MARRER LE GUIDAGE';
   guidanceActive=false;
 }
 
@@ -910,87 +1438,77 @@ function toggleGuidance(){
 }
 
 function startGuidance(){
-  if(!currentRouteCoords){ showToast('⚠️ Calculez une route d\'abord!'); return; }
+  if(!currentRouteCoords){ showToast('Calculez une route d\'abord!'); return; }
   guidanceActive=true;
-  const btn=document.getElementById('btnGuide');
-  btn.textContent='⏹️ ARRÊTER LE GUIDAGE';
+  var btn=document.getElementById('btnGuide');
+  btn.textContent='\u23F9\uFE0F ARR\u00caTER LE GUIDAGE';
   btn.classList.add('active');
-
-  // Center on user + zoom in
   followUser=true;
   mapObj.setView([userLat,userLng],16);
   document.getElementById('centerBtn').classList.add('tracking');
-
-  // Start auto-rerouting + show route info
   startRerouteDetection();
   if(currentRouteDist&&currentRouteDur) updateRouteInfoBar(currentRouteDist,currentRouteDur);
   document.getElementById('routeInfo').classList.add('vis');
-
-  // Announce departure
   go('straight');
-  showToast('🚀 Guidage actif!');
-  setStatus('🧭 Guidage en cours · Suivez les instructions vocales');
+  showToast('Guidage actif!');
+  setStatus('Guidage en cours - Suivez les instructions vocales');
 }
 
 function stopGuidance(){
   guidanceActive=false;
   if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
-  const btn=document.getElementById('btnGuide');
+  var btn=document.getElementById('btnGuide');
   if(currentRouteCoords){
-    btn.textContent='🚀 DÉMARRER LE GUIDAGE';
+    btn.textContent='\u{1F680} D\u00c9MARRER LE GUIDAGE';
     btn.classList.remove('active');
   }
   document.getElementById('routeInfo').classList.remove('vis');
   lastAnnouncedStep=-1;
   if(window.speechSynthesis) window.speechSynthesis.cancel();
-  setStatus('⏹️ Guidage arrêté');
+  setStatus('Guidage arr\u00eat\u00e9');
 }
 
-// ═══════════════════════════════════════════════════════
-//  ROUTE INFO BAR (ETA, Time remaining, Distance)
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  ROUTE INFO BAR (ETA, Time remaining, Distance remaining)
+// =============================================================
 function updateRouteInfoBar(distMeters,durSeconds){
-  const now=new Date();
-  const eta=new Date(now.getTime()+durSeconds*1000);
-  const etaStr=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
-  const minLeft=Math.round(durSeconds/60);
-  const timeStr=minLeft>=60?`${Math.floor(minLeft/60)}h${minLeft%60}min`:`${minLeft} min`;
-  const distStr=toDisplayDist(distMeters);
-
+  var now=new Date();
+  var eta=new Date(now.getTime()+durSeconds*1000);
+  var etaStr=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
+  var minLeft=Math.round(durSeconds/60);
+  var timeStr=minLeft>=60?Math.floor(minLeft/60)+'h'+(minLeft%60)+'min':minLeft+' min';
+  var distStr=toDisplayDist(distMeters);
   document.getElementById('riEta').textContent='~'+etaStr;
   document.getElementById('riTime').textContent=timeStr;
   document.getElementById('riDist').textContent=distStr;
   document.getElementById('routeInfo').classList.add('vis');
 }
 
-// ═══════════════════════════════════════════════════════
+// =============================================================
 //  ROUTE PROGRESS BAR
-// ═══════════════════════════════════════════════════════
+// =============================================================
 function updateRouteProgress(){
   if(!routeDestCoords||!currentRouteDist) return;
-  const distToDestM=haversine(userLat,userLng,routeDestCoords.lat,routeDestCoords.lng);
-  let pct=Math.max(0,Math.min(100,(1-distToDestM/currentRouteDist)*100));
+  var distToDestM=haversine(userLat,userLng,routeDestCoords.lat,routeDestCoords.lng);
+  var pct=Math.max(0,Math.min(100,(1-distToDestM/currentRouteDist)*100));
   document.getElementById('routeProgressFill').style.width=pct+'%';
-
-  // Also update remaining ETA/distance in info bar
-  const remainDist=Math.max(0,distToDestM);
-  const avgSpeed=currentRouteDist/currentRouteDur; // m/s
-  const remainTime=avgSpeed>0?remainDist/avgSpeed:0;
+  var remainDist=Math.max(0,distToDestM);
+  var avgSpeed=currentRouteDist/currentRouteDur;
+  var remainTime=avgSpeed>0?remainDist/avgSpeed:0;
   updateRouteInfoBar(remainDist,remainTime);
 }
 
-// ═══════════════════════════════════════════════════════
-//  AUTO-REROUTING DETECTION
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  AUTO-REROUTING (every 10s, >100m off route)
+// =============================================================
 function startRerouteDetection(){
   if(rerouteInterval) clearInterval(rerouteInterval);
-  rerouteInterval=setInterval(()=>{
+  rerouteInterval=setInterval(function(){
     if(!currentRouteCoords||!currentRouteCoords.length) return;
-    const minDist=minDistToRoute(userLat,userLng,currentRouteCoords);
-    if(minDist>100){ // > 100m off route
-      showToast('🔄 Recalcul en cours...');
+    var minDist=minDistToRoute(userLat,userLng,currentRouteCoords);
+    if(minDist>100){
+      showToast('Recalcul en cours...');
       go('recalc');
-      // Recalculate route to destination
       if(routeDestCoords){
         osrmRoute([{lat:userLat,lng:userLng},{lat:routeDestCoords.lat,lng:routeDestCoords.lng}]);
       }
@@ -999,30 +1517,27 @@ function startRerouteDetection(){
 }
 
 function minDistToRoute(lat,lng,routeCoords){
-  let min=Infinity;
-  for(let i=0;i<routeCoords.length;i++){
-    const d=haversine(lat,lng,routeCoords[i][0],routeCoords[i][1]);
+  var min=Infinity;
+  for(var i=0;i<routeCoords.length;i++){
+    var d=haversine(lat,lng,routeCoords[i][0],routeCoords[i][1]);
     if(d<min) min=d;
   }
   return min;
 }
 
-// ═══════════════════════════════════════════════════════
-//  TURN-BY-TURN GUIDANCE
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  TURN-BY-TURN GUIDANCE (within 80m of step)
+// =============================================================
 function checkTurnByTurn(){
   if(!routeSteps.length) return;
-  for(let i=lastAnnouncedStep+1;i<routeSteps.length;i++){
-    const step=routeSteps[i];
-    const dist=haversine(userLat,userLng,step.lat,step.lng);
-    if(dist<80){ // Within 80m of step
+  for(var i=lastAnnouncedStep+1;i<routeSteps.length;i++){
+    var step=routeSteps[i];
+    var dist=haversine(userLat,userLng,step.lat,step.lng);
+    if(dist<80){
       lastAnnouncedStep=i;
-      const scenario=mapManeuverToScenario(step.type,step.modifier);
-      if(scenario){
-        go(scenario);
-      }
-      // Show step instruction
-      const instrLabel=buildStepInstruction(step);
+      var scenario=mapManeuverToScenario(step.type,step.modifier);
+      if(scenario) go(scenario);
+      var instrLabel=buildStepInstruction(step);
       if(instrLabel) showInstr(instrLabel);
       break;
     }
@@ -1032,18 +1547,18 @@ function checkTurnByTurn(){
 function mapManeuverToScenario(type,modifier){
   if(type==='arrive') return 'arrived';
   if(type==='turn'){
-    if(modifier.includes('right')) return 'right';
-    if(modifier.includes('left')) return 'left';
-    if(modifier.includes('uturn')) return 'uturn';
+    if(modifier.indexOf('right')>=0) return 'right';
+    if(modifier.indexOf('left')>=0) return 'left';
+    if(modifier.indexOf('uturn')>=0) return 'uturn';
   }
   if(type==='new name'||type==='continue') return 'straight';
   if(type==='fork'){
-    if(modifier.includes('right')) return 'right';
-    if(modifier.includes('left')) return 'left';
+    if(modifier.indexOf('right')>=0) return 'right';
+    if(modifier.indexOf('left')>=0) return 'left';
   }
   if(type==='end of road'){
-    if(modifier.includes('right')) return 'right';
-    if(modifier.includes('left')) return 'left';
+    if(modifier.indexOf('right')>=0) return 'right';
+    if(modifier.indexOf('left')>=0) return 'left';
   }
   if(type==='roundabout'||type==='rotary') return 'right';
   if(type==='depart') return 'straight';
@@ -1051,58 +1566,60 @@ function mapManeuverToScenario(type,modifier){
 }
 
 function buildStepInstruction(step){
-  const labels={fr:{turn:'Tourner',arrive:'Arrivée',continue:'Continuer',fork:'Bifurquer','new name':'Continuer','end of road':'Fin de route',depart:'Départ',roundabout:'Rond-point',rotary:'Rond-point'},
+  var labels={
+    fr:{turn:'Tourner',arrive:'Arriv\u00e9e',continue:'Continuer',fork:'Bifurquer','new name':'Continuer','end of road':'Fin de route',depart:'D\u00e9part',roundabout:'Rond-point',rotary:'Rond-point'},
     en:{turn:'Turn',arrive:'Arrived',continue:'Continue',fork:'Fork','new name':'Continue','end of road':'End of road',depart:'Depart',roundabout:'Roundabout',rotary:'Roundabout'},
-    es:{turn:'Girar',arrive:'Llegada',continue:'Continuar',fork:'Bifurcar','new name':'Continuar','end of road':'Fin de calle',depart:'Salida',roundabout:'Rotonda',rotary:'Rotonda'}};
-  const l=lang;
-  const lb=(labels[l]&&labels[l][step.type])||(labels.fr[step.type])||step.type;
-  const mod=step.modifier?(' '+step.modifier):'';
-  const name=step.instruction&&step.instruction!==step.type?(' · '+step.instruction):'';
+    es:{turn:'Girar',arrive:'Llegada',continue:'Continuar',fork:'Bifurcar','new name':'Continuar','end of road':'Fin de calle',depart:'Salida',roundabout:'Rotonda',rotary:'Rotonda'}
+  };
+  var l=lang;
+  var lb=(labels[l]&&labels[l][step.type])||(labels.fr[step.type])||step.type;
+  var mod=step.modifier?(' '+step.modifier):'';
+  var name=step.instruction&&step.instruction!==step.type?(' \u00b7 '+step.instruction):'';
   return lb+mod+name;
 }
 
-// ═══════════════════════════════════════════════════════
+// =============================================================
 //  HAVERSINE DISTANCE (meters)
-// ═══════════════════════════════════════════════════════
+// =============================================================
 function haversine(lat1,lng1,lat2,lng2){
-  const R=6371000;
-  const dLat=(lat2-lat1)*Math.PI/180;
-  const dLng=(lng2-lng1)*Math.PI/180;
-  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  var R=6371000;
+  var dLat=(lat2-lat1)*Math.PI/180;
+  var dLng=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-// ═══════════════════════════════════════════════════════
-//  MODE & LANG
-// ═══════════════════════════════════════════════════════
+// =============================================================
+//  MODE & LANG SWITCHING
+// =============================================================
 function setMode(m){
   mode=m;
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+  document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.toggle('active',b.dataset.mode===m); });
   renderPersonas();
   applyPersona();
 }
 
 function setLang(l){
   lang=l;
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('active',b.dataset.lang===l); });
   updateIndicator();
 }
 
 function renderPersonas(){
-  const row=document.getElementById('personaRow');
+  var row=document.getElementById('personaRow');
   row.innerHTML='';
-  PERSONAS[mode].forEach((p,i)=>{
-    const btn=document.createElement('button');
+  PERSONAS[mode].forEach(function(p,i){
+    var btn=document.createElement('button');
     btn.className='persona-btn'+(i===activeP[mode]?' active':'');
     btn.textContent=p.label;
     btn.title=p.desc;
-    btn.onclick=()=>{ activeP[mode]=i; renderPersonas(); applyPersona(); };
+    btn.onclick=function(){ activeP[mode]=i; renderPersonas(); applyPersona(); };
     row.appendChild(btn);
   });
 }
 
 function applyPersona(){
-  const p=getP();
+  var p=getP();
   document.getElementById('charAv').textContent=p.av;
   document.getElementById('charName').textContent=p.name;
   document.getElementById('charDesc').textContent=p.desc;
@@ -1110,74 +1627,105 @@ function applyPersona(){
 }
 
 function updateIndicator(){
-  const flags={fr:'🇫🇷',en:'🇬🇧',es:'🇪🇸'};
-  document.getElementById('modeIndicator').textContent=`${getP().name} · ${flags[lang]||'🇫🇷'}`;
+  var flags={fr:'\u{1F1EB}\u{1F1F7}',en:'\u{1F1EC}\u{1F1E7}',es:'\u{1F1EA}\u{1F1F8}'};
+  document.getElementById('modeIndicator').textContent=getP().name+' \u00b7 '+(flags[lang]||'\u{1F1EB}\u{1F1F7}');
 }
 
 function testVoice(){
-  const s={grandmaman:'Ah oui mon beau, mamie est là!',enfant:'YESSSS ON EST EN FEU!!',amis:"T'as raté le virage, ostie de cave!",drole:'Bravo. La science ne comprend pas encore comment.',insulte:"T'AS MANQUÉ LE VIRAGE ESPÈCE D'IDIOT SANDWICH!"};
-  const txt=s[mode]||'Test de voix!';
+  var tests={
+    grandmaman:{
+      fr:"Ah oui mon beau... euh... mamie est L\u00c0 avec toi, t'sais!",
+      en:"Oh sweetie... hmm... grandma is RIGHT here with you, okay?",
+      es:"Ay mi amor... euh... abuelita est\u00e1 AQU\u00cd contigo!"
+    },
+    enfant:{
+      fr:"YESSSS ON EST EN FEU!! C'est... euh... c'\u00e9tait quoi la question?",
+      en:"YESSS WE'RE ON FIRE!! It's... hmm... what was I saying?",
+      es:"S\u00cdIII ESTAMOS EN FUEGO!! Es... euh... qu\u00e9 dec\u00eda?"
+    },
+    amis:{
+      fr:"T'as rat\u00e9 le virage, ostie de cave... genre, S\u00c9RIEUX l\u00e0!",
+      en:"You missed the turn... SERIOUSLY, are you even trying? Like...",
+      es:"Te pasaste el giro... EN SERIO, est\u00e1s intentando? Euh..."
+    },
+    drole:{
+      fr:"Bravo... la science ne comprend PAS encore comment t'es arriv\u00e9 l\u00e0, genre.",
+      en:"Bravo... science still doesn't UNDERSTAND how you got here, like.",
+      es:"Bravo... la ciencia a\u00fan no ENTIENDE c\u00f3mo llegaste, euh."
+    },
+    insulte:{
+      fr:"T'AS MANQU\u00c9 LE VIRAGE ESP\u00c8CE D'IDIOT SANDWICH! C'est CRRRU!",
+      en:"YOU MISSED THE TURN YOU ABSOLUTE IDIOT SANDWICH! It's RAAWW!",
+      es:"TE PASASTE EL GIRO PEDAZO DE SANDWICH IDIOTA! Est\u00e1 CRUDO!"
+    }
+  };
+  var modeTests=tests[mode]||tests.grandmaman;
+  var txt=modeTests[lang]||modeTests.fr;
   showInstr(txt); speak(txt,lang); animChar();
 }
 
-// ═══════════════════════════════════════════════════════
+// =============================================================
 //  SCENARIOS
-// ═══════════════════════════════════════════════════════
+// =============================================================
 function go(sc){
-  const l=lang;
-  const arr=P[mode]&&P[mode][l]&&P[mode][l][sc];
+  var l=lang;
+  var arr=P[mode]&&P[mode][l]&&P[mode][l][sc];
   if(!arr||!arr.length) return;
-  const txt=arr[Math.floor(Math.random()*arr.length)];
+  var txt=arr[Math.floor(Math.random()*arr.length)];
   showInstr(txt); speak(txt,l); animChar();
 }
 
-// ═══════════════════════════════════════════════════════
-//  SPEECH
-// ═══════════════════════════════════════════════════════
-const vsEl=document.getElementById('voiceSpeed');
-vsEl.addEventListener('input',()=>document.getElementById('speedLabel').textContent=parseFloat(vsEl.value).toFixed(1)+'×');
+// =============================================================
+//  SPEECH SYNTHESIS
+// =============================================================
+var vsEl=document.getElementById('voiceSpeed');
+vsEl.addEventListener('input',function(){ document.getElementById('speedLabel').textContent=parseFloat(vsEl.value).toFixed(1)+'x'; });
 
 function getVoices(){
   if(cachedVoices.length) return cachedVoices;
   cachedVoices=window.speechSynthesis?window.speechSynthesis.getVoices():[];
   return cachedVoices;
 }
-if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>cachedVoices=window.speechSynthesis.getVoices();
+if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=function(){ cachedVoices=window.speechSynthesis.getVoices(); };
 
+// pickVoice: language-dependent preferVoice with fallbacks
 function pickVoice(l,gender){
-  const voices=getVoices();
-  const p=getP();
+  var voices=getVoices();
+  var p=getP();
   // 1. Get language-specific preferred voices
-  const prefs=p.preferVoice&&p.preferVoice[l]?p.preferVoice[l]:
+  var prefs=p.preferVoice&&p.preferVoice[l]?p.preferVoice[l]:
     (p.preferVoice&&typeof p.preferVoice==='object'&&!Array.isArray(p.preferVoice)?p.preferVoice.fr:
     (Array.isArray(p.preferVoice)?p.preferVoice:[]));
   if(prefs&&prefs.length){
-    for(const pref of prefs){
-      const exact=voices.find(v=>v.name===pref);
-      if(exact) return exact;
+    // Try exact match first
+    for(var i=0;i<prefs.length;i++){
+      for(var j=0;j<voices.length;j++){
+        if(voices[j].name===prefs[i]) return voices[j];
+      }
     }
-    for(const pref of prefs){
-      const partial=voices.find(v=>v.name.toLowerCase().includes(pref.toLowerCase()));
-      if(partial) return partial;
+    // Try partial match
+    for(var i=0;i<prefs.length;i++){
+      for(var j=0;j<voices.length;j++){
+        if(voices[j].name.toLowerCase().indexOf(prefs[i].toLowerCase())>=0) return voices[j];
+      }
     }
   }
-  // 2. Prefer Natural/Online voices for better quality
-  const lm={fr:['fr','fr-FR','fr-CA'],en:['en','en-US','en-GB'],es:['es','es-ES','es-MX']};
-  const codes=lm[l]||['fr'];
-  let pool=voices.filter(v=>codes.some(c=>v.lang.toLowerCase().startsWith(c.toLowerCase())));
+  // 2. Fallback: filter by language, sort Natural > Google > Legacy, then by gender
+  var lm={fr:['fr','fr-FR','fr-CA'],en:['en','en-US','en-GB'],es:['es','es-ES','es-MX']};
+  var codes=lm[l]||['fr'];
+  var pool=voices.filter(function(v){ return codes.some(function(c){ return v.lang.toLowerCase().indexOf(c.toLowerCase())===0; }); });
   if(!pool.length) pool=voices;
-  // Sort: Natural/Online voices first, then Google, then others
-  pool.sort((a,b)=>{
-    const aN=/natural|online/i.test(a.name)?0:/google/i.test(a.name)?1:2;
-    const bN=/natural|online/i.test(b.name)?0:/google/i.test(b.name)?1:2;
+  pool.sort(function(a,b){
+    var aN=/natural|online/i.test(a.name)?0:/google/i.test(a.name)?1:2;
+    var bN=/natural|online/i.test(b.name)?0:/google/i.test(b.name)?1:2;
     return aN-bN;
   });
   if(gender==='female'){
-    const f=pool.filter(v=>/female|zira|samantha|nathalie|caroline|linda|amélie|alice|jenny|aria|sylvie|karen|satu|moira/i.test(v.name));
+    var f=pool.filter(function(v){ return /female|zira|samantha|nathalie|caroline|linda|am\u00e9lie|alice|jenny|aria|sylvie|karen|denise|dalia|sabina/i.test(v.name); });
     if(f.length) return f[0];
   }
   if(gender==='male'){
-    const m=pool.filter(v=>/male|daniel|david|richard|claude|alex|jorge|carlos|guy|eric|mark|ryan|thomas|remy|liam/i.test(v.name));
+    var m=pool.filter(function(v){ return /male|daniel|david|richard|claude|alex|jorge|carlos|guy|eric|mark|ryan|thomas|remy|liam|antoine|pablo/i.test(v.name); });
     if(m.length) return m[0];
   }
   return pool[0]||null;
@@ -1186,54 +1734,56 @@ function pickVoice(l,gender){
 function speak(txt,l){
   if(!voiceOn||!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const p=getP();
-  const u=new SpeechSynthesisUtterance(txt);
+  var p=getP();
+  var u=new SpeechSynthesisUtterance(txt);
   u.lang={fr:'fr-FR',en:'en-US',es:'es-ES'}[l]||'fr-FR';
   u.rate=p.rate*parseFloat(vsEl.value);
   u.pitch=p.pitch;
   u.volume=p.volume||1;
-  const v=pickVoice(l,p.gender);
+  var v=pickVoice(l,p.gender);
   if(v) u.voice=v;
-  setStatus('🎙️ '+p.name+' · '+(v?v.name:'défaut')+' · pitch '+p.pitch+' · ×'+u.rate.toFixed(2));
+  setStatus(p.name+' \u00b7 '+(v?v.name:'default')+' \u00b7 pitch '+p.pitch+' \u00b7 x'+u.rate.toFixed(2));
   window.speechSynthesis.speak(u);
 }
 
 function toggleVoice(){
   voiceOn=!voiceOn;
-  const btn=document.getElementById('voiceToggle');
-  btn.textContent=voiceOn?'🔊 ON':'🔇 OFF';
+  var btn=document.getElementById('voiceToggle');
+  btn.textContent=voiceOn?'\u{1F50A} ON':'\u{1F507} OFF';
   btn.classList.toggle('on',voiceOn);
   if(!voiceOn&&window.speechSynthesis) window.speechSynthesis.cancel();
 }
 
-// ═══════════════════════════════════════════════════════
+// =============================================================
 //  UI HELPERS
-// ═══════════════════════════════════════════════════════
+// =============================================================
 function showInstr(txt){
-  const el=document.getElementById('instrText');
+  var el=document.getElementById('instrText');
   el.textContent=txt;
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
 
 function animChar(){
-  const av=document.getElementById('charAv');
+  var av=document.getElementById('charAv');
   av.classList.remove('speaking'); void av.offsetWidth;
   av.classList.add('speaking');
-  setTimeout(()=>av.classList.remove('speaking'),2200);
+  setTimeout(function(){ av.classList.remove('speaking'); },2200);
 }
 
 function setStatus(msg){ document.getElementById('statusTxt').textContent=msg; }
 
-let toastT;
+var toastT;
 function showToast(msg){
-  const t=document.getElementById('toast');
+  var t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),4000);
+  clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('show'); },4000);
 }
 
-// ═══ INIT ═══
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
+// =============================================================
+//  INIT
+// =============================================================
+window.addEventListener('load',function(){
+  setTimeout(function(){
     renderPersonas();
     applyPersona();
     setupAutocomplete('departIn');
