@@ -2161,12 +2161,22 @@ function startGuidance(){
 function stopGuidance(){
   guidanceActive=false;
   if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
+  // Arrêter toute voix en cours
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  voiceQueue=[];
+  // Reset bouton guidage
   var btn=document.getElementById('btnGuide');
-  if(currentRouteCoords){
-    btn.textContent='\u{1F680} D\u00c9MARRER LE GUIDAGE';
-    btn.classList.remove('active');
-  }
+  btn.textContent='\u{1F680} D\u00c9MARRER LE GUIDAGE';
+  btn.classList.remove('active');
+  btn.classList.remove('vis');
+  // Masquer tous les éléments de guidage
   document.getElementById('routeInfo').classList.remove('vis');
+  document.getElementById('routeProgressFill').style.width='0%';
+  document.getElementById('guidanceOverlay').textContent='';
+  document.getElementById('guidanceStopFloat').style.display='';
+  // Reset la barre de pause
+  var pauseOv=document.getElementById('pauseOverlay');
+  if(pauseOv) pauseOv.style.display='none';
   // Quitter le mode plein écran
   document.body.classList.remove('guidance-fullscreen');
   try{
@@ -2174,10 +2184,27 @@ function stopGuidance(){
     else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
     else if(document.msExitFullscreen) document.msExitFullscreen();
   }catch(e){}
-  setTimeout(function(){ mapObj.invalidateSize(); },300);
-  lastAnnouncedStep=-1;
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
-  setStatus('Guidage arr\u00eat\u00e9');
+  // Effacer la route de la carte
+  if(routeLayer){mapObj.removeLayer(routeLayer);routeLayer=null;}
+  routeMarkers.forEach(function(m){ mapObj.removeLayer(m); }); routeMarkers=[];
+  if(destMark){mapObj.removeLayer(destMark);destMark=null;}
+  // Reset les champs de saisie
+  document.getElementById('departIn').value='';
+  document.getElementById('destIn').value='';
+  document.getElementById('wpList').innerHTML=''; wpCount=0;
+  // Reset les variables de route
+  currentRouteCoords=null; currentRouteDist=0; currentRouteDur=0;
+  routeDestCoords=null; routeStartCoords=null; routeUsesCustomStart=false;
+  routeSteps=[]; lastAnnouncedStep=-1; stepAnnounced={};
+  // Reset alertes vitesse
+  speedAlertActive=false;
+  var badge=document.getElementById('speedBadge');
+  if(badge) badge.classList.remove('alert');
+  // Réajuster la carte
+  setTimeout(function(){ if(mapObj) mapObj.invalidateSize(); },300);
+  // Recentrer sur la position actuelle
+  if(userLat&&userLng) mapObj.setView([userLat,userLng],14);
+  setStatus('Prêt pour un nouveau trajet');
 }
 
 // =============================================================
@@ -2307,19 +2334,19 @@ function checkTurnByTurn(){
     var dist=haversine(userLat,userLng,step.lat,step.lng);
     if(!stepAnnounced[i]) stepAnnounced[i]={far:false,mid:false,near:false};
 
-    // Pré-annonce à ~500m: "Dans 500 mètres, tournez à droite sur Rue X"
+    // Pré-annonce à ~500m: instruction de navigation parlée (pas de réplique drôle)
     if(dist<550 && dist>250 && !stepAnnounced[i].far){
       stepAnnounced[i].far=true;
       var preInstr=buildPreAnnounce(step,500);
-      if(preInstr){ showNavInstr(preInstr); }
+      if(preInstr){ showNavInstr(preInstr); speak(preInstr,lang); }
       vibrateAndDing();
       break;
     }
-    // Annonce à ~200m: "Dans 200 mètres, tournez à droite"
+    // Annonce à ~200m: instruction de navigation parlée (pas de réplique drôle)
     if(dist<250 && dist>80 && !stepAnnounced[i].mid){
       stepAnnounced[i].mid=true;
       var midInstr=buildPreAnnounce(step,200);
-      if(midInstr){ showNavInstr(midInstr); }
+      if(midInstr){ showNavInstr(midInstr); speak(midInstr,lang); }
       vibrateAndDing();
       break;
     }
