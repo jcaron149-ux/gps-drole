@@ -100,6 +100,13 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .btn-calc:hover{background:#fde68a;box-shadow:0 0 22px rgba(245,158,11,.5)}
 .btn-clear{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.8rem;transition:all .2s}
 .btn-clear:hover{border-color:var(--red);color:var(--red)}
+/* START GUIDANCE BUTTON */
+.btn-guide{width:100%;padding:10px;margin-top:7px;background:var(--neon2);border:none;border-radius:8px;color:#080c18;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;cursor:pointer;letter-spacing:1px;transition:all .3s;box-shadow:0 0 16px rgba(16,185,129,.4);display:none}
+.btn-guide.vis{display:block;animation:guideAppear .4s ease}
+.btn-guide:hover{background:#34d399;box-shadow:0 0 28px rgba(16,185,129,.6);transform:translateY(-1px)}
+.btn-guide.active{background:var(--red);box-shadow:0 0 16px rgba(239,68,68,.4)}
+.btn-guide.active:hover{background:#f87171;box-shadow:0 0 28px rgba(239,68,68,.6)}
+@keyframes guideAppear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .wp-remove{padding:3px 7px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.72rem;transition:all .2s;flex-shrink:0}
 .wp-remove:hover{border-color:var(--red);color:var(--red)}
 /* AUTOCOMPLETE */
@@ -239,6 +246,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
         <button class="btn-calc" onclick="calcRoute()">🗺️ CALCULER</button>
         <button class="btn-clear" onclick="clearRoute()" title="Effacer">🗑️</button>
       </div>
+      <button class="btn-guide" id="btnGuide" onclick="toggleGuidance()">🚀 DÉMARRER LE GUIDAGE</button>
       <div style="font-size:.62rem;color:var(--muted);margin-top:5px">Ou cliquez sur la carte pour destination directe 📍</div>
     </div>
 
@@ -530,6 +538,7 @@ let rerouteInterval=null;    // Interval for off-route detection
 let currentSpeed=0;          // Current speed in km/h from GPS
 let speedAlertActive=false;
 let useImperial=false;       // true = MPH (USA), false = KM/H
+let guidanceActive=false;    // true = guidage en cours
 
 // ═══════════════════════════════════════════════════════
 //  AUTO-DETECT USA → MPH
@@ -636,8 +645,8 @@ function startTracking(){
     btn.classList.toggle('tracking',followUser);
     setStatus('📡 GPS temps réel'+(accuracy?' · ±'+Math.round(accuracy)+'m':''));
 
-    // Update route progress + ETA + turn-by-turn proximity
-    if(currentRouteCoords){
+    // Update route progress + ETA + turn-by-turn (only when guidance active)
+    if(currentRouteCoords&&guidanceActive){
       updateRouteProgress();
       checkTurnByTurn();
     }
@@ -806,12 +815,11 @@ async function osrmRoute(pts){
       // Reset progress
       document.getElementById('routeProgressFill').style.width='0%';
 
-      // Start auto-rerouting detection
-      startRerouteDetection();
+      // Show guidance button (don't auto-start guidance)
+      showGuideButton();
 
       setStatus(`✅ Route: ${distLabel} · ~${dur} · ${pts.length} points · ${routeSteps.length} étapes`);
       showToast(`${distLabel} · ~${dur}`);
-      setTimeout(()=>go('straight'),900);
     }
   }catch(e){ setStatus('⚠️ Routage OSRM indisponible · Mode démo actif'); }
 }
@@ -829,7 +837,62 @@ function clearRoute(){
   if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
   document.getElementById('routeInfo').classList.remove('vis');
   document.getElementById('routeProgressFill').style.width='0%';
+  stopGuidance();
+  document.getElementById('btnGuide').classList.remove('vis');
   setStatus('🗑️ Route effacée · Prêt pour un nouvel itinéraire');
+}
+
+// ═══════════════════════════════════════════════════════
+//  GUIDANCE CONTROL
+// ═══════════════════════════════════════════════════════
+function showGuideButton(){
+  const btn=document.getElementById('btnGuide');
+  btn.classList.add('vis');
+  btn.classList.remove('active');
+  btn.textContent='🚀 DÉMARRER LE GUIDAGE';
+  guidanceActive=false;
+}
+
+function toggleGuidance(){
+  if(guidanceActive){ stopGuidance(); }
+  else { startGuidance(); }
+}
+
+function startGuidance(){
+  if(!currentRouteCoords){ showToast('⚠️ Calculez une route d\'abord!'); return; }
+  guidanceActive=true;
+  const btn=document.getElementById('btnGuide');
+  btn.textContent='⏹️ ARRÊTER LE GUIDAGE';
+  btn.classList.add('active');
+
+  // Center on user + zoom in
+  followUser=true;
+  mapObj.setView([userLat,userLng],16);
+  document.getElementById('centerBtn').classList.add('tracking');
+
+  // Start auto-rerouting + show route info
+  startRerouteDetection();
+  if(currentRouteDist&&currentRouteDur) updateRouteInfoBar(currentRouteDist,currentRouteDur);
+  document.getElementById('routeInfo').classList.add('vis');
+
+  // Announce departure
+  go('straight');
+  showToast('🚀 Guidage actif!');
+  setStatus('🧭 Guidage en cours · Suivez les instructions vocales');
+}
+
+function stopGuidance(){
+  guidanceActive=false;
+  if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
+  const btn=document.getElementById('btnGuide');
+  if(currentRouteCoords){
+    btn.textContent='🚀 DÉMARRER LE GUIDAGE';
+    btn.classList.remove('active');
+  }
+  document.getElementById('routeInfo').classList.remove('vis');
+  lastAnnouncedStep=-1;
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  setStatus('⏹️ Guidage arrêté');
 }
 
 // ═══════════════════════════════════════════════════════
