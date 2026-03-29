@@ -1347,15 +1347,51 @@ let guidanceActive=false;
 // =============================================================
 //  AUTO-DETECT USA -> MPH
 // =============================================================
+var countryDetected=false;
 function detectCountry(lat,lng){
-  var isUSA=(lat>=24.5&&lat<=49.5&&lng>=-125&&lng<=-66.9)
-    ||(lat>=51&&lat<=71.5&&lng>=-180&&lng<=-129)
-    ||(lat>=18.9&&lat<=22.3&&lng>=-160.3&&lng<=-154.8);
-  if(isUSA!==useImperial){
-    useImperial=isUSA;
-    document.getElementById('speedUnit').textContent=useImperial?'MPH':'KM/H';
-    setStatus(useImperial?'USA detected - Speed in MPH':'Speed in KM/H');
-  }
+  if(countryDetected) return; // Détecter une seule fois (utiliser reverse geocoding)
+  // Utiliser Nominatim reverse geocoding pour détecter le pays exact
+  fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&zoom=3&addressdetails=1',{headers:{'Accept-Language':'en'}})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      countryDetected=true;
+      var cc=(d.address&&d.address.country_code)||'';
+      var isUSA=(cc==='us');
+      // USA, Liberia, Myanmar = imperial. Tout le reste = métrique
+      var isImperial=(cc==='us'||cc==='lr'||cc==='mm');
+      if(isImperial!==useImperial){
+        useImperial=isImperial;
+        document.getElementById('speedUnit').textContent=useImperial?'MPH':'KM/H';
+        setStatus(useImperial?'USA - Speed in MPH':'Speed in KM/H');
+      }
+    })
+    .catch(function(){
+      // Fallback: si pas de réseau, utiliser une détection approximative
+      // Le Canada est AU-DESSUS de 49° sauf dans le sud de l'Ontario/Québec
+      // Clé: les USA ne vont PAS au-dessus de 49° (sauf Alaska)
+      // Alaska: lat>51 && lng<-129
+      // Hawaii: lat 18.9-22.3 && lng -160 to -154
+      // USA continental: lat 24.5-49 && lng -125 to -66.9
+      // MAIS le Canada occupe aussi lat 42-49 (sud Ontario, Québec, Prairies, BC)
+      // Heuristique: si lat>49 et pas Alaska → Canada (KM/H)
+      // Si lat<49 → probablement USA mais on ne peut pas être sûr
+      // Par défaut: KM/H (plus sûr pour le Canada)
+      countryDetected=true;
+      var probablyUSA=false;
+      // Alaska
+      if(lat>=51&&lat<=71.5&&lng<=-129&&lng>=-180) probablyUSA=true;
+      // Hawaii
+      else if(lat>=18.9&&lat<=22.3&&lng>=-160.3&&lng<=-154.8) probablyUSA=true;
+      // USA continental: seulement si SOUS la frontière canadienne typique
+      // La frontière est ~49° dans l'ouest, ~45° au Vermont, ~42° aux Grands Lacs
+      else if(lat>=24.5&&lat<=42&&lng>=-125&&lng<=-66.9) probablyUSA=true;
+      // Zone ambiguë 42-49: garder KM/H par défaut (plus de Canadiens que d'Américains utilisent cette app)
+      if(probablyUSA!==useImperial){
+        useImperial=probablyUSA;
+        document.getElementById('speedUnit').textContent=useImperial?'MPH':'KM/H';
+        setStatus(useImperial?'USA detected - Speed in MPH':'Speed in KM/H');
+      }
+    });
 }
 function toDisplaySpeed(mps){ return mps!==null&&mps>0?Math.round(mps*(useImperial?2.23694:3.6)):0; }
 function toDisplayDist(meters){ return useImperial?(meters/1609.344).toFixed(1)+' mi':(meters/1000).toFixed(1)+' km'; }
