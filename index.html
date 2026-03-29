@@ -1311,6 +1311,8 @@ let currentRouteCoords=null;
 let currentRouteDist=0;
 let currentRouteDur=0;
 let routeDestCoords=null;
+let routeStartCoords=null;
+let routeUsesCustomStart=false;
 let routeSteps=[];
 let lastAnnouncedStep=-1;
 let rerouteInterval=null;
@@ -1566,6 +1568,8 @@ function osrmRoute(pts){
         currentRouteDur=rt.duration;
         currentRouteCoords=rt.geometry.coordinates.map(function(c){ return [c[1],c[0]]; });
         routeDestCoords={lat:pts[pts.length-1].lat,lng:pts[pts.length-1].lng};
+        routeStartCoords={lat:pts[0].lat,lng:pts[0].lng};
+        routeUsesCustomStart=(document.getElementById('departIn').value.trim()!=='');
 
         routeSteps=[];
         lastAnnouncedStep=-1;
@@ -1609,7 +1613,7 @@ function clearRoute(){
   document.getElementById('departIn').value='';
   document.getElementById('destIn').value='';
   currentRouteCoords=null; currentRouteDist=0; currentRouteDur=0;
-  routeDestCoords=null; routeSteps=[]; lastAnnouncedStep=-1; stepAnnounced={};
+  routeDestCoords=null; routeStartCoords=null; routeUsesCustomStart=false; routeSteps=[]; lastAnnouncedStep=-1; stepAnnounced={};
   if(rerouteInterval){ clearInterval(rerouteInterval); rerouteInterval=null; }
   document.getElementById('routeInfo').classList.remove('vis');
   document.getElementById('routeProgressFill').style.width='0%';
@@ -1641,7 +1645,12 @@ function startGuidance(){
   btn.textContent='\u23F9\uFE0F ARR\u00caTER LE GUIDAGE';
   btn.classList.add('active');
   followUser=true;
-  mapObj.setView([userLat,userLng],17);
+  // Centrer sur le point de départ de la route (adresse saisie OU position GPS)
+  if(routeUsesCustomStart&&routeStartCoords){
+    mapObj.setView([routeStartCoords.lat,routeStartCoords.lng],17);
+  } else {
+    mapObj.setView([userLat,userLng],17);
+  }
   document.getElementById('centerBtn').classList.add('tracking');
   startRerouteDetection();
   if(currentRouteDist&&currentRouteDur) updateRouteInfoBar(currentRouteDist,currentRouteDur);
