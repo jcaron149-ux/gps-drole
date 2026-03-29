@@ -277,67 +277,95 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 // ═══════════════════════════════════════════════════════
 // ─────────────────────────────────────────────────────
 // Voice matching strategy:
-//   1st pick → Microsoft Natural/Online voices (Win10/11, most realistic)
-//   2nd pick → Google Cloud voices (Chrome, very good quality)
-//   3rd pick → Microsoft legacy voices (always available on Windows)
-//   4th pick → iOS/macOS voices (Siri voices, fallback for Apple)
-//   Rate/pitch fine-tuned per character's real voice signature
+//   preferVoice is now {fr:[...], en:[...], es:[...]}
+//   Each language gets voices that ACTUALLY SPEAK that language
+//   Rate/pitch tuned for comprehensibility + character feel
 // ─────────────────────────────────────────────────────
 const PERSONAS = {
   grandmaman:[
-    // Lise Payette: voix grave-douce, québécoise, posée, chaleureuse
-    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.72,  pitch:.88, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
-     preferVoice:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie']},
-    // Betty White: cheerful, warm, slightly higher pitch, energetic for her age
-    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.85,  pitch:1.15, volume:1, gender:'female', desc:'Espiègle · Directe · Style Betty White',
-     preferVoice:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Karen']},
-    // Katharine Hepburn: deliberate transatlantic accent, lower register, refined
-    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.70,  pitch:.82, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
-     preferVoice:['Microsoft Aria Online','Aria','Google UK English Female','Microsoft Linda','Microsoft Zira','Samantha']},
+    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.75,  pitch:.90, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
+     preferVoice:{
+       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],
+       en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha'],
+       es:['Microsoft Dalia Online','Dalia','Google español','Microsoft Sabina']}},
+    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.85,  pitch:1.12, volume:1, gender:'female', desc:'Espiègle · Directe · Style Betty White',
+     preferVoice:{
+       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google français','Amélie'],
+       en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Karen'],
+       es:['Microsoft Dalia Online','Dalia','Google español','Microsoft Sabina']}},
+    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.72,  pitch:.85, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
+     preferVoice:{
+       fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google français'],
+       en:['Microsoft Aria Online','Aria','Google UK English Female','Microsoft Linda','Samantha'],
+       es:['Microsoft Dalia Online','Dalia','Google español']}},
   ],
   enfant:[
-    // Dory: scattered, hyper, super high voice, talks a mile a minute
-    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.50, pitch:1.90,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
-     preferVoice:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie']},
-    // Buzz Lightyear: heroic baritone, measured dramatic delivery like Tim Allen
-    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.88,  pitch:.62, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
-     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex']},
-    // Timon: fast-talking sarcastic sidekick, Nathan Lane's higher pitch
-    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.35, pitch:1.45,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
-     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft Mark','Microsoft David','Alex']},
+    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.28, pitch:1.55,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
+     preferVoice:{
+       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google français','Amélie'],
+       en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha'],
+       es:['Microsoft Dalia Online','Dalia','Google español']}},
+    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.88,  pitch:.65, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español','Microsoft Pablo']}},
+    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.20, pitch:1.30,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Eric Online','Eric','Google US English','Microsoft Mark','Microsoft David','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
   ],
   amis:[
-    // Deadpool: Ryan Reynolds fast-talking, manic, slightly higher pitch
-    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.18, pitch:1.10,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
-     preferVoice:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Microsoft Mark','Alex']},
-    // Seth Rogen: laid back, deep-ish, slow talker, stoner vibe
-    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.82,  pitch:.75, volume:.92,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
-     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Claude','Alex']},
-    // Kronk: deep lovable dummy, Patrick Warburton's basso voice
-    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.78,  pitch:.58, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
-     preferVoice:['Microsoft Guy Online','Guy','Microsoft David','Microsoft Claude','Google US English','Alex']},
+    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.15, pitch:1.08,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Microsoft Mark','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
+    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.82,  pitch:.78, volume:.92,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
+    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.78,  pitch:.60, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
   ],
   drole:[
-    // Morgan Freeman: THE deep narrator voice, very slow, incredibly low pitch
-    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.65,  pitch:.42, volume:.82,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
-     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex']},
-    // Ron Burgundy: Will Ferrell confident newscaster, mid-range authoritative
+    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.68,  pitch:.52, volume:.82,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
     {id:'ron',    label:'📺 Ron',       av:'📺', name:'RON GPS',       rate:1.05, pitch:.92, volume:1,  gender:'male',   desc:'Pompeux confiant · Ron Burgundy',
-     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Mark','Alex']},
-    // Jarvis: smooth British AI (Paul Bettany), precise, cool, mid-range
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Mark','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
     {id:'jarvis', label:'🤖 Jarvis',   av:'🤖', name:'JARVIS GPS',    rate:.90,  pitch:.82, volume:.88,gender:'male',   desc:'IA sarcastique · Jarvis Iron Man',
-     preferVoice:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft David','Microsoft Richard']},
+     preferVoice:{
+       fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google français'],
+       en:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft David'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
   ],
   insulte:[
-    // Gordon Ramsay: fast angry British, higher intensity, Scottish edge
-    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.30, pitch:.92, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
-     preferVoice:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft Guy Online','Microsoft David']},
-    // Ermey (Full Metal Jacket): American drill sergeant, rapid-fire barking
-    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.40, pitch:.78, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
-     preferVoice:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Microsoft Mark','Alex']},
-    // Thanos: deepest voice possible, slow philosophical certainty, Josh Brolin
-    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.62,  pitch:.35, volume:.78,gender:'male',   desc:'Calme certain · Thanos',
-     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex']},
+    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.25, pitch:.92, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft Guy Online'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
+    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.25, pitch:.78, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Microsoft Mark','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
+    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.68,  pitch:.45, volume:.78,gender:'male',   desc:'Calme certain · Thanos',
+     preferVoice:{
+       fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],
+       en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+       es:['Microsoft Jorge Online','Jorge','Google español']}},
   ],
 };
 const activeP = {grandmaman:0,enfant:0,amis:0,drole:0,insulte:0};
@@ -1119,15 +1147,16 @@ if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>cachedVoic
 function pickVoice(l,gender){
   const voices=getVoices();
   const p=getP();
-  // 1. Essayer les voix préférées du persona (exact match, then partial)
-  if(p.preferVoice){
-    for(const pref of p.preferVoice){
-      // Exact name match first
+  // 1. Get language-specific preferred voices
+  const prefs=p.preferVoice&&p.preferVoice[l]?p.preferVoice[l]:
+    (p.preferVoice&&typeof p.preferVoice==='object'&&!Array.isArray(p.preferVoice)?p.preferVoice.fr:
+    (Array.isArray(p.preferVoice)?p.preferVoice:[]));
+  if(prefs&&prefs.length){
+    for(const pref of prefs){
       const exact=voices.find(v=>v.name===pref);
       if(exact) return exact;
     }
-    for(const pref of p.preferVoice){
-      // Partial match (handles "Microsoft Guy Online" matching "Microsoft Guy Online (Natural) - en-US")
+    for(const pref of prefs){
       const partial=voices.find(v=>v.name.toLowerCase().includes(pref.toLowerCase()));
       if(partial) return partial;
     }

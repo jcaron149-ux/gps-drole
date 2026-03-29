@@ -156,86 +156,86 @@ h1{font-family:'Orbitron',monospace;font-size:1.6rem;background:linear-gradient(
 // ═══════════════════════════════════════════════════════
 const PERSONAS = {
   grandmaman:[
-    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.72,  pitch:.88, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
-     preferVoice:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],
+    {id:'lise',   label:'👵 Lise',     av:'👵', name:'LISE GPS',      rate:.75,  pitch:.90, volume:.9, gender:'female', desc:'Grave-douce · Québécoise · Style Lise Payette',
+     preferVoice:{fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha'],es:['Microsoft Dalia Online','Dalia','Google español','Microsoft Sabina']},
      testFr:"Ah mon beau, fais attention icitte! Mamie veut pas que t'aies un accident!",
      testEn:"Oh sweetheart, be careful there! Grandma doesn't want you to get hurt!",
      testEs:"Ay mi amor, ten cuidado ahí! Abuelita no quiere que te lastimes!"},
-    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.85,  pitch:1.15, volume:1, gender:'female', desc:'Espiègle · Directe · Style Betty White',
-     preferVoice:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Karen'],
+    {id:'betty',  label:'🤭 Betty',    av:'🤭', name:'BETTY GPS',     rate:.85,  pitch:1.12, volume:1, gender:'female', desc:'Espiègle · Directe · Style Betty White',
+     preferVoice:{fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google français','Amélie'],en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Karen'],es:['Microsoft Dalia Online','Dalia','Google español','Microsoft Sabina']},
      testFr:"Oh chéri, t'as manqué le virage! C'est pas grave, à mon âge je manque bien des choses aussi!",
      testEn:"Oh honey, you missed the turn! That's okay, at my age I miss things too!",
      testEs:"Ay cariño, perdiste el giro! No importa, a mi edad yo también pierdo cosas!"},
-    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.70,  pitch:.82, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
-     preferVoice:['Microsoft Aria Online','Aria','Google UK English Female','Microsoft Linda','Microsoft Zira','Samantha'],
+    {id:'kate',   label:'🎩 Katharine',av:'🎩', name:'KATHARINE GPS', rate:.72,  pitch:.85, volume:.85,gender:'female', desc:'Classe · Franc-parler · Katharine Hepburn',
+     preferVoice:{fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google français'],en:['Microsoft Aria Online','Aria','Google UK English Female','Microsoft Linda','Samantha'],es:['Microsoft Dalia Online','Dalia','Google español']},
      testFr:"Si vous ne pouvez pas gérer un simple virage, peut-être devriez-vous prendre le bus.",
      testEn:"If you can't handle a simple turn, perhaps you should consider taking the bus, darling.",
      testEs:"Si no puedes manejar un simple giro, quizás deberías tomar el autobús, querido."},
   ],
   enfant:[
-    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.50, pitch:1.90,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
-     preferVoice:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Google français','Amélie'],
+    {id:'dory',   label:'🐟 Dory',     av:'🐟', name:'DORY GPS',      rate:1.28, pitch:1.55,volume:1,  gender:'female', desc:'Aiguë · Énergie max · Style Dory Nemo',
+     preferVoice:{fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Google français','Amélie'],en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha'],es:['Microsoft Dalia Online','Dalia','Google español']},
      testFr:"OH OH OH! On tourne à droite! Non attends... à gauche! Euh... j'ai oublié! On continue tout droit!",
      testEn:"OH OH OH! Turn right! No wait... left! Uh... I forgot! Just keep swimming... I mean driving!",
      testEs:"OH OH OH! Gira a la derecha! No espera... izquierda! Eh... olvidé! Sigue nadando... digo manejando!"},
-    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.88,  pitch:.62, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
-     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+    {id:'buzz',   label:'🚀 Buzz',     av:'🚀', name:'BUZZ GPS',      rate:.88,  pitch:.65, volume:1,  gender:'male',   desc:'Héroïque · Dramatique · Buzz Lightyear',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],es:['Microsoft Jorge Online','Jorge','Google español','Microsoft Pablo']},
      testFr:"Vers l'infini et au-delà! Préparez-vous pour la manoeuvre de virage à droite dans 500 mètres!",
      testEn:"To infinity and beyond! Prepare for right turn maneuver in 500 meters, Space Ranger!",
      testEs:"Hacia el infinito y más allá! Prepárese para la maniobra de giro a la derecha en 500 metros!"},
-    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.35, pitch:1.45,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
-     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft Mark','Microsoft David','Alex'],
+    {id:'timon',  label:'🦁 Timon',    av:'🦁', name:'TIMON GPS',     rate:1.20, pitch:1.30,volume:1,  gender:'male',   desc:'Sarcastique joyeux · Style Timon',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Eric Online','Eric','Google US English','Microsoft Mark','Microsoft David','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Hakuna Matata mon ami! T'as raté le virage mais c'est pas grave! Pas de souci pour le reste de tes jours!",
      testEn:"Hakuna Matata buddy! You missed the turn but no worries! For the rest of your days!",
      testEs:"Hakuna Matata amigo! Perdiste el giro pero no te preocupes! Por el resto de tus días!"},
   ],
   amis:[
-    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.18, pitch:1.10,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
-     preferVoice:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Microsoft Mark','Alex'],
+    {id:'deadpool',label:'💀 Deadpool',av:'💀', name:'DEADPOOL GPS',  rate:1.15, pitch:1.08,volume:1,  gender:'male',   desc:'Brise le 4e mur · Insulte affectueuse',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Guy Online','Guy','Google US English','Microsoft David','Microsoft Mark','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Hey le public! Oui toi derrière ton écran! T'as vu comment il conduit? Même moi j'ai peur et je suis immortel!",
      testEn:"Hey audience! Yeah you behind the screen! Did you see how they drive? Even I'm scared and I'm immortal!",
      testEs:"Hey público! Sí tú detrás de la pantalla! Viste cómo maneja? Hasta yo tengo miedo y soy inmortal!"},
-    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.82,  pitch:.75, volume:.92,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
-     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Claude','Alex'],
+    {id:'seth',   label:'😂 Seth',     av:'😂', name:'SETH GPS',      rate:.82,  pitch:.78, volume:.92,gender:'male',   desc:'Relax · Rires · Style Seth Rogen',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Heh heh heh... dude, t'as genre... raté le virage. C'est comme... pas grave man. On va juste... heh... recalculer.",
      testEn:"Heh heh heh... dude, you like... missed the turn. It's like... no big deal man. We'll just... heh... recalculate.",
      testEs:"Je je je... dude, como que... perdiste el giro. Es como... no importa man. Solo vamos a... je... recalcular."},
-    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.78,  pitch:.58, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
-     preferVoice:['Microsoft Guy Online','Guy','Microsoft David','Microsoft Claude','Google US English','Alex'],
+    {id:'kronk',  label:'🏺 Kronk',    av:'🏺', name:'KRONK GPS',     rate:.78,  pitch:.60, volume:1,  gender:'male',   desc:'Friendly · Pas trop bright · Kronk',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Oh yeah! Tout droit! C'est la direction... euh... attendez, c'est quoi déjà la gauche? Celle avec le pouce en L?",
      testEn:"Oh yeah! Straight ahead! That's the direction... uh... wait, which one is left again? The one with the thumb thing?",
      testEs:"Oh sí! Todo recto! Esa es la dirección... eh... espera, cuál es la izquierda? La del pulgar en L?"},
   ],
   drole:[
-    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.65,  pitch:.42, volume:.82,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
-     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+    {id:'morgan', label:'🎙️ Morgan',   av:'🎙️', name:'MORGAN GPS',    rate:.68,  pitch:.52, volume:.82,gender:'male',   desc:'Grave documentaire · Morgan Freeman',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Et c'est à ce moment précis... que notre conducteur réalisa... qu'il avait raté son virage. La vie est un voyage. Et parfois... on se perd.",
      testEn:"And it was at that very moment... that our driver realized... they had missed their turn. Life is a journey. And sometimes... we get lost.",
      testEs:"Y fue en ese preciso momento... que nuestro conductor se dio cuenta... que había perdido su giro. La vida es un viaje. Y a veces... nos perdemos."},
     {id:'ron',    label:'📺 Ron',       av:'📺', name:'RON GPS',       rate:1.05, pitch:.92, volume:1,  gender:'male',   desc:'Pompeux confiant · Ron Burgundy',
-     preferVoice:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Mark','Alex'],
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Eric Online','Eric','Google US English','Microsoft David','Microsoft Mark','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Je suis Ron Burgundy. Et je suis très important. Tournez à droite. Parce que je l'ai dit. Et soixante pour cent du temps, j'ai raison à chaque fois.",
      testEn:"I'm Ron Burgundy. And I'm kind of a big deal. Turn right. Because I said so. And sixty percent of the time, I'm right every time.",
      testEs:"Soy Ron Burgundy. Y soy bastante importante. Gira a la derecha. Porque lo dije yo. Y sesenta por ciento del tiempo, tengo razón siempre."},
     {id:'jarvis', label:'🤖 Jarvis',   av:'🤖', name:'JARVIS GPS',    rate:.90,  pitch:.82, volume:.88,gender:'male',   desc:'IA sarcastique · Jarvis Iron Man',
-     preferVoice:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft David','Microsoft Richard'],
+     preferVoice:{fr:['Microsoft Denise Online','Denise','Microsoft Nathalie','Google français'],en:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft David'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Monsieur, mes calculs indiquent une probabilité de 87 pour cent que vous allez rater le prochain virage. Je prépare un itinéraire alternatif.",
      testEn:"Sir, my calculations indicate an 87 percent probability that you will miss the next turn. I'm preparing an alternate route.",
      testEs:"Señor, mis cálculos indican una probabilidad del 87 por ciento de que perderá el próximo giro. Estoy preparando una ruta alternativa."},
   ],
   insulte:[
-    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.30, pitch:.92, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
-     preferVoice:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft Guy Online','Microsoft David'],
+    {id:'gordon', label:'👨‍🍳 Gordon',  av:'👨‍🍳', name:'GORDON GPS',    rate:1.25, pitch:.92, volume:1,  gender:'male',   desc:'Rage culinaire · Gordon Ramsay',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Google UK English Male','Microsoft Ryan Online','Ryan','Daniel','Microsoft Guy Online'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"T'AS MANQUÉ LE VIRAGE ESPÈCE D'IDIOT SANDWICH! Mon Dieu, même un SOUFFLÉ retombe mieux que toi!",
      testEn:"YOU MISSED THE TURN YOU ABSOLUTE IDIOT SANDWICH! My God, even a SOUFFLÉ lands better than you!",
      testEs:"PERDISTE EL GIRO PEDAZO DE SANDWICH IDIOTA! Dios mío, hasta un SOUFFLÉ aterriza mejor que tú!"},
-    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.40, pitch:.78, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
-     preferVoice:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Microsoft Mark','Alex'],
+    {id:'ermey',  label:'💂 Ermey',    av:'💂', name:'ERMEY GPS',     rate:1.25, pitch:.78, volume:1,  gender:'male',   desc:'Sergent instructeur · Full Metal Jacket',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Guy Online','Guy','Microsoft David','Google US English','Microsoft Mark','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"RECRUE! T'as RATÉ le virage! Est-ce que tes YEUX fonctionnent ou c'est juste DÉCORATIF?! DEMI-TOUR IMMÉDIATEMENT!",
      testEn:"PRIVATE! You MISSED the turn! Do your EYES work or are they just DECORATIVE?! ABOUT FACE IMMEDIATELY!",
      testEs:"RECLUTA! PERDISTE el giro! Tus OJOS funcionan o son solo DECORATIVOS?! MEDIA VUELTA INMEDIATAMENTE!"},
-    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.62,  pitch:.35, volume:.78,gender:'male',   desc:'Calme certain · Thanos',
-     preferVoice:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],
+    {id:'thanos', label:'🌌 Thanos',   av:'🌌', name:'THANOS GPS',    rate:.68,  pitch:.45, volume:.78,gender:'male',   desc:'Calme certain · Thanos',
+     preferVoice:{fr:['Microsoft Antoine Online','Antoine','Microsoft Claude','Google français'],en:['Microsoft Guy Online','Guy','Google UK English Male','Microsoft David','Daniel','Alex'],es:['Microsoft Jorge Online','Jorge','Google español']},
      testFr:"Tu as raté le virage. C'est... inévitable. Je recalcule. Et quand j'aurai fini... tu arriveras. Comme toutes choses devraient être... parfaitement équilibré.",
      testEn:"You missed the turn. It is... inevitable. I am recalculating. And when I am done... you will arrive. As all things should be... perfectly balanced.",
      testEs:"Perdiste el giro. Es... inevitable. Estoy recalculando. Y cuando termine... llegarás. Como todas las cosas deberían ser... perfectamente equilibrado."},
@@ -308,12 +308,16 @@ if(window.speechSynthesis){
 // ═══════════════════════════════════════════════════════
 function pickVoice(persona,l){
   const voices=getVoices();
-  if(persona.preferVoice){
-    for(const pref of persona.preferVoice){
+  // Get language-specific preferred voices
+  const prefs=persona.preferVoice&&persona.preferVoice[l]?persona.preferVoice[l]:
+    (persona.preferVoice&&typeof persona.preferVoice==='object'&&!Array.isArray(persona.preferVoice)?persona.preferVoice.fr:
+    (Array.isArray(persona.preferVoice)?persona.preferVoice:[]));
+  if(prefs&&prefs.length){
+    for(const pref of prefs){
       const exact=voices.find(v=>v.name===pref);
       if(exact) return exact;
     }
-    for(const pref of persona.preferVoice){
+    for(const pref of prefs){
       const partial=voices.find(v=>v.name.toLowerCase().includes(pref.toLowerCase()));
       if(partial) return partial;
     }
