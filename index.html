@@ -256,6 +256,30 @@ body.driver-mode .driver-hud{display:flex!important}
 </head>
 <body>
 
+<!-- DISCLAIMER: Affiché immédiatement AVANT tout le reste -->
+<div id="disclaimerOverlay" style="position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,#0f1626,#1c2a45);border:2px solid #3b82f6;border-radius:16px;padding:clamp(20px,4vw,36px);max-width:500px;width:100%;text-align:center;box-shadow:0 0 40px rgba(59,130,246,.3);font-family:'Exo 2',sans-serif;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">&#9888;&#65039;</div>
+    <div style="font-family:Orbitron,monospace;font-size:clamp(1rem,3vw,1.3rem);font-weight:900;color:#f59e0b;margin-bottom:16px;">AVERTISSEMENT</div>
+    <div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">Cette application contient du <b style="color:#ef4444;">langage grossier, vulgaire et des insultes</b> dans certains modes de navigation.</div>
+    <div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">&#128286; <b>Contenu r&eacute;serv&eacute; &agrave; un public averti.</b></div>
+    <div style="color:#94a3b8;font-size:clamp(.7rem,1.8vw,.8rem);line-height:1.5;margin-bottom:20px;">Les modes <b style="color:#f59e0b;">Extr&ecirc;me dr&ocirc;le</b> et <b style="color:#ef4444;">Extr&ecirc;me insulte</b> contiennent un humour cru et des r&eacute;pliques offensantes &agrave; des fins humoristiques uniquement. Ce GPS est un divertissement et ne remplace pas un vrai syst&egrave;me de navigation.</div>
+    <div style="color:#64748b;font-size:clamp(.65rem,1.5vw,.75rem);margin-bottom:20px;">En continuant, vous confirmez avoir 16 ans ou plus et acceptez le contenu mature de cette application.</div>
+    <button id="disclaimerAccept" style="padding:clamp(10px,2vw,14px) clamp(24px,5vw,40px);border-radius:30px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;font-family:Orbitron,monospace;font-size:clamp(.8rem,2vw,.95rem);font-weight:900;cursor:pointer;letter-spacing:1px;box-shadow:0 0 20px rgba(59,130,246,.4);transition:all .2s;">J'ACCEPTE ET JE CONTINUE</button>
+  </div>
+</div>
+<script>
+(function(){
+  var k='gps-drole-disclaimer-v1',o=document.getElementById('disclaimerOverlay');
+  if(localStorage.getItem(k)==='accepted'){o.remove();return;}
+  document.getElementById('disclaimerAccept').onclick=function(){
+    localStorage.setItem(k,'accepted');
+    o.style.opacity='0';o.style.transition='opacity .4s';
+    setTimeout(function(){o.remove();},400);
+  };
+})();
+</script>
+
 <header>
   <div>
     <div class="logo">GPS DROLE</div>
@@ -3452,32 +3476,7 @@ function loadCachedRoute(){
   }catch(e){ setStatus('Erreur chargement cache route'); }
 }
 
-// =============================================================
-//  DISCLAIMER: Mise en garde au démarrage
-// =============================================================
-(function(){
-  var disclaimerKey='gps-drole-disclaimer-v1';
-  if(localStorage.getItem(disclaimerKey)==='accepted') return;
-  var overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
-  var box=document.createElement('div');
-  box.style.cssText='background:linear-gradient(135deg,#0f1626,#1c2a45);border:2px solid #3b82f6;border-radius:16px;padding:clamp(20px,4vw,36px);max-width:500px;width:100%;text-align:center;box-shadow:0 0 40px rgba(59,130,246,.3);font-family:Exo 2,sans-serif;';
-  box.innerHTML='<div style="font-size:2.5rem;margin-bottom:12px;">\u26A0\uFE0F</div>'+
-    '<div style="font-family:Orbitron,monospace;font-size:clamp(1rem,3vw,1.3rem);font-weight:900;color:#f59e0b;margin-bottom:16px;">AVERTISSEMENT</div>'+
-    '<div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">Cette application contient du <b style="color:#ef4444;">langage grossier, vulgaire et des insultes</b> dans certains modes de navigation.</div>'+
-    '<div style="color:#e2e8f0;font-size:clamp(.8rem,2vw,.95rem);line-height:1.6;margin-bottom:8px;">\u{1F51E} <b>Contenu r\u00e9serv\u00e9 \u00e0 un public averti.</b></div>'+
-    '<div style="color:#94a3b8;font-size:clamp(.7rem,1.8vw,.8rem);line-height:1.5;margin-bottom:20px;">Les modes <b style="color:#f59e0b;">Extr\u00eame dr\u00f4le</b> et <b style="color:#ef4444;">Extr\u00eame insulte</b> contiennent un humour cru et des r\u00e9pliques offensantes \u00e0 des fins humoristiques uniquement. Ce GPS est un divertissement et ne remplace pas un vrai syst\u00e8me de navigation.</div>'+
-    '<div style="color:#64748b;font-size:clamp(.65rem,1.5vw,.75rem);margin-bottom:20px;">En continuant, vous confirmez avoir 16 ans ou plus et acceptez le contenu mature de cette application.</div>'+
-    '<button id="disclaimerAccept" style="padding:clamp(10px,2vw,14px) clamp(24px,5vw,40px);border-radius:30px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;font-family:Orbitron,monospace;font-size:clamp(.8rem,2vw,.95rem);font-weight:900;cursor:pointer;letter-spacing:1px;box-shadow:0 0 20px rgba(59,130,246,.4);transition:all .2s;">J\'ACCEPTE ET JE CONTINUE</button>';
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  document.getElementById('disclaimerAccept').addEventListener('click',function(){
-    localStorage.setItem(disclaimerKey,'accepted');
-    overlay.style.opacity='0';
-    overlay.style.transition='opacity .4s';
-    setTimeout(function(){ overlay.remove(); },400);
-  });
-})();
+// Disclaimer moved to inline HTML at top of <body> for immediate display
 </script>
 </body>
 </html>
