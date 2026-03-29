@@ -151,14 +151,15 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
   .center-btn{width:46px;height:46px;font-size:1.3rem}
 }
 /* Guidance fullscreen mode — panneau masqué, carte plein écran */
+body.guidance-fullscreen header,
 body.guidance-fullscreen .modes-bar,
-body.guidance-fullscreen .lang-bar{display:none}
-body.guidance-fullscreen .main{grid-template-columns:1fr}
+body.guidance-fullscreen .lang-bar,
+body.guidance-fullscreen .status-bar,
+body.guidance-fullscreen .pwa-install{display:none!important}
+body.guidance-fullscreen .main{grid-template-columns:1fr;grid-template-rows:1fr}
 body.guidance-fullscreen .panel{display:none}
-body.guidance-fullscreen #map{height:100%}
-body.guidance-fullscreen header{padding:5px 14px}
-body.guidance-fullscreen .logo{font-size:1.1rem}
-body.guidance-fullscreen .header-right{display:none}
+body.guidance-fullscreen #map{height:100vh}
+body.guidance-fullscreen{overflow:hidden;height:100vh}
 /* Floating instruction overlay during guidance */
 .guidance-overlay{display:none;position:absolute;bottom:60px;left:10px;right:10px;z-index:1001;background:rgba(15,22,38,.92);backdrop-filter:blur(8px);border:2px solid var(--neon);border-radius:12px;padding:12px 16px;font-size:.9rem;font-weight:600;color:var(--neon2);text-align:center;box-shadow:0 0 24px rgba(245,158,11,.3);pointer-events:none}
 body.guidance-fullscreen .guidance-overlay{display:block}
@@ -1548,8 +1549,15 @@ function startGuidance(){
   startRerouteDetection();
   if(currentRouteDist&&currentRouteDur) updateRouteInfoBar(currentRouteDist,currentRouteDur);
   document.getElementById('routeInfo').classList.add('vis');
-  // Mode plein écran: masquer panneau, carte full
+  // Mode plein écran: masquer tout, carte 100%
   document.body.classList.add('guidance-fullscreen');
+  // API Fullscreen du navigateur (vrai plein écran sans barre d'adresse)
+  try{
+    var el=document.documentElement;
+    if(el.requestFullscreen) el.requestFullscreen();
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if(el.msRequestFullscreen) el.msRequestFullscreen();
+  }catch(e){}
   setTimeout(function(){ mapObj.invalidateSize(); },300);
   go('straight');
   showToast('Guidage actif!');
@@ -1567,6 +1575,11 @@ function stopGuidance(){
   document.getElementById('routeInfo').classList.remove('vis');
   // Quitter le mode plein écran
   document.body.classList.remove('guidance-fullscreen');
+  try{
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if(document.msExitFullscreen) document.msExitFullscreen();
+  }catch(e){}
   setTimeout(function(){ mapObj.invalidateSize(); },300);
   lastAnnouncedStep=-1;
   if(window.speechSynthesis) window.speechSynthesis.cancel();
