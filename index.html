@@ -252,11 +252,14 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 // =============================================================
 const PERSONAS = {
   grandmaman:[
+    // Janette Bertrand: voix posée de femme sage, grave-chaleureuse,
+    // rythme LENT et délibéré (elle prend son temps), pitch BAS pour l'âge
+    // et la gravitas, volume confiant. Pas aigüe, pas pressée, pas Siri.
     {id:'janette', label:'\u{1F475} Janette', av:'\u{1F475}', name:'JANETTE GPS',
-     rate:.70, pitch:.85, volume:.92, gender:'female',
-     desc:'Chaleureuse \u00b7 Directe \u00b7 Qu\u00e9b\u00e9coise \u00b7 Style Janette Bertrand',
+     rate:.65, pitch:.78, volume:.95, gender:'female',
+     desc:'Franche \u00b7 Chaleureuse \u00b7 Sans tabou \u00b7 Janette Bertrand',
      preferVoice:{
-       fr:['Microsoft Sylvie Online','Sylvie','Microsoft Caroline','Microsoft Nathalie','Microsoft Denise Online','Denise','Google fran\u00e7ais','Am\u00e9lie'],
+       fr:['Microsoft Caroline','Microsoft Nathalie','Microsoft Sylvie Online','Sylvie','Microsoft Denise Online','Denise','Google fran\u00e7ais','Am\u00e9lie'],
        en:['Microsoft Jenny Online','Jenny','Google UK English Female','Microsoft Zira','Samantha','Microsoft Aria Online','Aria'],
        es:['Microsoft Dalia Online','Dalia','Google espa\u00f1ol','Microsoft Sabina']
      }},
@@ -394,55 +397,55 @@ const P = {
  grandmaman:{
   fr:{
    straight:[
-     "Continue tout droit... c'est correct, t'es capable. J'te fais CONFIANCE, là.",
-     "Tout droit mon grand... bon, t'sais, dans la vie faut avancer... pis c'est en avant que ça se passe!",
-     "Droit devant... pis lâche pas. Moi j'ai JAMAIS lâché pis regarde où ça m'a menée!",
-     "On continue tout droit... prends ton temps, y'a personne qui court après toi, là."
+     "Continue tout droit... juste, tout droit. Comment tu te sens là-dedans... ça va-tu?",
+     "Bon... tout droit. T'sais, moi j'te fais confiance. J'ai TOUJOURS fait confiance au monde... pis j'le regrette pas.",
+     "Droit devant, là... prends ton temps. Y'a PERSONNE qui va te juger pour aller à ton rythme.",
+     "On s'en va tout droit... pis juste entre nous... t'es MEILLEUR conducteur que tu penses, là."
    ],
    right:[
-     "Tourne à droite dans 500 mètres... pis fais-le avec CONFIANCE, mon grand!",
-     "À droite! T'sais... dans la vie, des fois faut prendre le bord... pis c'est correct!",
-     "Droite dans 500 mètres... bon, c'est comme dans les relations, faut savoir TOURNER au bon moment!"
+     "Tourne à droite dans 500 mètres... c'est-tu clair pour toi? Ça va? Bon... à DROITE, là.",
+     "À droite! T'sais... j'te dis ça franchement, la droite c'est par LÀ. Pas de gêne, tourne!",
+     "Droite dans 500 mètres... pis hésite pas! Moi dans ma vie, j'ai jamais hésité devant un VIRAGE."
    ],
    left:[
-     "Prends à gauche... pis hésite pas! L'hésitation, c'est le PIRE ennemi du conducteur!",
-     "À gauche mon grand... t'sais, y'a pas de mauvais côté... y'a juste des DÉTOURS!",
-     "Gauche! L'AUTRE gauche! Bon... c'est comme expliquer les émotions à un homme, ça..."
+     "Prends à gauche... pis dis-moi comment ça se passe pour toi au volant? Ça te stresse-tu?",
+     "À gauche! Pis fais-le avec ASSURANCE. T'as-tu remarqué que quand on hésite... c'est LÀ qu'on fait des erreurs?",
+     "Gauche! L'AUTRE gauche! Bon... c'est correct. Moi j'ai passé ma vie à expliquer les affaires CLAIREMENT... pis des fois ça marche pareil pas!"
    ],
    uturn:[
-     "Fais demi-tour... c'est correct de changer d'idée! Moi j'ai changé d'idée SOUVENT dans ma vie... pis j'le regrette pas!",
-     "On revire de bord... t'sais, avoir le courage de recommencer, c'est une FORCE, pas une faiblesse!"
+     "Fais demi-tour... pis t'sais quoi? Changer d'idée, c'est pas une faiblesse. C'est du COURAGE. Moi j'ai changé d'idée souvent... pis c'est ça qui m'a sauvée.",
+     "On revire de bord! C'est correct! Comment tu te SENS par rapport à ça? Moi, revirer de bord... ça m'a jamais fait peur."
    ],
    missed:[
-     "T'as manqué le virage... bon, c'est pas grave. Dans la vie, on manque des affaires... l'important c'est de se R'PRENDRE!",
-     "Aïe... c'était là! Mais t'sais quoi? On apprend de nos ERREURS. Moi la première!",
-     "Oh... raté! C'est comme dans un couple... des fois on se manque. L'important c'est de se RETROUVER!",
-     "Bon ben... c'est passé. Mais JAMAIS je vais t'en vouloir. On recalcule pis on r'part, là!"
+     "T'as manqué le virage... bon, écoute-moi bien. C'est PAS grave. On manque des affaires dans la vie... l'important c'est comment on se r'lève.",
+     "Aïe... c'était là! Mais juste entre nous... est-ce que ça t'arrive SOUVENT? Parce que moi, j'suis là pour en PARLER.",
+     "Oh... raté! Bon... dis-moi, comment tu te sens? Frustré? C'est NORMAL. Moi aussi ça m'est arrivé... pis j'suis encore là!",
+     "Bon... c'est passé. Mais moi je te JUGE pas. J'ai JAMAIS jugé personne. On recalcule pis on r'part, là."
    ],
    recalc:[
-     "Je recalcule... donne-moi deux secondes. Faut RÉFLÉCHIR avant d'agir, t'sais!",
-     "Nouveau chemin... bon, c'est ça la vie! Faut s'ADAPTER. Moi j'me suis toujours adaptée!",
-     "On recalcule... pis c'est correct. Y'a TOUJOURS un autre chemin, mon grand."
+     "Je recalcule... donne-moi une seconde. T'sais, moi j'ai TOUJOURS trouvé un autre chemin... toujours.",
+     "Nouveau chemin! Bon... c'est ça la vie, hein? Faut s'ADAPTER. Moi j'me suis adaptée pendant cent ans... j'suis pas à un virage près!",
+     "On recalcule... pis c'est correct. Y'a PAS de cul-de-sac dans la vie. Juste des détours."
    ],
    traffic:[
-     "Du trafic... bon, prends ton mal en patience. T'sais, la patience c'est une VERTU que j'ai apprise avec le temps!",
-     "Ah du trafic... c'est comme dans la vie, des fois ça BLOQUE. Mais ça finit toujours par débloquer!",
-     "Trafic! Bon... profites-en pour réfléchir à ta vie. Moi c'est dans le trafic que j'ai eu mes MEILLEURES idées!"
+     "Du trafic... bon. T'sais quoi? Profite de ce temps-là pour te demander... comment tu VAS, toi? Pour vrai, là.",
+     "Ah du trafic! C'est comme les épreuves... ça BLOQUE, mais ça finit toujours par passer. Toujours.",
+     "Trafic! Juste entre nous... c'est dans les moments d'attente qu'on apprend le plus sur SOI-MÊME. Moi j'dis ça, j'dis rien!"
    ],
    speed:[
-     "RALENTIS! Y'a un radar! T'sais, la vitesse ça impressionne PERSONNE... surtout pas la police!",
-     "Doucement! Radar! Moi j'te le dis par AMOUR... pis parce que les tickets c'est cher!",
-     "Ho ho ho! Radar devant! Dans la vie mon grand... c'est pas le plus VITE qui arrive le mieux, c'est le plus SAGE!"
+     "RALENTIS! Y'a un radar! Écoute... la vitesse, ça impressionne PERSONNE. Surtout pas moi. Pis surtout pas la police!",
+     "Doucement! Radar! T'sais, j'te dis ça parce que j'tiens à TOI... pis parce que les tickets, c'est de l'argent gaspillé!",
+     "Ho! Radar! Dis-moi... pourquoi tu vas si VITE? T'as-tu quelque chose à fuir? Parce que moi, j'suis là pour en PARLER!"
    ],
    tunnel:[
-     "On rentre dans un tunnel... c'est correct, j'suis LÀ avec toi. On va passer au travers ENSEMBLE!",
-     "Tunnel! T'sais... même dans le noir, y'a toujours de la lumière au BOUT. C'est ça que j'ai toujours dit!"
+     "On rentre dans un tunnel... c'est correct, j'suis LÀ. T'sais, même dans le noir... on est pas SEUL.",
+     "Tunnel! Pis t'sais ce que j'ai toujours dit? Même quand c'est NOIR... y'a toujours de la lumière. Toujours. Faut juste continuer."
    ],
    arrived:[
-     "T'es ARRIVÉ! Mon grand, j'suis tellement fière de toi! T'as PERSÉVÉRÉ pis t'as réussi!",
-     "Voilà! Destination atteinte! T'sais... le voyage c'est AUSSI important que la destination!",
-     "On est arrivé! BRAVO! Moi j'ai toujours dit... l'important c'est pas d'où tu pars, c'est où tu VAS!",
-     "Arrivé! Bon... prends le temps de RESPIRER. T'as fait ça comme un CHAMPION, là!"
+     "T'es arrivé! Pis... comment tu te SENS? Fier de toi? Tu devrais! Moi j'suis fière de toi.",
+     "Voilà! On est arrivé! T'sais... c'est pas la destination qui compte. C'est ce qu'on DEVIENT en chemin.",
+     "On est arrivé! BRAVO! Moi j'te l'dis franchement... t'as fait ça comme un CHAMPION.",
+     "Destination atteinte! Bon... prends le temps de RESPIRER. Pis dis-toi que t'es CAPABLE de tout. Parce que c'est vrai."
    ]
   },
   en:{
