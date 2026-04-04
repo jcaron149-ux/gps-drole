@@ -60,6 +60,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .char-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(245,158,11,.12),transparent 70%);pointer-events:none}
 .char-av{font-size:3rem;display:block;margin-bottom:4px;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(245,158,11,.4));cursor:default;user-select:none}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 2px 12px rgba(59,130,246,.3)}50%{transform:scale(1.15);box-shadow:0 2px 20px rgba(59,130,246,.6)}}
 .char-name{font-family:'Orbitron',monospace;font-size:.8rem;font-weight:700;color:var(--neon);letter-spacing:2px}
 .char-desc{font-size:.58rem;color:var(--muted);margin-top:3px;line-height:1.4}
 .persona-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:8px}
@@ -437,6 +438,7 @@ body.guidance-fullscreen #navArrow{display:block}
     <div class="guidance-overlay" id="guidanceOverlay">Suivez les instructions...</div>
     <button class="guidance-stop-float" id="guidanceStopFloat" onclick="toggleGuidance()">&#9209;&#65039; ARRETER</button>
     <button id="changeDestBtn" onclick="changeDestination()" style="display:none;position:fixed;bottom:70px;right:12px;z-index:10001;padding:8px 14px;border-radius:20px;border:none;background:#3b82f6;color:#fff;font-family:'Exo 2',sans-serif;font-size:.7rem;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(59,130,246,.4)">&#128205; Modifier destination</button>
+    <button id="recenterBtn" onclick="recenterMap()" style="display:none;position:fixed;bottom:70px;left:12px;z-index:10001;width:48px;height:48px;border-radius:50%;border:none;background:rgba(15,23,60,.9);backdrop-filter:blur(6px);color:#3b82f6;font-size:1.4rem;cursor:pointer;box-shadow:0 2px 12px rgba(59,130,246,.3);border:2px solid #3b82f6">&#127919;</button>
     <div class="pause-overlay" id="pauseOverlay">&#9208; Pause automatique</div>
     <div class="driver-hud" id="driverHud">
       <div class="driver-speed"><span id="driverSpeed">0</span><span class="driver-unit" id="driverUnit">KM/H</span></div>
@@ -525,12 +527,6 @@ body.guidance-fullscreen #navArrow{display:block}
       <button class="driver-mode-btn" onclick="toggleDriverMode()">&#128663; Mode Conduite</button>
     </div>
 
-    <div class="voice-section">
-      <div class="voice-row">
-        <button class="voice-toggle on" id="voiceToggle" onclick="toggleVoice()">&#128266; ON</button>
-      </div>
-    </div>
-
     <div class="demo-section" style="text-align:center">
       <button class="settings-toggle-btn" onclick="toggleSettings()" title="Param&egrave;tres" style="font-size:1.5rem;padding:8px 14px;border-radius:50%;min-width:0;width:auto;">&#9881;&#65039;</button>
     </div>
@@ -554,6 +550,9 @@ body.guidance-fullscreen #navArrow{display:block}
       <div class="settings-group">
         <div class="settings-group-title">&#128266; Synthese vocale</div>
         <div style="font-size:.65rem;color:var(--muted);margin-bottom:6px">Chrome recommande pour les meilleures voix</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <button class="voice-toggle on" id="voiceToggle" onclick="toggleVoice()" style="min-width:60px">&#128266; ON</button>
+        </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span style="font-size:.7rem;color:var(--text)">Vitesse:</span>
           <input type="range" class="voice-range" id="voiceSpeed" min="0.6" max="1.5" step="0.1" value="1" style="flex:1">
@@ -2347,11 +2346,21 @@ function startTracking(){
   }, function(err){
     setStatus('Erreur GPS: '+err.message);
   }, {enableHighAccuracy:true, maximumAge:3000, timeout:10000});
-  mapObj.on('dragstart',function(){ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); });
+  mapObj.on('dragstart',function(){ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); var rb=document.getElementById('recenterBtn'); if(rb&&rb.style.display!=='none') rb.style.animation='pulse 1s infinite'; });
 }
 
 function centerOnUser(){
   if(mapObj){ followUser=true; mapObj.setView([userLat,userLng],16); document.getElementById('centerBtn').classList.add('tracking'); }
+}
+function recenterMap(){
+  if(!mapObj) return;
+  followUser=true;
+  var zoom=guidanceActive?getSmartZoom(currentSpeed||0):16;
+  mapObj.setView([userLat,userLng],zoom,{animate:true,duration:0.5});
+  document.getElementById('centerBtn').classList.add('tracking');
+  var rb=document.getElementById('recenterBtn');
+  if(rb) rb.style.animation='none';
+  showToast('Recentr\u00e9 sur ta position');
 }
 
 function quickDest(lat,lng){
@@ -2666,6 +2675,7 @@ function startGuidance(){
   }catch(e){}
   setTimeout(function(){ mapObj.invalidateSize(); },300);
   document.getElementById('changeDestBtn').style.display='block';
+  document.getElementById('recenterBtn').style.display='block';
   go('straight');
   showToast('Guidage actif!');
   setStatus('Guidage en cours - Suivez les instructions vocales');
@@ -2688,6 +2698,7 @@ function stopGuidance(){
   document.getElementById('guidanceOverlay').textContent='';
   document.getElementById('guidanceStopFloat').style.display='';
   document.getElementById('changeDestBtn').style.display='none';
+  document.getElementById('recenterBtn').style.display='none';
   // Reset la barre de pause
   var pauseOv=document.getElementById('pauseOverlay');
   if(pauseOv) pauseOv.style.display='none';
@@ -3744,7 +3755,7 @@ startTracking=function(){
   }, function(err){
     setStatus('Erreur GPS: '+err.message);
   }, {enableHighAccuracy:true, maximumAge:2000, timeout:10000});
-  mapObj.on('dragstart',function(){ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); });
+  mapObj.on('dragstart',function(){ followUser=false; document.getElementById('centerBtn').classList.remove('tracking'); var rb=document.getElementById('recenterBtn'); if(rb&&rb.style.display!=='none') rb.style.animation='pulse 1s infinite'; });
 };
 
 // =============================================================
