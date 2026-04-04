@@ -2049,11 +2049,18 @@ function setupAutocomplete(inputId){
             var div=document.createElement('div');
             div.className='autocomplete-item';
             div.textContent=item.display_name;
-            div.addEventListener('click',function(){
+            div.addEventListener('mousedown',function(e){
+              e.preventDefault();
               input.value=item.display_name;
               dd.classList.remove('vis');
               dd.innerHTML='';
             });
+            div.addEventListener('touchstart',function(e){
+              e.preventDefault();
+              input.value=item.display_name;
+              dd.classList.remove('vis');
+              dd.innerHTML='';
+            },{passive:false});
             dd.appendChild(div);
           });
           dd.classList.add('vis');
@@ -2061,7 +2068,7 @@ function setupAutocomplete(inputId){
         .catch(function(){ dd.classList.remove('vis'); });
     },400);
   });
-  input.addEventListener('blur',function(){ setTimeout(function(){ dd.classList.remove('vis'); },200); });
+  input.addEventListener('blur',function(){ setTimeout(function(){ dd.classList.remove('vis'); dd.innerHTML=''; },300); });
 }
 
 // =============================================================
@@ -3141,24 +3148,37 @@ function setupAutocompletePhoton(inputId){
             var div=document.createElement('div');
             div.className='autocomplete-item';
             div.textContent=item.name;
-            div.addEventListener('click',function(){
+            // mousedown se déclenche AVANT blur — évite que le blur supprime l'item
+            div.addEventListener('mousedown',function(e){
+              e.preventDefault(); // empêche le blur de l'input
               input.value=item.name;
               input.dataset.lat=item.lat;
               input.dataset.lng=item.lng;
               dd.classList.remove('vis'); dd.innerHTML='';
-              // Auto-calculer si c'est le champ destination et qu'il est rempli
+              // Auto-calculer si c'est le champ destination
               if(input.id==='destIn'){
-                setTimeout(function(){ calcRoute(); }, 200);
+                setTimeout(function(){ calcRoute(); }, 100);
               }
             });
+            // Touch support pour mobile
+            div.addEventListener('touchstart',function(e){
+              e.preventDefault();
+              input.value=item.name;
+              input.dataset.lat=item.lat;
+              input.dataset.lng=item.lng;
+              dd.classList.remove('vis'); dd.innerHTML='';
+              if(input.id==='destIn'){
+                setTimeout(function(){ calcRoute(); }, 100);
+              }
+            },{passive:false});
             dd.appendChild(div);
           });
           dd.classList.add('vis');
         })
         .catch(function(){ dd.classList.remove('vis'); });
-    },300); // 300ms debounce (faster than 400ms)
+    },300);
   });
-  input.addEventListener('blur',function(){ setTimeout(function(){ dd.classList.remove('vis'); },200); });
+  input.addEventListener('blur',function(){ setTimeout(function(){ dd.classList.remove('vis'); dd.innerHTML=''; },300); });
 }
 
 // =============================================================
