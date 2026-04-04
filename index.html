@@ -460,7 +460,7 @@ body.guidance-fullscreen #navArrow{display:block}
         <input class="dest-input" id="destIn" placeholder="Destination finale..." autocomplete="off" onkeypress="if(event.key==='Enter')calcRoute()">
       </div>
       <div class="btn-row" style="margin-top:7px">
-        <button class="btn-clear" onclick="clearRoute()" title="Effacer la route" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-size:.7rem;cursor:pointer">&#128465; Effacer la route</button>
+        <button class="btn-clear" onclick="clearRoute()" title="Effacer" style="padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.6rem;cursor:pointer">&#128465; Effacer</button>
       </div>
       <button class="btn-guide" id="btnGuide" onclick="toggleGuidance()">&#128640; DEMARRER LE GUIDAGE</button>
       <div style="font-size:.62rem;color:var(--muted);margin-top:5px">Ou cliquez sur la carte pour destination directe</div>
@@ -508,8 +508,6 @@ body.guidance-fullscreen #navArrow{display:block}
     <div class="voice-section">
       <div class="voice-row">
         <button class="voice-toggle on" id="voiceToggle" onclick="toggleVoice()">&#128266; ON</button>
-        <input type="range" class="voice-range" id="voiceSpeed" min="0.6" max="1.5" step="0.1" value="1">
-        <span style="font-size:.68rem;color:var(--muted)" id="speedLabel">1.0x</span>
       </div>
     </div>
 
@@ -536,6 +534,11 @@ body.guidance-fullscreen #navArrow{display:block}
       <div class="settings-group">
         <div class="settings-group-title">&#128266; Synthese vocale</div>
         <div style="font-size:.65rem;color:var(--muted);margin-bottom:6px">Chrome recommande pour les meilleures voix</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:.7rem;color:var(--text)">Vitesse:</span>
+          <input type="range" class="voice-range" id="voiceSpeed" min="0.6" max="1.5" step="0.1" value="1" style="flex:1">
+          <span style="font-size:.68rem;color:var(--muted)" id="speedLabel">1.0x</span>
+        </div>
         <button class="test-voice-btn" onclick="testVoice()" style="width:100%;margin-bottom:8px">&#128266; Tester la voix du personnage</button>
       </div>
 
@@ -3454,7 +3457,17 @@ var tripOriginName='';
 var routeDestName='';
 
 function getTripHistory(){
-  try{ return JSON.parse(localStorage.getItem('gps-drole-history')||'[]'); }catch(e){ return []; }
+  try{
+    var hist=JSON.parse(localStorage.getItem('gps-drole-history')||'[]');
+    // Auto-supprimer les trajets de plus de 7 jours
+    var sevenDays=7*24*60*60*1000;
+    var now=Date.now();
+    var filtered=hist.filter(function(t){ return t.date && (now - new Date(t.date).getTime()) < sevenDays; });
+    if(filtered.length!==hist.length){
+      localStorage.setItem('gps-drole-history',JSON.stringify(filtered));
+    }
+    return filtered;
+  }catch(e){ return []; }
 }
 function saveTripToHistory(trip){
   var hist=getTripHistory();
