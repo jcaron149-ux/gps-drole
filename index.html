@@ -436,6 +436,7 @@ body.guidance-fullscreen #navArrow{display:block}
     <div class="route-progress" id="routeProgress"><div class="route-progress-fill" id="routeProgressFill"></div></div>
     <div class="guidance-overlay" id="guidanceOverlay">Suivez les instructions...</div>
     <button class="guidance-stop-float" id="guidanceStopFloat" onclick="toggleGuidance()">&#9209;&#65039; ARRETER</button>
+    <button id="changeDestBtn" onclick="changeDestination()" style="display:none;position:fixed;bottom:70px;right:12px;z-index:10001;padding:8px 14px;border-radius:20px;border:none;background:#3b82f6;color:#fff;font-family:'Exo 2',sans-serif;font-size:.7rem;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(59,130,246,.4)">&#128205; Modifier destination</button>
     <div class="pause-overlay" id="pauseOverlay">&#9208; Pause automatique</div>
     <div class="driver-hud" id="driverHud">
       <div class="driver-speed"><span id="driverSpeed">0</span><span class="driver-unit" id="driverUnit">KM/H</span></div>
@@ -2090,6 +2091,83 @@ function checkCameraProximity(lat,lng){
 }
 
 // FEATURE: Share ETA via Web Share API
+// FEATURE: Change destination mid-route (keeps old route until new one is ready)
+function changeDestination(){
+  // Save current route as backup
+  var oldRouteLayer=routeLayer;
+  var oldSteps=routeSteps.slice();
+  var oldDest=routeDestCoords;
+
+  var newDest=prompt('Nouvelle destination:');
+  if(!newDest||!newDest.trim()) return;
+
+  showToast('\u23F3 Recalcul vers: '+newDest.trim());
+
+  // Geocode new destination
+  geocode(newDest.trim()).then(function(gd){
+    if(!gd){ showToast('Destination non trouv\u00e9e'); return; }
+
+    // Calculate new route from current position
+    var pts=[{lat:userLat,lng:userLng,name:'Ma position'},gd];
+    var coords=pts.map(function(p){ return p.lng+','+p.lat; }).join(';');
+    var url='https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true';
+
+    fetch(url).then(function(r){ return r.json(); }).then(function(d){
+      if(!d.routes||!d.routes.length){ showToast('Route non trouv\u00e9e'); return; }
+
+      // Now remove old route and draw new one
+      if(oldRouteLayer) mapObj.removeLayer(oldRouteLayer);
+      altRouteLayers.forEach(function(l){ mapObj.removeLayer(l); }); altRouteLayers=[];
+      routeMarkers.forEach(function(m){ mapObj.removeLayer(m); }); routeMarkers=[];
+
+      var rt=d.routes[0];
+      routeLayer=L.geoJSON(rt.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
+
+      // Destination marker
+      var m=L.marker([gd.lat,gd.lng],{icon:L.divIcon({html:'\uD83D\uDD34',className:'',iconSize:[22,22],iconAnchor:[11,11]})})
+        .addTo(mapObj).bindPopup((gd.name||'').split(',')[0]);
+      routeMarkers.push(m);
+
+      currentRouteDist=rt.distance;
+      currentRouteDur=rt.duration;
+      currentRouteCoords=rt.geometry.coordinates.map(function(c){ return [c[1],c[0]]; });
+      routeDestCoords={lat:gd.lat,lng:gd.lng};
+      routeStartCoords={lat:userLat,lng:userLng};
+
+      // Parse new steps
+      routeSteps=[];
+      lastAnnouncedStep=-1;
+      stepAnnounced={};
+      if(rt.legs){
+        rt.legs.forEach(function(leg){
+          if(leg.steps){
+            leg.steps.forEach(function(step){
+              if(step.maneuver&&step.maneuver.location){
+                routeSteps.push({
+                  lat:step.maneuver.location[1],lng:step.maneuver.location[0],
+                  type:step.maneuver.type,modifier:step.maneuver.modifier||'',
+                  instruction:step.name||step.maneuver.type,distance:step.distance,
+                  duration:step.duration||0,bearing_after:step.maneuver.bearing_after||0
+                });
+              }
+            });
+          }
+        });
+      }
+
+      updateRouteInfoBar(rt.distance,rt.duration);
+      document.getElementById('destIn').value=gd.name||newDest;
+      var distLabel=toDisplayDist(rt.distance);
+      var min=Math.round(rt.duration/60);
+      showToast('\u2705 Nouvelle route: '+distLabel+' \u00b7 ~'+min+' min');
+      speak('Nouvelle destination '+Math.round(rt.distance/1000)+' kilom\u00e8tres',currentLang);
+
+      // Fetch weather at new destination
+      fetchWeather(gd.lat,gd.lng);
+    }).catch(function(){ showToast('Erreur de calcul'); });
+  });
+}
+
 function shareETA(){
   if(!currentRouteDur||!routeDestCoords) { showToast('Pas de trajet actif'); return; }
   var distToD=haversine(userLat,userLng,routeDestCoords.lat,routeDestCoords.lng);
@@ -2364,38 +2442,45 @@ function geocode(q, inputEl){
 }
 
 function calcRoute(){
-  setStatus('Calcul de l\'itin\u00e9raire...');
-  var pts=[];
-  var dv=document.getElementById('departIn').value.trim();
-
+  setStatus('Calcul...');
+  showToast('\u23F3 Calcul en cours...');
   var departInput=document.getElementById('departIn');
-  var pDepart;
-  if(dv){ pDepart=geocode(dv, departInput); }
-  else { pDepart=Promise.resolve({lat:userLat,lng:userLng,name:'Ma position'}); }
+  var destInput=document.getElementById('destIn');
+  var dv=departInput.value.trim();
+  var dstv=destInput.value.trim();
+  if(!dstv){ setStatus('Entrez une destination'); return; }
 
-  pDepart.then(function(startPt){
-    if(!startPt&&dv){ setStatus('D\u00e9part non trouv\u00e9'); return; }
-    if(startPt) pts.push(startPt);
+  // OPTIMISATION: Tous les geocode en PARALLÈLE (au lieu de séquentiel)
+  var allPromises=[];
 
-    var wpEls=[].slice.call(document.querySelectorAll('[id^="wpIn"]'));
-    var wpPromises=wpEls.map(function(el){
-      return el.value.trim()?geocode(el.value.trim(), el):Promise.resolve(null);
-    });
+  // Départ
+  allPromises.push(dv ? geocode(dv, departInput) : Promise.resolve({lat:userLat,lng:userLng,name:'Ma position'}));
 
-    return Promise.all(wpPromises).then(function(wpResults){
-      wpResults.forEach(function(g){ if(g) pts.push(g); });
-
-      var destInput=document.getElementById('destIn');
-      var dstv=destInput.value.trim();
-      if(!dstv){ setStatus('Entrez une destination'); return; }
-      return geocode(dstv, destInput).then(function(gd){
-        if(!gd){ setStatus('Destination non trouv\u00e9e'); return; }
-        pts.push(gd);
-        if(pts.length<2){ setStatus('D\u00e9part + destination requis'); return; }
-        osrmRoute(pts);
-      });
-    });
+  // Waypoints
+  var wpEls=[].slice.call(document.querySelectorAll('[id^="wpIn"]'));
+  wpEls.forEach(function(el){
+    allPromises.push(el.value.trim() ? geocode(el.value.trim(), el) : Promise.resolve(null));
   });
+
+  // Destination
+  allPromises.push(geocode(dstv, destInput));
+
+  Promise.all(allPromises).then(function(results){
+    var pts=[];
+    // Premier = départ
+    if(results[0]) pts.push(results[0]);
+    else if(dv){ setStatus('D\u00e9part non trouv\u00e9'); return; }
+    // Milieu = waypoints
+    for(var i=1;i<results.length-1;i++){
+      if(results[i]) pts.push(results[i]);
+    }
+    // Dernier = destination
+    var dest=results[results.length-1];
+    if(!dest){ setStatus('Destination non trouv\u00e9e'); return; }
+    pts.push(dest);
+    if(pts.length<2){ setStatus('D\u00e9part + destination requis'); return; }
+    osrmRoute(pts);
+  }).catch(function(){ setStatus('Erreur de geocoding'); });
 }
 
 var altRouteLayers=[];
@@ -2404,7 +2489,7 @@ function osrmRoute(pts){
   var prefs=getRoutingPrefs();
   var url='https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true';
   // Routes alternatives
-  if(prefs.showAlternatives!==false) url+='&alternatives=3';
+  if(prefs.showAlternatives!==false) url+='&alternatives=2';
   // Note: OSRM public server doesn't support exclude param, but we add it for future use
   if(prefs.avoidTolls) url+='&exclude=toll';
   if(prefs.avoidHighways) url+='&exclude=motorway';
@@ -2580,6 +2665,7 @@ function startGuidance(){
     else if(el.msRequestFullscreen) el.msRequestFullscreen();
   }catch(e){}
   setTimeout(function(){ mapObj.invalidateSize(); },300);
+  document.getElementById('changeDestBtn').style.display='block';
   go('straight');
   showToast('Guidage actif!');
   setStatus('Guidage en cours - Suivez les instructions vocales');
@@ -2601,6 +2687,7 @@ function stopGuidance(){
   document.getElementById('routeProgressFill').style.width='0%';
   document.getElementById('guidanceOverlay').textContent='';
   document.getElementById('guidanceStopFloat').style.display='';
+  document.getElementById('changeDestBtn').style.display='none';
   // Reset la barre de pause
   var pauseOv=document.getElementById('pauseOverlay');
   if(pauseOv) pauseOv.style.display='none';
