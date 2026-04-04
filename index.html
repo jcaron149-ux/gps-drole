@@ -413,9 +413,25 @@ body.guidance-fullscreen #navArrow{display:block}
     </div>
     <button class="center-btn" id="centerBtn" onclick="centerOnUser()" title="Centrer sur ma position">&#127919;</button>
     <div class="speed-badge" id="speedBadge">
-      <div class="speed-val" id="speedVal">0</div>
-      <div class="speed-unit" id="speedUnit">KM/H</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div>
+          <div class="speed-val" id="speedVal">0</div>
+          <div class="speed-unit" id="speedUnit">KM/H</div>
+        </div>
+        <div id="speedLimitBadge" style="display:none;width:36px;height:36px;border-radius:50%;border:3px solid #ef4444;background:#fff;text-align:center;line-height:30px;font-weight:900;font-size:.75rem;color:#1a1a2e;font-family:Orbitron,monospace">
+          <span id="speedLimitVal">50</span>
+        </div>
+      </div>
       <div class="speed-heading" id="headingVal">&#8212;</div>
+    </div>
+    <div id="fatigueAlert" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:rgba(15,23,60,.95);backdrop-filter:blur(10px);border:2px solid #f59e0b;border-radius:16px;padding:24px;text-align:center;max-width:320px;box-shadow:0 0 40px rgba(245,158,11,.3)">
+      <div style="font-size:2.5rem;margin-bottom:10px">&#9749;</div>
+      <div style="font-family:Orbitron,monospace;font-size:.9rem;font-weight:700;color:#f59e0b;margin-bottom:8px">PAUSE RECOMMAND&Eacute;E</div>
+      <div id="fatigueMsg" style="color:#e2e8f0;font-size:.8rem;line-height:1.5;margin-bottom:16px"></div>
+      <button onclick="dismissFatigue()" style="padding:8px 24px;border-radius:20px;border:none;background:#3b82f6;color:#fff;font-family:Orbitron,monospace;font-weight:700;cursor:pointer">OK, merci!</button>
+    </div>
+    <div id="weatherWidget" style="display:none;position:absolute;top:8px;right:8px;z-index:1001;background:rgba(15,23,60,.85);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-family:'Exo 2',sans-serif;font-size:.65rem;color:#e2e8f0;cursor:pointer" onclick="this.style.display='none'">
+      <span id="weatherIcon"></span> <span id="weatherTemp"></span> <span id="weatherDesc" style="color:var(--muted)"></span>
     </div>
     <div class="route-progress" id="routeProgress"><div class="route-progress-fill" id="routeProgressFill"></div></div>
     <div class="guidance-overlay" id="guidanceOverlay">Suivez les instructions...</div>
@@ -493,11 +509,14 @@ body.guidance-fullscreen #navArrow{display:block}
     <div class="poi-section">
       <div class="box-label">&#128205; Points d'int&eacute;r&ecirc;t</div>
       <div class="poi-buttons">
-        <button class="poi-btn" onclick="togglePOI('gas')" id="poiGas" title="Stations">&#9981;</button>
-        <button class="poi-btn" onclick="togglePOI('food')" id="poiFood" title="Restos">&#127828;</button>
-        <button class="poi-btn" onclick="togglePOI('toilet')" id="poiToilet" title="Toilettes">&#128699;</button>
-        <button class="poi-btn" onclick="togglePOI('pharmacy')" id="poiPharmacy" title="Pharmacies">&#127973;</button>
-        <button class="poi-btn" onclick="togglePOI('cafe')" id="poiCafe" title="Caf&eacute;s">&#9749;</button>
+        <button class="poi-btn" onclick="smartPOI('gas')" id="poiGas" title="Stations">&#9981;</button>
+        <button class="poi-btn" onclick="smartPOI('food')" id="poiFood" title="Restos">&#127828;</button>
+        <button class="poi-btn" onclick="smartPOI('rest')" id="poiToilet" title="Toilettes">&#128699;</button>
+        <button class="poi-btn" onclick="smartPOI('hospital')" id="poiPharmacy" title="H&ocirc;pitaux">&#127973;</button>
+        <button class="poi-btn" onclick="smartPOI('coffee')" id="poiCafe" title="Caf&eacute;s">&#9749;</button>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:5px">
+        <button class="poi-btn" onclick="shareETA()" title="Partager ETA" style="flex:1;width:auto;height:auto;padding:5px;font-size:.65rem;border-radius:6px">&#128228; Partager ETA</button>
       </div>
     </div>
 
@@ -557,6 +576,25 @@ body.guidance-fullscreen #navArrow{display:block}
           <button class="demo-btn" onclick="go('tunnel')">&#128647; Tunnel</button>
           <button class="demo-btn" onclick="go('arrived')">&#127937; Arrivee!</button>
         </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">&#128663; Navigation</div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--text);margin-bottom:6px;cursor:pointer">
+          <input type="checkbox" id="cbAvoidTolls" onchange="saveRoutingPrefs()"> &Eacute;viter les p&eacute;ages
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--text);margin-bottom:6px;cursor:pointer">
+          <input type="checkbox" id="cbAvoidHighways" onchange="saveRoutingPrefs()"> &Eacute;viter les autoroutes
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--text);margin-bottom:6px;cursor:pointer">
+          <input type="checkbox" id="cbShowAlternatives" checked onchange="saveRoutingPrefs()"> Afficher routes alternatives
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--text);margin-bottom:6px;cursor:pointer">
+          <input type="checkbox" id="cbSpeedCameras" checked onchange="saveRoutingPrefs()"> Alertes radars/cam&eacute;ras
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--text);cursor:pointer">
+          <input type="checkbox" id="cbFatigueAlert" checked onchange="saveRoutingPrefs()"> Alerte fatigue (2h)
+        </label>
       </div>
 
       <div class="settings-group">
@@ -1905,7 +1943,227 @@ function detectCountry(lat,lng){
 }
 function toDisplaySpeed(mps){ return mps!==null&&mps>0?Math.round(mps*(useImperial?2.23694:3.6)):0; }
 function toDisplayDist(meters){ return useImperial?(meters/1609.344).toFixed(1)+' mi':(meters/1000).toFixed(1)+' km'; }
-function speedLimit(){ return useImperial?35:50; }
+// FEATURE: Real speed limit from OSM via Overpass API
+var currentSpeedLimit=null;
+var lastSpeedLimitQuery=0;
+function speedLimit(){ return currentSpeedLimit||(useImperial?35:50); }
+function fetchSpeedLimit(lat,lng){
+  var now=Date.now();
+  if(now-lastSpeedLimitQuery<15000) return; // query max every 15s
+  lastSpeedLimitQuery=now;
+  var query='[out:json][timeout:5];way(around:30,'+lat+','+lng+')[maxspeed];out tags 1;';
+  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.elements&&d.elements.length){
+        var ms=d.elements[0].tags.maxspeed;
+        if(ms){
+          var val=parseInt(ms);
+          if(!isNaN(val)){
+            // Convert if needed (OSM stores in km/h or mph)
+            if(ms.indexOf('mph')>=0) currentSpeedLimit=useImperial?val:Math.round(val*1.60934);
+            else currentSpeedLimit=useImperial?Math.round(val/1.60934):val;
+            var badge=document.getElementById('speedLimitBadge');
+            var valEl=document.getElementById('speedLimitVal');
+            if(badge&&valEl){ badge.style.display='block'; valEl.textContent=currentSpeedLimit; }
+          }
+        }
+      }
+    }).catch(function(){});
+}
+
+// FEATURE: Routing preferences (avoid tolls/highways)
+function saveRoutingPrefs(){
+  localStorage.setItem('gps-drole-routing',JSON.stringify({
+    avoidTolls:document.getElementById('cbAvoidTolls').checked,
+    avoidHighways:document.getElementById('cbAvoidHighways').checked,
+    showAlternatives:document.getElementById('cbShowAlternatives').checked,
+    speedCameras:document.getElementById('cbSpeedCameras').checked,
+    fatigueAlert:document.getElementById('cbFatigueAlert').checked
+  }));
+}
+function loadRoutingPrefs(){
+  try{
+    var p=JSON.parse(localStorage.getItem('gps-drole-routing'));
+    if(p){
+      if(p.avoidTolls) document.getElementById('cbAvoidTolls').checked=true;
+      if(p.avoidHighways) document.getElementById('cbAvoidHighways').checked=true;
+      if(p.showAlternatives===false) document.getElementById('cbShowAlternatives').checked=false;
+      if(p.speedCameras===false) document.getElementById('cbSpeedCameras').checked=false;
+      if(p.fatigueAlert===false) document.getElementById('cbFatigueAlert').checked=false;
+    }
+  }catch(e){}
+}
+function getRoutingPrefs(){
+  try{ return JSON.parse(localStorage.getItem('gps-drole-routing'))||{}; }catch(e){ return {}; }
+}
+
+// FEATURE: Smart zoom based on speed
+function getSmartZoom(speedKmh){
+  if(speedKmh>100) return 14; // highway
+  if(speedKmh>60) return 15;  // fast road
+  if(speedKmh>30) return 16;  // city
+  return 17;                   // slow/residential
+}
+
+// FEATURE: Fatigue alert after 2h continuous driving
+var drivingStartTime=null;
+var fatigueAlerted=false;
+var fatigueMessages={
+  fr:["H\u00e9 {name}! \u00c7a fait 2 heures que tu roules! Arr\u00eate-toi prendre un caf\u00e9!","Wow {name}, tu conduis depuis 2 heures! M\u00eame les pilotes de F1 font des pit stops!","Alerte fatigue {name}! Tes yeux vont finir par tomber sur le volant!","2 heures de route {name}! Il est temps de te d\u00e9gourdir les jambes!"],
+  en:["{name}, you've been driving for 2 hours! Time for a coffee break!","Hey {name}, even race car drivers take pit stops after 2 hours!","{name}, 2 hours straight! Your eyes need a break!"],
+  es:["{name}, llevas 2 horas conduciendo! Hora de un caf\u00e9!","Oye {name}, hasta los pilotos de F1 paran despu\u00e9s de 2 horas!"]
+};
+function checkFatigue(){
+  var prefs=getRoutingPrefs();
+  if(prefs.fatigueAlert===false) return;
+  if(!guidanceActive) return;
+  if(!drivingStartTime) drivingStartTime=Date.now();
+  var elapsed=(Date.now()-drivingStartTime)/1000/60; // minutes
+  if(elapsed>=120&&!fatigueAlerted){
+    fatigueAlerted=true;
+    var msgs=fatigueMessages[currentLang]||fatigueMessages.fr;
+    var msg=msgs[Math.floor(Math.random()*msgs.length)];
+    var name=localStorage.getItem('gps-drole-username')||'';
+    msg=msg.replace('{name}',name||'champion');
+    document.getElementById('fatigueMsg').textContent=msg;
+    document.getElementById('fatigueAlert').style.display='block';
+    speak(msg,currentLang);
+    if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+  }
+}
+function dismissFatigue(){
+  document.getElementById('fatigueAlert').style.display='none';
+  drivingStartTime=Date.now(); // reset timer
+  fatigueAlerted=false;
+}
+setInterval(checkFatigue,60000); // check every minute
+
+// FEATURE: Speed cameras from OSM
+var speedCameraMarkers=[];
+var lastCameraQuery=0;
+function fetchSpeedCameras(lat,lng){
+  var prefs=getRoutingPrefs();
+  if(prefs.speedCameras===false) return;
+  var now=Date.now();
+  if(now-lastCameraQuery<60000) return; // query max every 60s
+  lastCameraQuery=now;
+  var query='[out:json][timeout:5];node(around:2000,'+lat+','+lng+')[highway=speed_camera];out;';
+  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      // Clear old markers
+      speedCameraMarkers.forEach(function(m){ mapObj.removeLayer(m); });
+      speedCameraMarkers=[];
+      if(d.elements){
+        d.elements.forEach(function(cam){
+          var m=L.marker([cam.lat,cam.lon],{
+            icon:L.divIcon({html:'&#128247;',className:'',iconSize:[20,20],iconAnchor:[10,10]})
+          }).addTo(mapObj).bindPopup('Radar');
+          speedCameraMarkers.push(m);
+        });
+      }
+    }).catch(function(){});
+}
+// Alert when approaching a speed camera
+var lastCameraAlert=0;
+function checkCameraProximity(lat,lng){
+  var prefs=getRoutingPrefs();
+  if(prefs.speedCameras===false) return;
+  var now=Date.now();
+  if(now-lastCameraAlert<30000) return; // max 1 alert per 30s
+  speedCameraMarkers.forEach(function(m){
+    var ll=m.getLatLng();
+    var d=haversine(lat,lng,ll.lat,ll.lng);
+    if(d<300&&d>10){ // within 300m
+      lastCameraAlert=now;
+      var msgs={
+        fr:'Attention radar dans '+Math.round(d)+' m\u00e8tres',
+        en:'Speed camera ahead in '+Math.round(d)+' meters',
+        es:'Radar en '+Math.round(d)+' metros'
+      };
+      speak(msgs[currentLang]||msgs.fr,currentLang);
+      showToast('&#128247; Radar: '+Math.round(d)+'m');
+      if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    }
+  });
+}
+
+// FEATURE: Share ETA via Web Share API
+function shareETA(){
+  if(!currentRouteDur||!routeDestCoords) { showToast('Pas de trajet actif'); return; }
+  var distToD=haversine(userLat,userLng,routeDestCoords.lat,routeDestCoords.lng);
+  var avgSpd=currentRouteDist/currentRouteDur;
+  var remainSec=avgSpd>0?distToD/avgSpd:0;
+  var eta=new Date(Date.now()+remainSec*1000);
+  var etaStr=eta.getHours().toString().padStart(2,'0')+':'+eta.getMinutes().toString().padStart(2,'0');
+  var distStr=toDisplayDist(distToD);
+  var minLeft=Math.round(remainSec/60);
+  var name=localStorage.getItem('gps-drole-username')||'Quelqu\'un';
+  var text=name+' arrive vers '+etaStr+' (dans ~'+minLeft+' min, '+distStr+' restant)';
+  var url='https://www.google.com/maps/@'+userLat+','+userLng+',15z';
+  if(navigator.share){
+    navigator.share({title:'Mon ETA - GPS Dr\u00f4le',text:text,url:url}).catch(function(){});
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(text+' '+url).then(function(){
+      showToast('ETA copi\u00e9 dans le presse-papier!');
+    }).catch(function(){ showToast(text); });
+  }
+}
+
+// FEATURE: Search along route (POI)
+function searchAlongRoute(type){
+  if(!currentRouteCoords||!currentRouteCoords.length){ showToast('Calculez un trajet d\'abord'); return; }
+  // Sample points along the route (every ~20% of the route)
+  var sample=[];
+  var step=Math.max(1,Math.floor(currentRouteCoords.length/5));
+  for(var i=0;i<currentRouteCoords.length;i+=step) sample.push(currentRouteCoords[i]);
+  // Build Overpass query for POIs near route
+  var amenityMap={gas:'amenity=fuel',food:'amenity~"restaurant|fast_food|cafe"',rest:'amenity=toilets',hospital:'amenity=hospital',coffee:'amenity=cafe'};
+  var filter=amenityMap[type]||'amenity=fuel';
+  var arounds=sample.map(function(c){ return 'node(around:1000,'+c[0]+','+c[1]+')['+filter+'];'; }).join('');
+  var query='[out:json][timeout:10];('+arounds+');out 10;';
+  showToast('Recherche en cours...');
+  fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d.elements||!d.elements.length){ showToast('Rien trouv\u00e9 le long de la route'); return; }
+      var icons={gas:'\u26FD',food:'\uD83C\uDF54',rest:'\uD83D\uDEBB',hospital:'\uD83C\uDFE5',coffee:'\u2615'};
+      var ic=icons[type]||'\uD83D\uDCCD';
+      d.elements.forEach(function(el){
+        var name=el.tags&&el.tags.name?el.tags.name:type;
+        var m=L.marker([el.lat,el.lon],{
+          icon:L.divIcon({html:ic,className:'',iconSize:[22,22],iconAnchor:[11,11]})
+        }).addTo(mapObj).bindPopup(name);
+        routeMarkers.push(m); // will be cleaned with route
+      });
+      showToast(d.elements.length+' r\u00e9sultats trouv\u00e9s');
+    }).catch(function(){ showToast('Erreur de recherche'); });
+}
+
+// FEATURE: Weather at destination
+function fetchWeather(lat,lng){
+  // OpenWeatherMap free tier (no API key needed for basic)
+  // Using open-meteo.com (truly free, no key)
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lng+'&current=temperature_2m,weathercode&timezone=auto')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.current){
+        var temp=Math.round(d.current.temperature_2m);
+        var code=d.current.weathercode;
+        var icons={0:'\u2600',1:'\uD83C\uDF24',2:'\u26C5',3:'\u2601',45:'\uD83C\uDF2B',48:'\uD83C\uDF2B',51:'\uD83C\uDF27',53:'\uD83C\uDF27',55:'\uD83C\uDF27',61:'\uD83C\uDF26',63:'\uD83C\uDF27',65:'\uD83C\uDF27',71:'\u2744',73:'\u2744',75:'\u2744',95:'\u26A1',96:'\u26A1'};
+        var descs={0:'D\u00e9gag\u00e9',1:'Peu nuageux',2:'Partiellement nuageux',3:'Couvert',45:'Brouillard',51:'Bruine',61:'Pluie',71:'Neige',95:'Orage'};
+        var icon=icons[code]||'\uD83C\uDF24';
+        var desc=descs[code]||'';
+        if(useImperial) temp=Math.round(temp*9/5+32);
+        document.getElementById('weatherIcon').textContent=icon;
+        document.getElementById('weatherTemp').textContent=temp+(useImperial?'\u00b0F':'\u00b0C');
+        document.getElementById('weatherDesc').textContent=desc;
+        document.getElementById('weatherWidget').style.display='block';
+      }
+    }).catch(function(){});
+}
 
 // =============================================================
 //  THEME (Dark/Light) with localStorage
@@ -2140,15 +2398,47 @@ function calcRoute(){
   });
 }
 
+var altRouteLayers=[];
 function osrmRoute(pts){
   var coords=pts.map(function(p){ return p.lng+','+p.lat; }).join(';');
-  fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true')
+  var prefs=getRoutingPrefs();
+  var url='https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson&steps=true';
+  // Routes alternatives
+  if(prefs.showAlternatives!==false) url+='&alternatives=3';
+  // Note: OSRM public server doesn't support exclude param, but we add it for future use
+  if(prefs.avoidTolls) url+='&exclude=toll';
+  if(prefs.avoidHighways) url+='&exclude=motorway';
+  fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d.routes&&d.routes.length){
         var rt=d.routes[0];
         if(routeLayer) mapObj.removeLayer(routeLayer);
+        altRouteLayers.forEach(function(l){ mapObj.removeLayer(l); }); altRouteLayers=[];
         routeMarkers.forEach(function(m){ mapObj.removeLayer(m); }); routeMarkers=[];
+        // Draw alternative routes first (behind main route)
+        if(d.routes.length>1){
+          for(var ai=1;ai<d.routes.length;ai++){
+            (function(altRoute,idx){
+              var altDist=toDisplayDist(altRoute.distance);
+              var altMin=Math.round(altRoute.duration/60);
+              var altLayer=L.geoJSON(altRoute.geometry,{style:{color:'#64748b',weight:4,opacity:.5,dashArray:'8,6'}}).addTo(mapObj);
+              altLayer.on('click',function(){
+                // Switch to this alternative route
+                rt=altRoute;
+                mapObj.removeLayer(routeLayer);
+                altRouteLayers.forEach(function(l){ mapObj.removeLayer(l); }); altRouteLayers=[];
+                routeLayer=L.geoJSON(rt.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
+                currentRouteDist=rt.distance;currentRouteDur=rt.duration;
+                currentRouteCoords=rt.geometry.coordinates.map(function(c){ return [c[1],c[0]]; });
+                updateRouteInfoBar(rt.distance,rt.duration);
+                showToast('Route alternative: '+altDist+' \u00b7 ~'+altMin+' min');
+              });
+              altRouteLayers.push(altLayer);
+            })(d.routes[ai],ai);
+          }
+          if(d.routes.length>1) showToast(d.routes.length+' routes trouv\u00e9es \u2014 cliquez sur une grise pour changer');
+        }
         routeLayer=L.geoJSON(rt.geometry,{style:{color:'#f59e0b',weight:5,opacity:.9,dashArray:'10,5'}}).addTo(mapObj);
         pts.forEach(function(p,i){
           var em=i===0?'\u{1F7E2}':i===pts.length-1?'\u{1F534}':'\u{1F535}';
@@ -2198,6 +2488,11 @@ function osrmRoute(pts){
         showGuideButton();
         setStatus('Route: '+distLabel+' \u00b7 ~'+dur+' \u00b7 '+pts.length+' points \u00b7 '+routeSteps.length+' etapes');
         showToast(distLabel+' \u00b7 ~'+dur);
+
+        // FEATURE: Fetch weather at destination
+        fetchWeather(pts[pts.length-1].lat,pts[pts.length-1].lng);
+        // FEATURE: Fetch speed cameras along route
+        fetchSpeedCameras(pts[pts.length-1].lat,pts[pts.length-1].lng);
 
         // CACHE: sauver route en localStorage pour survie hors-ligne
         try{
@@ -3330,12 +3625,15 @@ startTracking=function(){
     userMark.setLatLng([latitude,longitude]);
     if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
     accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
-    // Suivi GPS temps réel: zoom serré en guidage, animation fluide
+    // FEATURE: Smart zoom based on speed
     if(followUser){
-      var zoomLevel=guidanceActive?17:mapObj.getZoom();
+      var spdKmh=speed?speed*3.6:0;
+      var zoomLevel=guidanceActive?getSmartZoom(spdKmh):mapObj.getZoom();
       mapObj.setView([latitude,longitude],zoomLevel,{animate:true,duration:0.5});
     }
     detectCountry(latitude,longitude);
+    fetchSpeedLimit(latitude,longitude);
+    checkCameraProximity(latitude,longitude);
     var spdDisplay=toDisplaySpeed(speed);
     currentSpeed=spdDisplay;
     document.getElementById('speedVal').textContent=spdDisplay;
@@ -3984,6 +4282,15 @@ function showPOIs(cat,elements){
   showToast(elements.length+' '+c.label[lang]+' trouv\u00e9(s)');
 }
 
+// Smart POI: search along route if active, else nearby
+function smartPOI(cat){
+  if(currentRouteCoords&&currentRouteCoords.length>2){
+    searchAlongRoute(cat);
+  } else {
+    togglePOI(cat);
+  }
+}
+
 function togglePOI(cat){
   var btn=document.getElementById('poi'+cat.charAt(0).toUpperCase()+cat.slice(1));
   if(poiActive[cat]){
@@ -4084,6 +4391,7 @@ var _origOnLoad=null;
 setTimeout(function(){
   renderTripHistory();
   checkAutoNightMode();
+  loadRoutingPrefs();
 },600);
 
 // =============================================================
