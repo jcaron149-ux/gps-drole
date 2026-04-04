@@ -1,7 +1,7 @@
-# GPS DRÔLE v4.0 — Prompt de continuation complet
+# GPS DRÔLE v4.2 — Prompt de continuation complet
 
 ## Identité
-Application GPS humoristique PWA standalone. Un seul fichier HTML (4200+ lignes) contenant tout le CSS, JS et HTML. Personnages drôles qui donnent des directions de navigation avec humour, sarcasme ou insultes selon le mode choisi.
+Application GPS humoristique PWA standalone. Un seul fichier HTML (4300+ lignes) contenant tout le CSS, JS et HTML. Personnages drôles qui donnent des directions de navigation avec humour, sarcasme ou insultes selon le mode choisi.
 
 ## Liens
 - **Repo:** https://github.com/jcaron149-ux/gps-drole
@@ -13,7 +13,7 @@ Application GPS humoristique PWA standalone. Un seul fichier HTML (4200+ lignes)
 ## Stack technique (100% gratuit)
 - **Carte:** Leaflet.js 1.9.4 + OpenStreetMap (tuiles sombres CartoDB dark_matter)
 - **Routing:** OSRM (Open Source Routing Machine)
-- **Geocoding:** Photon API (Komoot) avec biais local + Nominatim fallback
+- **Geocoding:** Nominatim (prioritaire pour adresses avec numéro civique) + Photon API (Komoot, pour noms de lieux)
 - **Voix:** Web Speech API (navigateur natif)
 - **PWA:** Service Worker (sw.js v12) + manifest.json
 - **Stockage:** localStorage (favoris, nom utilisateur, historique, route cache)
@@ -22,13 +22,13 @@ Application GPS humoristique PWA standalone. Un seul fichier HTML (4200+ lignes)
 ## Architecture fichiers
 ```
 gps-drole/
-├── index.html          (4200+ lignes — app monolithe complète)
+├── index.html          (4300+ lignes — app monolithe complète)
 ├── sw.js               (97 lignes — Service Worker v12, network-first)
 ├── manifest.json       (20 lignes — config PWA)
-├── logo-concept.svg    (logo SVG source)
+├── logo-concept.svg    (logo SVG — visage crâne/sourire)
 ├── logo-preview.html   (page preview du logo)
-├── SKILL.md            (ce fichier)
-└── .claude/launch.json (config dev server)
+├── SKILL.md            (ce fichier — prompt de continuation)
+└── .claude/launch.json (config dev server preview)
 ```
 
 ## 5 modes × 3 personas × 3 langues = 45 combinaisons
@@ -43,7 +43,7 @@ gps-drole/
 
 **Langues:** FR (québécois), EN, ES
 
-## Fonctionnalités v4.0
+## Fonctionnalités v4.2
 
 ### Navigation & carte
 - GPS temps réel (watchPosition + badge vitesse km/h)
@@ -54,8 +54,11 @@ gps-drole/
 - ETA dynamique en temps réel
 - Détection auto USA → MPH/feet
 - Pré-chargement tuiles le long de la route
-- Recherche Photon avec biais local
 - Adresse de départ personnalisable
+- **Numéros civiques** pris en charge (Nominatim avec viewbox local quand numéro détecté)
+- **Calcul automatique** de la route quand on sélectionne une destination (pas de bouton CALCULER)
+- Coordonnées cachées de l'autocomplétion réutilisées (évite double geocoding)
+- mousedown/touchstart sur les items autocomplétion (évite race condition avec blur)
 
 ### Mode plein écran
 - Fullscreen API au démarrage du guidage
@@ -63,63 +66,100 @@ gps-drole/
 - Boutons grossis pour conduite
 - Vue 3D inclinée + flèche directionnelle
 
+### Mode Conduite (HUD)
+- Interface ultra-simplifiée: vitesse en gros, flèche directionnelle, distance au virage, ETA
+- Tout le reste masqué pour zéro distraction
+- Bouton QUITTER pour revenir au mode normal
+- Mise à jour toutes les 2 secondes
+
 ### Voix — Natural Speech Engine v2
-- 6 techniques anti-synthétique: multi-utterance, variation dynamique, text hacking (ponctuation supprimée), intonation contour, emphase volume, respiration simulée
+- 6 techniques anti-synthétique:
+  1. Multi-utterance: segments longs (max 80 car, max 3 segments)
+  2. Variation dynamique: rate ±5%, pitch ±4% par segment
+  3. Text hacking: TOUTE ponctuation supprimée (. , - : ; " etc.) — seuls lettres/chiffres/apostrophes restent
+  4. Intonation contour: pitch monte pour questions (+8%), descend en fin (-5%)
+  5. Emphase par volume: mots CAPS plus forts
+  6. Respiration simulée: pauses variables entre segments
 - Son ding 880Hz + vibration aux virages
 - Répliques seulement lors des directives (pas tous les 200m)
-- Texte des répliques NON affiché
+- Texte des répliques NON affiché à l'écran
 - Sélection voix: Natural > Google > Legacy
+- **Slider vitesse voix** dans Paramètres > Synthèse vocale (0.6x à 1.5x)
 
 ### PWA & hors-ligne
-- SW v12 network-first + cache-first tuiles
-- Route en localStorage pour survie hors-ligne
-- Avertissement vocal si recalcul échoue hors-ligne
-- updateViaCache:'none' + reg.update() pour refresh immédiat
-- WakeLock écran allumé pendant guidage
+- SW v12 network-first pour app + cache-first pour tuiles carte
+- Route sauvegardée en localStorage pour survie hors-ligne
+- Pré-chargement tuiles le long de la route (tant qu'on a du réseau)
+- Avertissement vocal du personnage si recalcul échoue hors-ligne
+- updateViaCache:'none' + reg.update() pour mises à jour immédiates
+- WakeLock: écran allumé pendant guidage
 
 ### Interface
+- **Bottom sheet** style Google Maps — ouvert par défaut à 50vh au lancement
 - Thème par personnage (couleurs dynamiques)
-- Transitions fluides + glassmorphism
-- Bottom sheet style Google Maps
+- Transitions fluides + glassmorphism (backdrop-filter blur)
 - Splash screen avec logo SVG crâne/sourire animé
 - Confettis à l'arrivée
-- Mode conduite simplifié + détection d'arrêt auto
+- Bouton "Effacer" petit et discret (remplace l'ancien CALCULER)
+- Icône ⚙️ Paramètres pour accéder aux réglages et tests
 
 ### Personnalisation
-- Nom utilisateur (demandé après disclaimer, sauvé en localStorage)
-- Répliques personnalisées avec le prénom
-- Favoris: Maison/Travail + liste personnalisée
-- Historique trajets
+- Nom utilisateur (demandé au premier lancement après disclaimer, sauvé en localStorage)
+- Répliques personnalisées avec le prénom de l'utilisateur
+- Changement de nom dans Paramètres > Profil
+- Favoris: Maison/Travail raccourcis + liste personnalisée
+- **Historique trajets** avec auto-suppression après 7 jours d'inactivité
+- Bouton "Relancer" sur chaque trajet de l'historique
 
 ### Logo
 - Visage unique coupé au milieu: crâne anatomique (gauche) + visage jaune qui rit (droite)
-- 2 yeux, 1 nez, 1 bouche partagés entre les deux moitiés
+- Oeil gauche: orbite noire avec pupille rouge
+- Oeil droit: oeil plissé qui rit avec larme bleue
+- Bouche: dents de crâne réalistes à gauche, gros sourire à droite
 - Le Ô de DRÔLE = smiley jaune avec accent circonflexe
 - Sous-titre: "À en mourir de rire"
 - Pin GPS bleu au sommet
+- Glow rouge (crâne) / orange (rire) autour
 
-### Sécurité
-- Disclaimer langage grossier à chaque visite
-- Aucune donnée transmise (tout local)
-- Conforme lois Canada/USA (mains libres)
+### Sécurité & légal
+- Disclaimer langage grossier à CHAQUE visite (pas de skip)
+- Bouton "J'ACCEPTE ET JE CONTINUE" obligatoire
+- Aucune donnée transmise à un serveur (tout en localStorage)
+- Conforme lois Canada/USA (mains libres, pas de distraction visuelle en guidage)
 
 ## Scénarios de test (dans Paramètres ⚙️)
 Tout droit, Droite, Gauche, Demi-tour, Virage raté, Recalcul, Trafic, Radar, Tunnel, Arrivée
 
-## Règles de développement
-1. Toujours push vers GitHub après modification
-2. Bumper le SW (CACHE_NAME) à chaque changement
-3. SVG inliné dans le HTML (pas de fichiers externes bloqués par SW)
-4. Tester en mode incognito pour contourner le cache
-5. Un seul fichier HTML — pas de framework
-6. 100% gratuit — aucune API payante
-7. Voix: nettoyer TOUTE ponctuation avant TTS, segments longs, variations subtiles
+## Reset trajet
+Quand l'utilisateur clique "Arrêter le trajet":
+- Route effacée de la carte + marqueurs supprimés
+- Bande d'instructions masquée
+- Mode plein écran désactivé
+- Formulaire de recherche réaffiché (bottom sheet remonte)
+- Voix arrêtée + WakeLock relâché
+- Prêt pour un nouveau trajet
 
-## Évolution future
-- React Native + Mapbox (app store)
-- ElevenLabs voix IA (payant)
-- Capacitor pour APIs natives
+## Règles de développement
+1. **Toujours push vers GitHub** après modification (déploiement auto)
+2. **Bumper le SW** (CACHE_NAME version) à chaque changement pour forcer le refresh
+3. **SVG inliné** dans le HTML (pas de fichiers externes bloqués par le SW)
+4. **Tester en mode incognito** pour contourner le cache navigateur
+5. **Un seul fichier HTML** — pas de framework, pas de build step
+6. **100% gratuit** — aucune API payante, aucun compte requis
+7. **Voix naturelles** — nettoyer TOUTE ponctuation avant TTS, segments longs, variations subtiles
+8. **Geocoding intelligent** — Nominatim quand numéro civique détecté, Photon sinon
+9. **mousedown + touchstart** pour les items autocomplétion (pas click — race condition avec blur)
+10. **Copier index.html dans /c/temp/gps-drole/** après édition pour le preview local
+
+## Évolution future envisagée
+- React Native + Mapbox pour publication sur app stores
+- ElevenLabs pour voix IA réalistes (payant ~5-22$/mois)
+- Capacitor wrapper pour accès APIs natives (WiFi, notifications push)
 - Android Auto / CarPlay
-- Partage position temps réel
-- Points d'intérêt, alertes vitesse
-- Achievements / gamification
+- Partage de position en temps réel (WebSocket/Firebase)
+- Points d'intérêt proches (stations, restos, toilettes via Overpass API)
+- Alertes de vitesse par zone (API Overpass)
+- Achievements / gamification ("100 km parcourus!", badges)
+- Nouveaux personnages: Professeur, Pirate, Robot, Commentateur sportif
+- Répliques contextuelles selon l'heure/météo/vitesse
+- Easter eggs (répliques rares 1/50)
