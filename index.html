@@ -4176,6 +4176,8 @@ function launchConfetti(){
   var handle=document.getElementById('dragHandle');
   if(!panel||!handle) return;
   panel.classList.add('bottom-sheet');
+  panel.classList.add('half');
+  panel.style.height='50vh';
   document.body.classList.add('bs-active');
   var startY=0,startH=0,dragging=false;
   function onStart(e){
