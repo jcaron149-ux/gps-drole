@@ -2081,9 +2081,16 @@ function addWp(){
 }
 function removeWp(n){ var el=document.getElementById('wp'+n); if(el) el.remove(); }
 
-function geocode(q){
+function geocode(q, inputEl){
   if(!q.trim()) return Promise.resolve(null);
-  return fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=1')
+  // Si l'input a des coordonnées déjà résolues (via autocomplétion), les utiliser directement
+  if(inputEl && inputEl.dataset && inputEl.dataset.lat && inputEl.dataset.lng){
+    return Promise.resolve({lat:+inputEl.dataset.lat, lng:+inputEl.dataset.lng, name:q});
+  }
+  // Sinon, chercher avec Nominatim + biais local pour numéros civiques
+  var url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=1&addressdetails=1';
+  if(userLat&&userLng) url+='&viewbox='+(userLng-2)+','+(userLat+2)+','+(userLng+2)+','+(userLat-2)+'&bounded=0';
+  return fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(d){ return d.length?{lat:+d[0].lat,lng:+d[0].lon,name:d[0].display_name}:null; })
     .catch(function(){ return null; });
@@ -2094,8 +2101,9 @@ function calcRoute(){
   var pts=[];
   var dv=document.getElementById('departIn').value.trim();
 
+  var departInput=document.getElementById('departIn');
   var pDepart;
-  if(dv){ pDepart=geocode(dv); }
+  if(dv){ pDepart=geocode(dv, departInput); }
   else { pDepart=Promise.resolve({lat:userLat,lng:userLng,name:'Ma position'}); }
 
   pDepart.then(function(startPt){
@@ -2104,15 +2112,16 @@ function calcRoute(){
 
     var wpEls=[].slice.call(document.querySelectorAll('[id^="wpIn"]'));
     var wpPromises=wpEls.map(function(el){
-      return el.value.trim()?geocode(el.value.trim()):Promise.resolve(null);
+      return el.value.trim()?geocode(el.value.trim(), el):Promise.resolve(null);
     });
 
     return Promise.all(wpPromises).then(function(wpResults){
       wpResults.forEach(function(g){ if(g) pts.push(g); });
 
-      var dstv=document.getElementById('destIn').value.trim();
+      var destInput=document.getElementById('destIn');
+      var dstv=destInput.value.trim();
       if(!dstv){ setStatus('Entrez une destination'); return; }
-      return geocode(dstv).then(function(gd){
+      return geocode(dstv, destInput).then(function(gd){
         if(!gd){ setStatus('Destination non trouv\u00e9e'); return; }
         pts.push(gd);
         if(pts.length<2){ setStatus('D\u00e9part + destination requis'); return; }
@@ -3071,6 +3080,9 @@ function setupAutocompletePhoton(inputId){
   var timer;
   input.addEventListener('input',function(){
     clearTimeout(timer);
+    // Effacer les coordonnées cached quand l'utilisateur retape
+    delete input.dataset.lat;
+    delete input.dataset.lng;
     var q=input.value.trim();
     if(q.length<3){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
     timer=setTimeout(function(){
@@ -3110,6 +3122,10 @@ function setupAutocompletePhoton(inputId){
               input.dataset.lat=item.lat;
               input.dataset.lng=item.lng;
               dd.classList.remove('vis'); dd.innerHTML='';
+              // Auto-calculer si c'est le champ destination et qu'il est rempli
+              if(input.id==='destIn'){
+                setTimeout(function(){ calcRoute(); }, 200);
+              }
             });
             dd.appendChild(div);
           });
