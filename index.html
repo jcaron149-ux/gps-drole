@@ -460,8 +460,7 @@ body.guidance-fullscreen #navArrow{display:block}
         <input class="dest-input" id="destIn" placeholder="Destination finale..." autocomplete="off" onkeypress="if(event.key==='Enter')calcRoute()">
       </div>
       <div class="btn-row" style="margin-top:7px">
-        <button class="btn-calc" onclick="calcRoute()">&#128506;&#65039; CALCULER</button>
-        <button class="btn-clear" onclick="clearRoute()" title="Effacer">&#128465;&#65039;</button>
+        <button class="btn-clear" onclick="clearRoute()" title="Effacer la route" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-size:.7rem;cursor:pointer">&#128465; Effacer la route</button>
       </div>
       <button class="btn-guide" id="btnGuide" onclick="toggleGuidance()">&#128640; DEMARRER LE GUIDAGE</button>
       <div style="font-size:.62rem;color:var(--muted);margin-top:5px">Ou cliquez sur la carte pour destination directe</div>
@@ -3086,30 +3085,55 @@ function setupAutocompletePhoton(inputId){
     var q=input.value.trim();
     if(q.length<3){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
     timer=setTimeout(function(){
-      // Try Photon (Komoot) first — faster + better results + local bias
-      var photonUrl='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang='+lang;
-      // Biais géographique: prioriser les résultats proches de l'utilisateur
-      if(userLat&&userLng) photonUrl+='&lat='+userLat+'&lon='+userLng;
-      fetch(photonUrl)
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-          if(!data.features||!data.features.length){
-            // Fallback to Nominatim
-            // Nominatim fallback avec viewbox local (±2 degrés autour de l'utilisateur)
-            var nomUrl='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&addressdetails=1';
-            if(userLat&&userLng) nomUrl+='&viewbox='+(userLng-2)+','+(userLat+2)+','+(userLng+2)+','+(userLat-2)+'&bounded=0';
-            return fetch(nomUrl)
-              .then(function(r){ return r.json(); })
-              .then(function(nom){
-                return nom.map(function(n){ return {name:n.display_name,lat:+n.lat,lng:+n.lon}; });
-              });
-          }
-          return data.features.map(function(f){
-            var p=f.properties;
-            var parts=[p.name,p.street,p.city||p.county,p.state,p.country].filter(Boolean);
-            return {name:parts.join(', '),lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0]};
+      // Détecter si la requête contient un numéro civique (ex: "1234 rue...")
+      var hasNumber=/^\d+\s/.test(q) || /\d+/.test(q.split(',')[0]);
+
+      function searchNominatim(){
+        var nomUrl='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&addressdetails=1';
+        if(userLat&&userLng) nomUrl+='&viewbox='+(userLng-2)+','+(userLat+2)+','+(userLng+2)+','+(userLat-2)+'&bounded=0';
+        return fetch(nomUrl)
+          .then(function(r){ return r.json(); })
+          .then(function(nom){
+            return nom.map(function(n){
+              // Construire un nom avec le numéro civique visible
+              var parts=[];
+              if(n.address){
+                if(n.address.house_number) parts.push(n.address.house_number);
+                if(n.address.road) parts.push(n.address.road);
+                if(n.address.city||n.address.town||n.address.village) parts.push(n.address.city||n.address.town||n.address.village);
+                if(n.address.state) parts.push(n.address.state);
+                if(n.address.country) parts.push(n.address.country);
+              }
+              return {name:parts.length>2?parts.join(', '):n.display_name,lat:+n.lat,lng:+n.lon};
+            });
           });
-        })
+      }
+
+      function searchPhoton(){
+        var photonUrl='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=5&lang='+lang;
+        if(userLat&&userLng) photonUrl+='&lat='+userLat+'&lon='+userLng;
+        return fetch(photonUrl)
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            if(!data.features||!data.features.length) return searchNominatim();
+            return data.features.map(function(f){
+              var p=f.properties;
+              var parts=[];
+              if(p.housenumber) parts.push(p.housenumber);
+              if(p.name && p.name!==p.street) parts.push(p.name);
+              if(p.street) parts.push(p.street);
+              parts.push(p.city||p.county||'');
+              parts.push(p.state||'');
+              parts.push(p.country||'');
+              return {name:parts.filter(Boolean).join(', '),lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0]};
+            });
+          });
+      }
+
+      // Si numéro civique → Nominatim d'abord (meilleur pour les adresses exactes)
+      // Sinon → Photon d'abord (meilleur pour les noms de lieux)
+      var searchPromise = hasNumber ? searchNominatim() : searchPhoton();
+      searchPromise.catch(function(){ return []; })
         .then(function(results){
           if(!results||!results.length){ dd.classList.remove('vis'); dd.innerHTML=''; return; }
           dd.innerHTML='';
