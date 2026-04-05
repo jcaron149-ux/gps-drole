@@ -2859,6 +2859,14 @@ var stepAnnounced={}; // stepIdx -> {far:bool, mid:bool, near:bool}
 
 function checkTurnByTurn(){
   if(!routeSteps.length) return;
+  // Seuils dynamiques selon la vitesse (plus tôt sur autoroute)
+  var spdKmh=currentSpeed||0;
+  if(useImperial) spdKmh=spdKmh*1.60934;
+  var farDist,midDist,nearDist;
+  if(spdKmh>80){ farDist=2000; midDist=500; nearDist=100; }
+  else if(spdKmh>50){ farDist=1000; midDist=300; nearDist=50; }
+  else { farDist=500; midDist=200; nearDist=30; }
+
   for(var i=Math.max(0,lastAnnouncedStep);i<routeSteps.length;i++){
     var step=routeSteps[i];
     var dist=haversine(userLat,userLng,step.lat,step.lng);
@@ -2866,24 +2874,24 @@ function checkTurnByTurn(){
 
     // FEATURE 8: Update directional arrow based on next step
     updateNavArrow(step);
-    // Pré-annonce à ~500m: instruction de navigation parlée (pas de réplique drôle)
-    if(dist<550 && dist>250 && !stepAnnounced[i].far){
+    // Pré-annonce lointaine (2km autoroute, 500m ville)
+    if(dist<farDist*1.1 && dist>midDist*1.1 && !stepAnnounced[i].far){
       stepAnnounced[i].far=true;
-      var preInstr=buildPreAnnounce(step,500);
+      var preInstr=buildPreAnnounce(step,farDist);
       if(preInstr){ showNavInstr(preInstr); speak(preInstr,lang); }
       vibrateAndDing();
       break;
     }
-    // Annonce à ~200m: instruction de navigation parlée (pas de réplique drôle)
-    if(dist<250 && dist>80 && !stepAnnounced[i].mid){
+    // Rappel milieu (500m autoroute, 200m ville)
+    if(dist<midDist*1.1 && dist>nearDist*1.5 && !stepAnnounced[i].mid){
       stepAnnounced[i].mid=true;
-      var midInstr=buildPreAnnounce(step,200);
+      var midInstr=buildPreAnnounce(step,midDist);
       if(midInstr){ showNavInstr(midInstr); speak(midInstr,lang); }
       vibrateAndDing();
       break;
     }
-    // Annonce finale à 30m: voix du personnage + instruction nav dans overlay
-    if(dist<40 && !stepAnnounced[i].near){
+    // Annonce finale (100m autoroute, 30m ville): voix du personnage
+    if(dist<nearDist*1.3 && !stepAnnounced[i].near){
       stepAnnounced[i].near=true;
       lastAnnouncedStep=i;
       var scenario=mapManeuverToScenario(step.type,step.modifier);
@@ -2898,7 +2906,7 @@ function checkTurnByTurn(){
       break;
     }
     // Ne pas scanner les steps trop loin
-    if(dist>600) break;
+    if(dist>farDist*1.2) break;
   }
 }
 

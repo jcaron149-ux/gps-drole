@@ -1,6 +1,6 @@
 // GPS DRÔLE — Service Worker v1
 // Caches: app shell + map tiles (offline support)
-const CACHE_NAME = 'gps-drole-v15';
+const CACHE_NAME = 'gps-drole-v16';
 const TILE_CACHE = 'gps-drole-tiles-v1';
 const APP_SHELL = [
   './',
