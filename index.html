@@ -130,7 +130,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
 .center-btn{position:absolute;bottom:18px;right:18px;z-index:1000;width:40px;height:40px;border-radius:50%;border:2px solid var(--neon);background:var(--s2);color:var(--neon);font-size:1.2rem;cursor:pointer;box-shadow:0 0 14px rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;transition:all .2s}
 .center-btn:hover{background:var(--neon);color:#080c18}
 .center-btn.tracking{border-color:var(--neon2);color:var(--neon2);box-shadow:0 0 14px rgba(16,185,129,.4)}
-.speed-badge{position:absolute;bottom:18px;left:18px;z-index:1000;background:var(--s2);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--muted);box-shadow:0 0 12px rgba(16,185,129,.2);display:flex;flex-direction:column;gap:2px;min-width:90px;transition:border-color .3s,box-shadow .3s}
+.speed-badge{position:absolute;top:55px;left:12px;z-index:1000;background:var(--s2);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-family:'Orbitron',monospace;font-size:.7rem;color:var(--muted);box-shadow:0 0 12px rgba(16,185,129,.2);display:flex;flex-direction:column;gap:2px;min-width:90px;transition:border-color .3s,box-shadow .3s}
 .speed-val{font-size:1.4rem;font-weight:900;color:var(--neon);line-height:1}
 .speed-unit{font-size:.55rem;color:var(--muted);letter-spacing:2px}
 .speed-heading{font-size:.6rem;color:var(--neon2);margin-top:2px}
@@ -145,7 +145,7 @@ header{flex-shrink:0;background:linear-gradient(90deg,var(--s1),var(--s2));borde
   .logo{font-size:1.1rem}
   .header-right{font-size:.58rem}
   .center-btn{width:52px;height:52px;font-size:1.5rem;bottom:22px;right:14px}
-  .speed-badge{bottom:22px;left:14px;padding:6px 10px}
+  .speed-badge{top:55px;left:10px;padding:6px 10px}
 }
 /* Mobile landscape — full map mode */
 @media(max-height:500px) and (orientation:landscape){
@@ -282,7 +282,7 @@ body.driver-mode .driver-hud{display:flex!important}
 /* ===== FEATURE 6: Bigger guidance buttons ===== */
 body.guidance-fullscreen .guidance-stop-float{padding:12px 24px;font-size:.8rem;border-radius:30px}
 body.guidance-fullscreen .center-btn{width:56px;height:56px;font-size:1.6rem}
-body.guidance-fullscreen .speed-badge{padding:12px 18px;font-size:1rem}
+body.guidance-fullscreen .speed-badge{top:60px;left:12px;padding:12px 18px;font-size:1rem}
 /* ===== FEATURE 7: 3D tilted view in guidance ===== */
 body.guidance-fullscreen #map{perspective:800px;transform:rotateX(25deg);transform-origin:center 70%;transition:transform .5s ease}
 /* ===== FEATURE 8: Directional arrow ===== */
