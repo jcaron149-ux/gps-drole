@@ -1948,7 +1948,12 @@ function toDisplayDist(meters){ return useImperial?(meters/1609.344).toFixed(1)+
 // FEATURE: Real speed limit from OSM via Overpass API
 var currentSpeedLimit=null;
 var lastSpeedLimitQuery=0;
-function speedLimit(){ return currentSpeedLimit||(useImperial?35:50); }
+function speedLimit(){
+  var base=currentSpeedLimit||(useImperial?35:50);
+  // Marge de tolérance: +10 en ville (<=60), +15 sur autoroute (>60)
+  var margin=(base>(useImperial?37:60))?((useImperial?9:15)):((useImperial?6:10));
+  return base+margin;
+}
 function fetchSpeedLimit(lat,lng){
   var now=Date.now();
   if(now-lastSpeedLimitQuery<15000) return; // query max every 15s
@@ -3423,12 +3428,35 @@ speak=function(txt,l){
 };
 
 // =============================================================
-//  VIBRATION + DING SOUND avant chaque instruction
+//  BLUETOOTH/CARPLAY AUDIO FIX + DING SOUND
 // =============================================================
+// Force audio routing to Bluetooth/CarPlay by playing a silent audio element first
+// This "wakes up" the Bluetooth audio channel on iOS/Android
+var btAudioEl=null;
+function initBluetoothAudio(){
+  if(btAudioEl) return;
+  btAudioEl=document.createElement('audio');
+  btAudioEl.setAttribute('playsinline','');
+  btAudioEl.setAttribute('webkit-playsinline','');
+  // Silent WAV base64 (minimal, just activates the audio route)
+  btAudioEl.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+  btAudioEl.volume=0.01;
+  document.body.appendChild(btAudioEl);
+  btAudioEl.play().catch(function(){});
+}
+// Call on first user interaction to unlock audio
+document.addEventListener('click',function btInit(){
+  initBluetoothAudio();
+  // Also resume AudioContext if suspended (Chrome policy)
+  if(dingCtx&&dingCtx.state==='suspended') dingCtx.resume();
+  document.removeEventListener('click',btInit);
+},{once:true});
+
 var dingCtx=null;
 function playDing(){
   try{
     if(!dingCtx) dingCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(dingCtx.state==='suspended') dingCtx.resume();
     var osc=dingCtx.createOscillator();
     var gain=dingCtx.createGain();
     osc.connect(gain); gain.connect(dingCtx.destination);
@@ -3437,6 +3465,8 @@ function playDing(){
     gain.gain.exponentialRampToValueAtTime(0.01,dingCtx.currentTime+0.3);
     osc.start(dingCtx.currentTime);
     osc.stop(dingCtx.currentTime+0.3);
+    // Play silent audio to keep Bluetooth channel active
+    if(btAudioEl) btAudioEl.play().catch(function(){});
   }catch(e){}
 }
 function vibrateAndDing(){
@@ -3721,6 +3751,11 @@ startTracking=function(){
     var accuracy=pos.coords.accuracy, speed=pos.coords.speed, heading=pos.coords.heading;
     userLat=latitude; userLng=longitude;
     userMark.setLatLng([latitude,longitude]);
+    // Orienter l'icône voiture dans la direction du trajet
+    if(heading!==null&&!isNaN(heading)){
+      var el=userMark.getElement();
+      if(el) el.style.transform='rotate('+heading+'deg)';
+    }
     if(accuracyCircle) mapObj.removeLayer(accuracyCircle);
     accuracyCircle=L.circle([latitude,longitude],{radius:accuracy,color:'#3b82f6',fillColor:'#3b82f6',fillOpacity:.1,weight:1}).addTo(mapObj);
     // FEATURE: Smart zoom based on speed
